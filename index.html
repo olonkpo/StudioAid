@@ -132,6 +132,11 @@ body{font-size:13px}
 @media print{body>*:not(#studio){display:none!important}#studio{position:static;display:block!important;box-shadow:none;border:0}.st-side,.noprint{display:none!important}.st-main{overflow:visible}}
 html.native:root{color-scheme:light!important}.native body{background:transparent}.native .desk{display:none}
 .native #bar{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}.native .bg.all .pc{background:var(--bg)}
+.board{overflow:visible}.bg{min-width:0;width:100%}
+.sn{font-size:10.5px;padding:3px 1px;overflow:hidden;overflow-wrap:anywhere}
+.cell{font-size:11px;padding:0 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.ph{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gear.upd{position:relative}.gear.upd::after{content:"";position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:#d64545}
 </style>
 </head>
 <body>
@@ -149,7 +154,7 @@ const PH=[{n:'Booked',c:'#3b6ea5',s:['Confirm Booking','Send Reminder']},{n:'Pro
 const DEF={theme:'auto',size:44,fade:true,cur:'GHS',me:'Ebenezer',cc:'233'};
 const ORD=['','started','done','paused'],LBL={'':'',started:'Started',done:'Done',paused:'Paused'};
 let S={projects:[],phases:JSON.parse(JSON.stringify(PH)),phase:1,y:200,side:'r',cfg:{},view:'board'};
-const NAT=window.native||null;try{Object.assign(S,JSON.parse((NAT?NAT.load():localStorage.getItem('shootbar2'))||'{}'))}catch(e){}
+const NAT=window.native||null;const VER=NAT?NAT.version():'preview';try{Object.assign(S,JSON.parse((NAT?NAT.load():localStorage.getItem('shootbar2'))||'{}'))}catch(e){}
 S.cfg=Object.assign({},DEF,S.cfg);
 const save=()=>{try{const j=JSON.stringify(S);NAT?NAT.save(j):localStorage.setItem('shootbar2',j)}catch(e){}};
 const $=id=>document.getElementById(id);
@@ -168,7 +173,7 @@ function renderBoard(){
   const due=[];S.projects.forEach(p=>{if(p.arch)return;Object.entries(p.due||{}).forEach(([x,d])=>{if(d<=td&&p.cells[x]!=='done'&&c.includes(x))due.push({p,x,d})})});due.sort((a,b)=>a.d<b.d?-1:1);
   $('due').innerHTML=due.length?`<div class="duel"><b>${due.length} due or overdue</b>`+due.slice(0,3).map(o=>`<button data-open="${o.p.id}" data-sec0="wf" class="${o.d<td?'od':''}">${esc(o.p.name)} \u2014 ${esc(o.x)} \u00b7 ${o.d<td?'overdue':'today'}</button>`).join('')+(due.length>3?`<span class="m">+${due.length-3} more</span>`:'')+'</div>':'';
   if(!list.length){$('board').innerHTML='<div class="empty">'+(S.projects.length?'No projects match.':'No projects yet. Add one below.')+'</div>';return}
-  $('board').innerHTML=`<div class="bg all" style="grid-template-columns:170px repeat(${n},minmax(64px,1fr))"><div></div>`+
+  $('board').innerHTML=`<div class="bg all" style="grid-template-columns:minmax(130px,1.5fr) repeat(${n},minmax(0,1fr))"><div></div>`+
   S.phases.map(p=>`<div class="ph" style="--c:${p.c};grid-column:span ${p.s.length}">${esc(p.n)}</div>`).join('')+'<div></div>'+
   c.map(x=>`<div class="sn">${esc(x)}</div>`).join('')+
   list.map(p=>`<div class="pc${hl===p.id?' hl':''}" id="r${p.id}"><i class="dt" style="background:var(${stat(p)})"></i><button class="pn" data-open="${p.id}" aria-label="Open ${esc(p.name)} details"><b>${esc(p.name)}</b><span class="m">${p.date?fmt(p.date):'No date'}</span></button><button class="x" data-del="${p.id}" aria-label="Delete ${esc(p.name)}">\u2715</button></div>`+
@@ -291,12 +296,15 @@ function openSet(){
   <div class="sr"><label for="sCur">Currency label</label><input type="text" id="sCur" value="${esc(S.cfg.cur)}" style="width:90px"></div>
   <h3>Phases and steps (steps separated by commas)</h3>`+S.phases.map((p,i)=>`<div class="sr"><input type="color" data-pc="${i}" value="${p.c}" aria-label="Color for ${esc(p.n)}"><input type="text" class="w" data-pn="${i}" value="${esc(p.n)}" aria-label="Phase name" style="flex:1"><input type="text" class="w" data-ps="${i}" value="${esc(p.s.join(', '))}" aria-label="Steps for ${esc(p.n)}"></div>`).join('')+
   `<div class="sr"><label for="sMe">Your name (message sign-off)</label><input type="text" id="sMe" value="${esc(S.cfg.me)}" style="width:140px"></div><div class="sr"><label for="sCc">Country code for WhatsApp numbers</label><input type="text" id="sCc" value="${esc(S.cfg.cc)}" style="width:90px"></div><h3>Bubble</h3><div class="sr"><label for="sSize">Size (${S.cfg.size}px)</label><input type="range" id="sSize" min="32" max="80" value="${S.cfg.size}"></div><div class="sr"><label for="sFade">Fade when idle</label><input type="checkbox" id="sFade" ${S.cfg.fade?'checked':''}></div>
+  <h3>Updates</h3><div class="sr"><span class="m">Version ${esc(VER)}</span><span style="flex:1"></span><button class="btn" id="updChk">Check for updates</button></div><div id="updMsg" class="m"></div>
   <h3>Backup</h3><div class="sr"><button class="btn" id="bkCopy">Copy backup</button><button class="btn" id="bkRestore">Restore from box</button></div><textarea id="bkBox" rows="3" aria-label="Backup text" placeholder="Backup text appears here. To restore, paste a backup here and press Restore."></textarea>
   <div class="sr" style="margin-top:14px"><button class="btn" id="rst">Reset settings</button><span style="flex:1"></span><button class="go" id="done">Done</button></div>`;
-  $('sTheme').value=S.cfg.theme}
+  $('sTheme').value=S.cfg.theme;renderUpd()}
 
 
 $('set').onclick=e=>{const id=e.target.id;
+  if(id==='updChk')checkUpd(true);
+  if(id==='updGo'&&UPD){NAT?NAT.openExternal(UPD.url):0}
   if(id==='bkCopy'){S.lb=Date.now();save();renderBoard();const j=JSON.stringify({projects:S.projects,phases:S.phases,cfg:S.cfg});$('bkBox').value=j;$('bkBox').select();try{navigator.clipboard.writeText(j)}catch(_){}}
   if(id==='bkRestore'){try{const o=JSON.parse($('bkBox').value);if(!Array.isArray(o.projects))throw 0;S.projects=o.projects;if(Array.isArray(o.phases)&&o.phases.length)S.phases=o.phases;S.cfg=Object.assign({},DEF,o.cfg);save();render();$('bkBox').value='Restored.'}catch(_){$('bkBox').value='That text is not a valid backup.'}}
   if(e.target.id==='done'){S.view='B';render()}
@@ -312,7 +320,7 @@ const BW=()=>S.cfg.size;
 function setBubble(){const x=S.side==='l'?M:innerWidth-BW()-M;S.y=Math.max(M,Math.min(innerHeight-BW()-M,S.y));bub.style.left=x+'px';bub.style.top=S.y+'px'}
 function wake(){bub.classList.remove('idle');clearTimeout(idleT);if(S.cfg.fade)idleT=setTimeout(()=>{if(!$('bar').classList.contains('open'))bub.classList.add('idle')},3000)}
 function place(){setBubble();const bar=$('bar');if(!bar.classList.contains('open'))return;
-  const W=({B:800,C:620,P:480,S:420})[S.view]||380;bar.style.width=Math.min(W,innerWidth-24)+'px';const r=bub.getBoundingClientRect(),w=bar.offsetWidth,h=bar.offsetHeight,n=innerWidth<520;
+  const W=({B:960,C:620,P:480,S:420})[S.view]||380;bar.style.width=Math.min(W,innerWidth-24)+'px';const r=bub.getBoundingClientRect(),w=bar.offsetWidth,h=bar.offsetHeight,n=innerWidth<520;
   const l=n?(innerWidth-w)/2:S.side==='l'?r.right+10:r.left-10-w,t=n?(r.top>innerHeight/2?r.top-h-10:r.bottom+10):r.top;
   bar.style.left=Math.max(8,Math.min(innerWidth-w-8,l))+'px';bar.style.top=Math.max(8,Math.min(innerHeight-h-8,t))+'px'}
 bub.addEventListener('pointerdown',e=>{bub.setPointerCapture(e.pointerId);drag={sx:e.clientX,sy:e.clientY,ox:bub.offsetLeft,oy:bub.offsetTop,moved:false};wake()});
@@ -329,12 +337,20 @@ addEventListener('keydown',e=>{if(e.altKey&&e.code==='Space'){e.preventDefault()
 addEventListener('resize',place);
 document.addEventListener('pointerdown',e=>{if($('bar').classList.contains('open')&&!e.target.closest('#bar,#bubble'))toggle(false)});
 S.q='';render();$('vf').value=S.vf||'act';$('sf').value=S.sf||'add';wake();
+let UPD=null,UPS='';
+function renderUpd(){const m=$('updMsg');if(!m)return;
+  m.innerHTML=UPS==='checking'?'Checking\u2026':UPS==='error'?'Could not check for updates. Check your internet connection.':UPD?`Version ${esc(UPD.latest)} is available. <button class="btn" id="updGo">Download</button>${UPD.demo?' (preview example)':''}`:UPS==='latest'?'You have the latest version.':''}
+async function checkUpd(manual){if(manual){UPS='checking';renderUpd()}
+  let r;try{r=NAT?await NAT.checkUpdate():{ok:true,latest:'0.1.2',newer:true,url:'',demo:true}}catch(e){r={ok:false}}
+  if(!r.ok){if(manual){UPS='error';renderUpd()}return}
+  UPD=r.newer?r:null;UPS=r.newer?'':'latest';renderUpd();const g=document.querySelector('.gear');if(g)g.classList.toggle('upd',!!UPD);
+  if(!manual&&UPD&&NAT&&S.un!==r.latest){NAT.notify('StudioAid','Version '+r.latest+' is available. Open Settings to download it.');S.un=r.latest;save()}}
 function notifyDue(){const td=key(new Date());if(S.ln===td)return;const c=cols();let n=0;S.projects.forEach(p=>{if(p.arch)return;Object.entries(p.due||{}).forEach(([x,d])=>{if(d<=td&&p.cells[x]!=='done'&&c.includes(x))n++})});if(n){NAT.notify('StudioAid',n+' step'+(n===1?'':'s')+' due or overdue');S.ln=td;save()}}
 if(NAT){document.documentElement.classList.add('native');let on=false;
  document.addEventListener('mousemove',e=>{const i=!!e.target.closest('#bubble,#bar,#studio,#toast');if(i!==on){on=i;NAT.interactive(i)}});
  NAT.onToggle(f=>toggle(f));
  addEventListener('blur',()=>{if($('studio').hidden&&$('bar').classList.contains('open'))toggle(false)});
- notifyDue();setInterval(notifyDue,36e5)}
+ notifyDue();setInterval(notifyDue,36e5);setTimeout(()=>checkUpd(false),5000);setInterval(()=>checkUpd(false),432e5)}
 </script>
 </body>
 </html>

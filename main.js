@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, globalShortcut, ipcMain, screen, shell, Notification, nativeImage } = require('electron');
+const { app, BrowserWindow, Tray, Menu, globalShortcut, ipcMain, screen, shell, Notification, nativeImage, net } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -44,6 +44,23 @@ function saveData(json) {
   } catch (e) { console.error('save failed', e); }
 }
 
+// ---- Updates: compare this version with the newest GitHub release
+const REPO = 'olonkpo/StudioAid';
+const cmpVer = (a, b) => { const x = a.split('.').map(Number), y = b.split('.').map(Number); for (let i = 0; i < 3; i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d; } return 0; };
+async function checkUpdate() {
+  try {
+    const r = await net.fetch(`https://api.github.com/repos/${REPO}/releases/latest`, { headers: { 'User-Agent': 'StudioAid', Accept: 'application/vnd.github+json' } });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    const latest = String(j.tag_name || '').replace(/^v/, '');
+    const asset = (j.assets || []).find(a => a.name.endsWith(IS_MAC ? '.dmg' : '.exe'));
+    return { ok: true, current: app.getVersion(), latest, newer: cmpVer(latest, app.getVersion()) > 0, url: asset ? asset.browser_download_url : j.html_url };
+  } catch (e) { return { ok: false, error: String(e.message || e) }; }
+}
+ipcMain.handle('update-check', checkUpdate);
+ipcMain.on('version', e => { e.returnValue = app.getVersion(); });
+ipcMain.on('open-external', (_e, url) => { if (typeof url === 'string' && url.startsWith(`https://github.com/${REPO}/`)) shell.openExternal(url); });
+
 ipcMain.on('interactive', (_e, on) => win && win.setIgnoreMouseEvents(!on, { forward: true }));
 ipcMain.on('save', (_e, json) => saveData(json));
 ipcMain.on('load', e => { try { e.returnValue = fs.existsSync(dataFile()) ? fs.readFileSync(dataFile(), 'utf8') : null; } catch (_) { e.returnValue = null; } });
@@ -69,6 +86,7 @@ app.whenReady().then(() => {
   tray.setContextMenu(Menu.buildFromTemplate([
     { label: 'Show or hide panel', click: togglePanel },
     { label: 'Open at login', type: 'checkbox', checked: app.getLoginItemSettings().openAtLogin, click: i => app.setLoginItemSettings({ openAtLogin: i.checked }) },
+    { label: 'Check for updates', click: async () => { const r = await checkUpdate(); if (r.ok && r.newer) shell.openExternal(r.url); else if (Notification.isSupported()) new Notification({ title: 'StudioAid', body: r.ok ? 'You have the latest version (' + r.current + ').' : 'Could not check for updates.' }).show(); } },
     { label: 'Show data folder', click: () => shell.openPath(app.getPath('userData')) },
     { type: 'separator' },
     { label: 'Quit', role: 'quit' }
