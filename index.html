@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>StudioAid</title>
+<style>
+:root{--bg:#fbfcfc;--panel:#f1f3f4;--ink:#1c2a33;--mute:#667780;--glass:rgba(250,252,253,.86);--line:#d3dadd;--chip:#eceeef;--done:#2e7d32;--start:#0a7ea4;--pause:#b35c00;box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12181c;--panel:#1b242a;--ink:#e6ecef;--mute:#8d9ca6;--glass:rgba(30,40,46,.86);--line:#35444d;--chip:#242f36;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12181c;--panel:#1b242a;--ink:#e6ecef;--mute:#8d9ca6;--glass:rgba(30,40,46,.86);--line:#35444d;--chip:#242f36;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.4 "Avenir Next","Helvetica Neue",system-ui,sans-serif;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--start);outline-offset:2px}
+.desk{position:fixed;inset:0;display:grid;place-items:center;text-align:center;color:var(--mute);padding:24px}.desk b{display:block;font-size:20px;color:var(--ink);margin-bottom:6px}
+.mt{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:12px}.mt .sp{flex:1}.mt .sum{font-size:12.5px;color:var(--mute)}
+.top{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+h1{font-size:22px;margin:0;font-weight:700}
+.sum{font-size:13px;color:var(--mute)}
+.top .sp{flex:1;min-width:20px}
+.btn{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px}
+.btn[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.addp{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.addp input,.set input[type=text],.set select{background:var(--chip);border:1px solid var(--line);border-radius:8px;padding:7px 9px;min-width:0}
+.go{background:var(--ink);color:var(--bg);border:0;border-radius:8px;padding:7px 14px;font-weight:600}
+.board{overflow-x:auto;padding-bottom:8px}
+.bg{display:grid;gap:6px;min-width:max-content;width:100%}
+.ph{background:var(--c);color:#fff;text-align:center;font-size:12px;padding:3px 6px;border-radius:2px}
+.sn{text-align:center;font-size:13px;font-weight:600;padding:8px 4px;white-space:nowrap}
+.pc{display:flex;align-items:center;gap:8px;position:sticky;left:0;z-index:2;background:var(--bg);padding-right:8px;min-width:0}
+.pc.hl{box-shadow:0 0 0 2px var(--start)}
+.dt{flex:none;width:8px;height:8px;border-radius:50%}
+.av{flex:none;width:36px;height:36px;border-radius:50%;background:#7b8791;color:#fff;display:grid;place-items:center;font-weight:700}
+.pn{flex:1;min-width:0;display:flex;flex-direction:column}
+.pn b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m{font-size:12px;color:var(--mute)}
+.am{flex:none;width:92px;font-size:13px}
+.am input{width:58px;border:0;background:transparent;padding:0;font-size:13px}
+.pg{height:4px;background:var(--line);border-radius:2px;margin-top:4px;overflow:hidden}.pg i{display:block;height:100%;background:var(--done)}
+.x{border:0;background:transparent;color:var(--mute);padding:2px 4px}
+.cell{height:54px;border:0;border-radius:3px;background:var(--chip);color:#fff;font-weight:600;font-size:13px}
+.cell[data-s=done]{background:var(--done)}.cell[data-s=started]{background:var(--start)}.cell[data-s=paused]{background:var(--pause)}
+.cell:hover{filter:brightness(.95)}
+.empty{padding:30px 0;color:var(--mute)}
+.dow,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.dow div{font-size:12px;color:var(--mute);padding:2px 4px}
+.day{min-height:92px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px;display:flex;flex-direction:column;gap:3px;overflow:hidden}
+.day.out{opacity:.45}.day.td .n{background:var(--ink);color:var(--bg);border-radius:10px;padding:0 7px;align-self:flex-start}
+.n{font-size:12.5px;font-weight:600}
+.pill{border:0;border-radius:4px;background:var(--c);color:#fff;font-size:11.5px;padding:2px 5px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mon{font-weight:700;min-width:150px;text-align:center}
+.cal-h{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+/* bubble + bar */
+#bubble{position:fixed;z-index:20;border-radius:50%;border:0;padding:0;background:var(--glass);box-shadow:0 0 0 4px var(--c),0 6px 18px rgba(0,0,0,.28);touch-action:none;transition:opacity .4s,left .18s,top .18s;cursor:grab;display:grid;place-items:center;font-weight:700}
+#bubble.drag{transition:none;cursor:grabbing}#bubble.idle{opacity:.4}
+#bubble small{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;border-radius:10px;background:var(--c);color:#fff;font-size:12px;display:grid;place-items:center;padding:0 5px}
+#bar{position:fixed;z-index:19;width:330px;max-width:calc(100vw - 24px);max-height:calc(100vh - 24px);overflow:auto;background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 36px rgba(0,0,0,.3);padding:10px;display:none}
+#bar.open{display:block;animation:pop .14s ease-out}
+@keyframes pop{from{opacity:0;transform:scale(.96)}}
+@media (prefers-reduced-motion:reduce){#bar.open{animation:none}#bubble{transition:none}}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--chip);padding:3px;border-radius:10px}
+.tabs button{border:0;background:transparent;border-radius:8px;padding:6px 2px;font-size:12.5px;font-weight:600;color:var(--mute)}
+.tabs button[aria-pressed=true]{background:var(--c);color:#fff}
+.nx{margin:10px 2px}
+.qr{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line)}.qr span{flex:1;font-weight:600}
+.qb{min-width:104px;border:0;border-radius:6px;padding:7px 10px;background:var(--chip);color:var(--mute);font-weight:600}.qb[data-s=done]{background:var(--done);color:#fff}.qb[data-s=started]{background:var(--start);color:#fff}.qb[data-s=paused]{background:var(--pause);color:#fff}
+#qsel{width:100%;margin-bottom:10px;background:var(--chip);border:1px solid var(--line);border-radius:8px;padding:8px}
+.gear{font-size:17px;line-height:1;padding:5px 10px}
+.nx .t{font-weight:700;font-size:16px}
+.acts{display:flex;gap:6px;margin-top:10px}
+.acts button{flex:1;border:0;border-radius:8px;padding:8px;color:#fff;font-weight:600}
+.add{display:flex;gap:6px}
+.add input{flex:1;min-width:0;background:var(--chip);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.add button{background:var(--c);color:#fff;border:0;border-radius:8px;padding:0 12px;font-weight:600}
+.hint{font-size:12px;color:var(--mute);margin-top:8px}
+#ov{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.45);display:none;place-items:center;padding:16px}#ov.open{display:grid}
+.set{padding:2px}
+.set h2{margin:0 0 8px;font-size:19px}.set h3{font-size:14px;margin:14px 0 6px}
+.sr{display:flex;align-items:center;gap:8px;margin:6px 0}.sr label{flex:1}
+.sr input[type=color]{flex:none;width:38px;height:30px;padding:0;border:1px solid var(--line);border-radius:6px;background:none}
+.sr input.w{flex:2}
+.pn{background:none;border:0;padding:0;text-align:left;cursor:pointer;color:inherit}.pn:hover b{text-decoration:underline}
+.pv h2{margin:10px 0 4px;font-size:19px}.pv h3{font-size:14px;margin:16px 0 0}
+.pv label{display:block;font-size:12.5px;color:var(--mute);margin-top:8px}
+.pv input,.pv textarea,.pv select,#bkBox{display:block;width:100%;margin-top:3px;background:var(--chip);border:1px solid var(--line);border-radius:8px;padding:7px 9px;color:var(--ink);font:inherit}
+.pv .g2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.pv .acts2{display:flex;gap:8px;margin-top:10px}.pv a.btn{text-decoration:none;color:var(--ink)}
+@media(max-width:520px){.pv .g2{grid-template-columns:1fr}}
+/* low-profile overrides */
+body{font-size:13px}
+#bar{border-radius:12px;padding:8px;box-shadow:0 8px 28px rgba(0,0,0,.2);max-height:min(72vh,580px)}
+#bubble{box-shadow:0 0 0 2px var(--c),0 3px 10px rgba(0,0,0,.2)}#bubble.idle{opacity:.3}
+#bubble small{top:-5px;right:-5px;min-width:16px;height:16px;font-size:10px;border-radius:8px;padding:0 4px}
+.desk{opacity:.45}
+.btn{padding:4px 10px;border-radius:7px;font-size:12.5px;background:transparent}
+.mt{margin-bottom:8px}.mt .sum{padding-right:4px}
+.tabs{grid-template-columns:repeat(4,1fr);margin-bottom:8px}.tabs button{padding:5px 2px}
+.bg{gap:4px}.bg.all .pc{position:sticky;left:0;background:var(--glass)}
+.pc{position:static;background:transparent;padding-right:4px;gap:6px}
+.pn b{font-size:13px;font-weight:600}
+.sn{font-size:11.5px;padding:3px 2px;color:var(--mute)}.ph{font-size:11px;padding:2px 6px;border-radius:4px}
+.cell{height:28px;font-size:11.5px;border-radius:6px}
+.x{opacity:0;font-size:11px}.pc:hover .x,.x:focus-visible{opacity:1}
+.addrow input{width:100%;margin-top:8px;background:transparent;border:1px dashed var(--line);border-radius:8px;padding:6px 9px;font-size:12.5px}
+.empty{padding:12px 0}.day{min-height:60px;padding:3px}.pill{font-size:11px}
+.sn{white-space:normal;line-height:1.15;text-align:center;word-break:break-word}
+#studio{position:fixed;inset:12px;z-index:40;display:grid;grid-template-columns:200px 1fr;background:var(--bg);border:1px solid var(--line);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden}
+#studio[hidden]{display:none}
+.st-side{background:var(--panel);padding:14px 10px;display:flex;flex-direction:column;gap:4px;border-right:1px solid var(--line);overflow:auto}
+.stn{padding:4px 8px 12px}.stn b{display:block;font-size:15px}
+.st-side button{text-align:left;border:0;background:transparent;border-radius:8px;padding:8px 10px;font-size:13px;white-space:nowrap}
+.st-side button[aria-pressed=true]{background:var(--ink);color:var(--bg)}.st-side .stx{margin-top:auto;color:var(--mute)}
+.st-main{padding:20px 24px;overflow:auto}.st-main h2{margin:0 0 4px;font-size:21px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.cards>div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px}.cards b{display:block;font-size:17px}
+.prog2{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:10px}.prog2 i{display:block;height:100%;background:var(--done)}
+.row2{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line)}.row2 .sp{flex:1}
+.od{color:#d64545}.dn{text-decoration:line-through;color:var(--mute)}
+.pv input[type=checkbox]{width:auto;margin:0}.pf input{width:auto;margin:0;flex:1;min-width:0}
+.wn{flex:1}.dd{width:150px!important;margin:0!important}.addi{margin-top:8px!important}
+.cards .amt{font-size:17px;font-weight:700;width:120px;padding:2px 6px;margin:0}
+@media(max-width:640px){#studio{grid-template-columns:1fr;grid-template-rows:auto 1fr}.st-side{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}.stn{display:none}.cards{grid-template-columns:1fr 1fr}}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--bg);padding:8px 12px;border-radius:10px;display:flex;gap:12px;align-items:center;font-size:13px}#toast[hidden]{display:none}#toast button{border:0;background:transparent;color:inherit;font-weight:700;text-decoration:underline}
+.cell.ovd{box-shadow:inset 0 0 0 2px #d64545}
+.duel{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px;font-size:12px}.duel button{border:1px solid var(--line);background:transparent;border-radius:999px;padding:2px 9px;font-size:12px}
+.bkn{width:100%;margin-bottom:8px;border:1px dashed var(--pause);background:transparent;border-radius:8px;padding:5px;font-size:12px;color:var(--pause)}
+.tb{display:flex;gap:6px;margin-bottom:8px}.tb input,.tb select,.addrow select{background:transparent;border:1px solid var(--line);border-radius:7px;padding:4px 8px;font-size:12px;min-width:0}.tb input{flex:1}
+.addrow{display:flex;gap:6px}.addrow input{flex:1;width:auto}.addrow select{margin-top:8px;border-style:dashed}
+.duep{background:transparent;color:var(--ink);border:1px dashed var(--mute)}
+.cn{width:58px!important;margin:0!important;padding:4px 6px!important;display:inline-block!important}.cnw{display:flex;gap:4px;align-items:center;color:var(--mute)}
+.st-side [data-act=arch]{margin-top:auto;color:var(--mute)}.st-side .stx{margin-top:0}
+@media print{body>*:not(#studio){display:none!important}#studio{position:static;display:block!important;box-shadow:none;border:0}.st-side,.noprint{display:none!important}.st-main{overflow:visible}}
+html.native:root{color-scheme:light!important}.native body{background:transparent}.native .desk{display:none}
+.native #bar{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}.native .bg.all .pc{background:var(--bg)}
+</style>
+</head>
+<body>
+<div class="desk"><div><b>Your editing app goes here</b>Tap the bubble or press Option+Space.</div></div>
+<button id="bubble" aria-label="Open StudioAid panel" aria-expanded="false"></button>
+<div id="bar" role="dialog" aria-label="StudioAid panel">
+<div class="mt" id="mt"><button class="btn" data-v="B">Board</button><button class="btn" data-v="C">Calendar</button><span class="sp"></span><span class="sum" id="sum"></span><button class="btn gear" data-v="S" aria-label="Settings" title="Settings">⚙</button></div>
+<section id="vB" hidden><div id="bk"></div><div id="due"></div><div class="tb"><input id="q" placeholder="Search projects" aria-label="Search projects"><select id="vf" aria-label="Show"><option value="act">Active</option><option value="arch">Archived</option><option value="all">All</option></select><select id="sf" aria-label="Sort"><option value="add">Added</option><option value="date">Date</option><option value="name">Name</option></select></div><div id="board" class="board"></div><div class="addrow"><input id="pn" placeholder="+ New project" aria-label="New project name"><select id="pt" aria-label="Template"><option value="">Blank</option><option>Wedding</option><option>Graduation</option><option>Event</option><option>Tour + photo bundle</option></select></div></section>
+<section id="vC" hidden><div id="cal"></div></section>
+<section id="set" class="set" hidden></section></div>
+<div id="toast" hidden></div>
+<div id="studio" hidden role="dialog" aria-label="Project studio"><div class="st-side" id="stSide"></div><div class="st-main pv" id="stMain"></div></div>
+<script>
+const PH=[{n:'Booked',c:'#3b6ea5',s:['Confirm Booking','Send Reminder']},{n:'Processing',c:'#6a5aa5',s:['Meeting','Event','Completion','Delivery']},{n:'Post-project',c:'#2f8a6b',s:['Social Posts','Follow-up','Referrals']}];
+const DEF={theme:'auto',size:44,fade:true,cur:'GHS',me:'Ebenezer',cc:'233'};
+const ORD=['','started','done','paused'],LBL={'':'',started:'Started',done:'Done',paused:'Paused'};
+let S={projects:[],phases:JSON.parse(JSON.stringify(PH)),phase:1,y:200,side:'r',cfg:{},view:'board'};
+const NAT=window.native||null;try{Object.assign(S,JSON.parse((NAT?NAT.load():localStorage.getItem('shootbar2'))||'{}'))}catch(e){}
+S.cfg=Object.assign({},DEF,S.cfg);
+const save=()=>{try{const j=JSON.stringify(S);NAT?NAT.save(j):localStorage.setItem('shootbar2',j)}catch(e){}};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const fmt=k=>{const[y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})};
+const cols=()=>S.phases.flatMap(p=>p.s);
+let view=new Date(),hl=null;view.setDate(1);S.view='B';S.all=true;if(S.cfg.size===58)S.cfg.size=44;
+function stat(p){const c=cols(),d=c.filter(x=>p.cells[x]==='done').length;return d===c.length?'--done':c.some(x=>p.cells[x])?'--start':'--mute'}
+function applyCfg(){const r=document.documentElement;S.cfg.theme==='auto'?r.removeAttribute('data-theme'):r.setAttribute('data-theme',S.cfg.theme);
+  const b=$('bubble');b.style.width=b.style.height=S.cfg.size+'px';b.style.fontSize=S.cfg.size*.32+'px'}
+function renderBoard(){
+  const c=cols(),n=c.length,list=vis(),tot=list.reduce((a,p)=>a+(+p.amount||0),0),td=key(new Date()),lb=S.lb;
+  $('sum').textContent=list.length+' \u00b7 '+S.cfg.cur+' '+tot.toLocaleString();
+  $('bk').innerHTML=S.projects.length&&!NAT&&(!lb||Date.now()-lb>6048e5)?`<button class="bkn" data-v="S">${lb?'Last backup was over a week ago':'You have not backed up yet'} \u00b7 Back up now</button>`:'';
+  const due=[];S.projects.forEach(p=>{if(p.arch)return;Object.entries(p.due||{}).forEach(([x,d])=>{if(d<=td&&p.cells[x]!=='done'&&c.includes(x))due.push({p,x,d})})});due.sort((a,b)=>a.d<b.d?-1:1);
+  $('due').innerHTML=due.length?`<div class="duel"><b>${due.length} due or overdue</b>`+due.slice(0,3).map(o=>`<button data-open="${o.p.id}" data-sec0="wf" class="${o.d<td?'od':''}">${esc(o.p.name)} \u2014 ${esc(o.x)} \u00b7 ${o.d<td?'overdue':'today'}</button>`).join('')+(due.length>3?`<span class="m">+${due.length-3} more</span>`:'')+'</div>':'';
+  if(!list.length){$('board').innerHTML='<div class="empty">'+(S.projects.length?'No projects match.':'No projects yet. Add one below.')+'</div>';return}
+  $('board').innerHTML=`<div class="bg all" style="grid-template-columns:170px repeat(${n},minmax(64px,1fr))"><div></div>`+
+  S.phases.map(p=>`<div class="ph" style="--c:${p.c};grid-column:span ${p.s.length}">${esc(p.n)}</div>`).join('')+'<div></div>'+
+  c.map(x=>`<div class="sn">${esc(x)}</div>`).join('')+
+  list.map(p=>`<div class="pc${hl===p.id?' hl':''}" id="r${p.id}"><i class="dt" style="background:var(${stat(p)})"></i><button class="pn" data-open="${p.id}" aria-label="Open ${esc(p.name)} details"><b>${esc(p.name)}</b><span class="m">${p.date?fmt(p.date):'No date'}</span></button><button class="x" data-del="${p.id}" aria-label="Delete ${esc(p.name)}">\u2715</button></div>`+
+    c.map(x=>{const st=p.cells[x]||'',du=(p.due||{})[x],ct=(p.counts||{})[x],od=du&&du<td&&st!=='done',lab=ct&&ct.t&&st!=='done'?(ct.d||0)+'/'+ct.t:LBL[st];return `<button class="cell${od?' ovd':''}" data-s="${st}" data-p="${p.id}" data-c="${esc(x)}" title="${du?'Due '+fmt(du):''}" aria-label="${esc(p.name)}, ${esc(x)}: ${st||'not started'}${od?', overdue':''}">${lab}</button>`}).join('')).join('')+'</div>';
+}
+function renderCal(){
+  const y=view.getFullYear(),m=view.getMonth(),start=new Date(y,m,1-view.getDay()),tk=key(new Date());
+  let h=`<div class="cal-h"><button class="btn" data-mv="-1" aria-label="Previous month">‹</button><span class="mon">${view.toLocaleDateString(undefined,{month:'long',year:'numeric'})}</span><button class="btn" data-mv="1" aria-label="Next month">›</button><button class="btn" data-mv="0">Today</button></div><div class="dow">${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div>${d}</div>`).join('')}</div><div class="grid">`;
+  for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);if(i>=35&&d.getMonth()!==m)break;const k=key(d);
+    h+=`<div class="day${d.getMonth()!==m?' out':''}${k===tk?' td':''}"><span class="n">${d.getDate()}</span>`+S.projects.filter(p=>p.date===k).map(p=>`<button class="pill" data-hl="${p.id}" style="--c:var(${stat(p)})">${esc(p.name)}</button>`).join('')+S.projects.flatMap(p=>Object.entries(p.due||{}).filter(([x,dd])=>dd===k&&p.cells[x]!=='done').map(([x])=>`<button class="pill duep" data-open="${p.id}" data-sec0="wf">${esc(p.name)}: ${esc(x)}</button>`)).join('')+'</div>'}
+  $('cal').innerHTML=h+'</div>';
+}
+function renderBar(){
+  const cs=cols(),open=S.projects.reduce((a,p)=>a+cs.filter(x=>p.cells[x]!=='done').length,0);
+  [$('bubble'),$('bar')].forEach(e=>e.style.setProperty('--c','var(--ink)'));
+  $('bubble').innerHTML='\ud83d\udcf7'+(open?`<small>${open}</small>`:'');
+}
+function render(){applyCfg();renderBoard();renderCal();renderBar();['B','C'].forEach(v=>$('v'+v).hidden=S.view!==v);$('set').hidden=S.view!=='S';document.querySelectorAll('#mt [data-v]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.view));place()}
+const TEMPL={'Wedding':{shots:['Getting ready','Ceremony','Couple portraits','Family groups','Reception details','Cake cutting','First dance'],gear:['Two camera bodies','Wide and telephoto lenses','Flash','Spare batteries','Memory cards']},
+'Graduation':{shots:['Portraits in gown','Family photos','Friends group','Diploma moment','Campus backdrop'],gear:['Camera and standard lens','Reflector','Spare batteries','Memory cards']},
+'Event':{shots:['Venue overview','Guest candids','Speeches','Key moments','Group photos','Details'],gear:['Camera','Flash','Spare batteries','Memory cards']},
+'Tour + photo bundle':{shots:['Arrival','Landmarks','Candid moments','Group photo','Golden hour','Portraits'],gear:['Camera and lenses','Power bank','Rain cover','Memory cards']}};
+function addProject(name,amount,date,tp){name=name.trim();if(!name)return;const o={id:Date.now()+Math.random().toString(36).slice(2,5),name,amount:+amount||0,date:date||'',cells:{}};const T=TEMPL[tp];if(T){o.shots=T.shots.map(t=>({t,d:false}));o.gear=T.gear.map(t=>({t,d:false}))}S.projects.push(o);save();render()}
+let tT;function toast(m,lbl,fn){const t=$('toast');t.innerHTML=`<span>${esc(m)}</span><button>${lbl}</button>`;t.hidden=false;t.querySelector('button').onclick=()=>{fn();t.hidden=true};clearTimeout(tT);tT=setTimeout(()=>t.hidden=true,8000)}
+function delProject(id){const i=S.projects.findIndex(p=>p.id===id);if(i<0)return;const p=S.projects.splice(i,1)[0];toast('Deleted '+p.name,'Undo',()=>{S.projects.splice(Math.min(i,S.projects.length),0,p);save();render()})}
+function migrate(o,n){if(o.length!==n.length)return;o.forEach((x,i)=>{if(x===n[i]||o.includes(n[i]))return;S.projects.forEach(p=>['cells','due','counts'].forEach(k=>{if(p[k]&&x in p[k]){p[k][n[i]]=p[k][x];delete p[k][x]}}))})}
+function vis(){const q=(S.q||'').toLowerCase(),vf=S.vf||'act';let a=S.projects.filter(p=>(vf==='all'||(vf==='arch')===!!p.arch)&&p.name.toLowerCase().includes(q));const sf=S.sf||'add';if(sf==='date')a=a.slice().sort((x,y)=>(x.date||'9')<(y.date||'9')?-1:1);else if(sf==='name')a=a.slice().sort((x,y)=>x.name.localeCompare(y.name));return a}
+$('pn').onkeydown=e=>{if(e.key==='Enter'){addProject($('pn').value,0,key(new Date()),$('pt').value);$('pn').value=''}};
+$('board').onclick=e=>{const c=e.target.closest('.cell'),x=e.target.closest('[data-del]');
+  if(c){const p=S.projects.find(p=>p.id===c.dataset.p),k=c.dataset.c,nx=ORD[(ORD.indexOf(p.cells[k]||'')+1)%4];nx?p.cells[k]=nx:delete p.cells[k]}
+  else if(x){delProject(x.dataset.del)}else return;save();render()};
+$('board').onchange=e=>{const a=e.target.dataset.amt;if(a){S.projects.find(p=>p.id===a).amount=+e.target.value||0;save();renderBoard()}};
+
+$('cal').onclick=e=>{const m=e.target.closest('[data-mv]'),h=e.target.closest('[data-hl]');
+  if(m){const v=+m.dataset.mv;view=v?new Date(view.getFullYear(),view.getMonth()+v,1):new Date(new Date().getFullYear(),new Date().getMonth(),1);renderCal()}
+  if(h){hl=h.dataset.hl;S.view='B';render();const r=$('r'+hl);if(r)r.scrollIntoView({block:'center'})}};
+/* bar */
+$('bar').onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+  if(d.open){openStudio(d.open,d.sec0);return}
+  if(d.v){S.view=d.v;if(d.v==='S')openSet();render();return}
+  if(d.ph){if(d.ph==='all')S.all=true;else{S.all=false;S.phase=+d.ph}}
+  else if(d.qp){const p=S.projects.find(p=>p.id===d.qp),k=d.qs,nx=ORD[(ORD.indexOf(p.cells[k]||'')+1)%4];nx?p.cells[k]=nx:delete p.cells[k]}else return;save();render()};
+/* project details + client messages */
+const TPL={'Booking confirmation':{s:'Booking confirmed: {project}',b:'Hi {client},\n\nThis is to confirm your booking for {project} on {date}. Please let me know if anything changes or if you have any questions.\n\nThank you,\n{me}'},
+'Session reminder':{s:'Reminder: {project} on {date}',b:'Hi {client},\n\nA friendly reminder about {project} on {date}. Let me know if you need to reschedule or have any special requests.\n\nSee you soon,\n{me}'},
+'Delivery link':{s:'Your photos are ready: {project}',b:'Hi {client},\n\nYour photos from {project} are ready. You can view and download them here: {link}\n\nI hope you love them!\n\n{me}'},
+'Follow-up and review':{s:'Thank you, {client}',b:'Hi {client},\n\nThank you for choosing me for {project}. If you enjoyed the experience, a short review or a referral to friends and family would mean a lot.\n\nWarm regards,\n{me}'},
+'Payment reminder':{s:'Payment reminder: {project}',b:'Hi {client},\n\nA gentle reminder about the outstanding payment of {amount} for {project}. Please let me know if you have any questions.\n\nThank you,\n{me}'}};
+const curP=()=>S.projects.find(x=>x.id===S.pid);let edited=false;
+let tplPick='Booking confirmation',sec='ov';
+const logIt=(p,k,t)=>{p.log=(p.log||[]).concat({ts:Date.now(),k,t}).slice(-80)};
+const paidOf=p=>(p.pay||[]).reduce((a,x)=>a+(+x.amt||0),0);
+const money=n=>S.cfg.cur+' '+(+n||0).toLocaleString();
+const stamp=()=>new Date().toLocaleString(undefined,{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+function openStudio(id,s0){S.pid=id;sec=s0||'ov';toggle(false);$('studio').hidden=false;renderStudio()}
+function closeStudio(){$('studio').hidden=true;save();render()}
+function setStep(p,x,v){v?p.cells[x]=v:delete p.cells[x];logIt(p,'Step',x+' \u2192 '+(LBL[v]||'Not started'));save();renderStudio();render()}
+const fld=(p,k,l,t)=>`<label>${l}<input data-f="${k}" type="${t||'text'}" value="${esc(p[k]||'')}"></label>`;
+const lst=(p,k,l)=>`<h3>${l}</h3>`+(p[k]||[]).map((x,i)=>`<div class="row2"><input type="checkbox" data-chk="${k}" data-i="${i}" ${x.d?'checked':''} aria-label="${esc(x.t)}"><span class="${x.d?'dn':''}">${esc(x.t)}</span><span class="sp"></span><button class="x" style="opacity:1" data-rm="${k}" data-i="${i}" aria-label="Remove">\u2715</button></div>`).join('')+`<input class="addi" data-add="${k}" placeholder="+ Add item, press Enter">`;
+const logRow=(l,full)=>`<div class="row2"><span>${esc(l.k)}: ${esc(l.t)}</span><span class="sp"></span><span class="m">${new Date(l.ts).toLocaleString(undefined,full?{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}:{day:'numeric',month:'short'})}</span></div>`;
+const V={
+ov(p){const c=cols(),d=c.filter(x=>p.cells[x]==='done').length,paid=paidOf(p),nx=c.find(x=>p.cells[x]!=='done'),td=key(new Date());
+ const due=c.filter(x=>p.due&&p.due[x]&&p.cells[x]!=='done').sort((a,b)=>p.due[a]<p.due[b]?-1:1).slice(0,5);
+ return `<h2>${esc(p.name)}</h2><div class="m">${p.date?fmt(p.date):'No date'}${p.time?' \u00b7 '+esc(p.time):''}${p.location?' \u00b7 '+esc(p.location):''}${p.client?' \u00b7 '+esc(p.client):''}</div>
+ <div class="prog2"><i style="width:${c.length?d/c.length*100:0}%"></i></div>
+ <div class="cards"><div><span class="m">Steps done</span><b>${d} of ${c.length}</b></div><div><span class="m">Amount</span><b>${money(p.amount)}</b></div><div><span class="m">Paid</span><b>${money(paid)}</b></div><div><span class="m">Balance</span><b>${money((+p.amount||0)-paid)}</b></div></div>
+ <h3>Next up</h3>${nx?`<div class="row2"><b>${esc(nx)}</b><span class="m">${LBL[p.cells[nx]||'']||'Not started'}</span><span class="sp"></span><button class="btn" data-act="st" data-st="${esc(nx)}" data-v="started">Start</button><button class="btn" data-act="st" data-st="${esc(nx)}" data-v="done">Done</button></div>`:'<div class="m">Every step is done.</div>'}
+ <h3>Due soon</h3>${due.length?due.map(x=>`<div class="row2"><span>${esc(x)}</span><span class="sp"></span><span class="${p.due[x]<td?'od':'m'}">${fmt(p.due[x])}</span></div>`).join(''):'<div class="m">No due dates set. Add them in Workflow.</div>'}
+ <h3>Recent activity</h3>${(p.log||[]).slice(-5).reverse().map(l=>logRow(l)).join('')||'<div class="m">Nothing yet.</div>'}`},
+cs(p){return `<h2>Client &amp; shoot</h2><div class="g2">${fld(p,'client','Client name')}${fld(p,'email','Email','email')}${fld(p,'phone','Phone / WhatsApp','tel')}${fld(p,'link','Gallery link','url')}${fld(p,'date','Date','date')}${fld(p,'time','Time','time')}${fld(p,'location','Location')}${fld(p,'pkg','Package')}</div>
+ <label>Brief and deliverables<textarea data-f="brief" rows="3">${esc(p.brief||'')}</textarea></label>
+ <div class="g2"><div>${lst(p,'shots','Shot list')}</div><div>${lst(p,'gear','Gear checklist')}</div></div>`},
+wf(p){const td=key(new Date());return `<h2>Workflow</h2>`+S.phases.map(ph=>`<h3 style="color:${ph.c}">${esc(ph.n)}</h3>`+ph.s.map(x=>{const st=p.cells[x]||'',du=(p.due||{})[x]||'',ct=(p.counts||{})[x]||{};
+ return `<div class="row2"><span class="wn">${esc(x)}</span><button class="qb" data-s="${st}" data-act="cyc" data-st="${esc(x)}">${LBL[st]||'Not started'}</button><span class="cnw"><input type="number" min="0" class="cn" data-cn="${esc(x)}" data-k="d" value="${ct.d||''}" placeholder="0" aria-label="Photos done for ${esc(x)}">/<input type="number" min="0" class="cn" data-cn="${esc(x)}" data-k="t" value="${ct.t||''}" placeholder="total" aria-label="Photos total for ${esc(x)}"></span><input type="date" class="dd${du&&du<td&&st!=='done'?' od':''}" data-due="${esc(x)}" value="${du}" aria-label="Due date for ${esc(x)}"></div>`}).join('')).join('')},
+pay(p){const paid=paidOf(p),bal=(+p.amount||0)-paid;return `<h2>Payments</h2><div class="cards"><div><span class="m">Total</span><b><input class="amt" data-f="amount" type="number" min="0" value="${+p.amount||0}" aria-label="Total amount"></b></div><div><span class="m">Paid</span><b>${money(paid)}</b></div><div><span class="m">Balance</span><b class="${bal>0?'od':''}">${money(bal)}</b></div></div>
+ <h3>Payments received</h3>`+((p.pay||[]).map((x,i)=>`<div class="row2"><span>${fmt(x.date)}</span><b>${money(x.amt)}</b><span class="m">${esc(x.note||'')}</span><span class="sp"></span><button class="x" style="opacity:1" data-rm="pay" data-i="${i}" aria-label="Remove payment">\u2715</button></div>`).join('')||'<div class="m">No payments recorded.</div>')+
+ `<div class="row2 pf"><input type="date" id="payD" value="${key(new Date())}" aria-label="Payment date"><input type="number" id="payA" min="0" placeholder="Amount" aria-label="Payment amount"><input id="payN" placeholder="Note (deposit, balance)" aria-label="Note"><button class="btn" data-act="pay">Add payment</button></div>${bal>0?'<div class="acts2"><button class="btn" data-act="payrem">Write payment reminder</button></div>':''}`},
+msg(p){return `<h2>Messages</h2><label>Template<select id="tplSel">${Object.keys(TPL).map(k=>`<option${k===tplPick?' selected':''}>${k}</option>`).join('')}</select></label><label>Subject<input id="msgSub"></label><label>Message<textarea id="msgBody" rows="8"></textarea></label>
+ <div class="acts2"><a class="btn" id="aMail" target="_blank" rel="noopener">Email</a><a class="btn" id="aWa" target="_blank" rel="noopener">WhatsApp</a><button class="btn" data-act="copy">Copy</button></div><div class="m" style="margin-top:6px">If Email or WhatsApp does not open, use Copy and paste into your app.</div><h3>Sent log</h3>`+((p.log||[]).filter(l=>['Email','WhatsApp','Copied'].includes(l.k)).slice(-8).reverse().map(l=>logRow(l,1)).join('')||'<div class="m">Nothing logged yet.</div>')},
+inv(p){const paid=paidOf(p),bal=(+p.amount||0)-paid;p.inv=p.inv||'INV-'+key(new Date()).replace(/-/g,'')+'-'+p.id.slice(-3).toUpperCase();
+ return `<div class="invd"><h2>Invoice ${esc(p.inv)}</h2><div class="m">${esc(S.cfg.me||'')} \u00b7 Issued ${fmt(key(new Date()))}</div><h3>Billed to</h3><div>${esc(p.client||'Client')}${p.email?'<br>'+esc(p.email):''}${p.phone?'<br>'+esc(p.phone):''}</div><h3>For</h3><div>${esc(p.name)}${p.pkg?' \u2014 '+esc(p.pkg):''}${p.date?' \u00b7 '+fmt(p.date):''}</div>
+ <div class="row2"><span>Total</span><span class="sp"></span><b>${money(p.amount)}</b></div>`+(p.pay||[]).map(x=>`<div class="row2"><span>Payment received ${fmt(x.date)}${x.note?' \u00b7 '+esc(x.note):''}</span><span class="sp"></span><span>\u2212 ${money(x.amt)}</span></div>`).join('')+`<div class="row2"><b>Balance due</b><span class="sp"></span><b>${money(bal)}</b></div></div><div class="acts2 noprint"><button class="btn" data-act="print">Print or save as PDF</button><button class="btn" data-act="cpinv">Copy as text</button></div>`},
+nt(p){return `<h2>Notes</h2><textarea data-f="notes" rows="16" aria-label="Notes">${esc(p.notes||'')}</textarea><div class="acts2"><button class="btn" data-act="stamp">Insert date and time</button></div>`}};
+function renderStudio(){const p=curP();if(!p){closeStudio();return}
+ const secs=[['ov','Overview'],['cs','Client & shoot'],['wf','Workflow'],['pay','Payments'],['msg','Messages'],['inv','Invoice'],['nt','Notes']];
+ $('stSide').innerHTML=`<div class="stn"><b>${esc(p.name)}</b><span class="m">${esc(p.client||'No client yet')}</span></div>`+secs.map(([k,l])=>`<button data-sec="${k}" aria-pressed="${sec===k}">${l}</button>`).join('')+`<button data-act="arch">${p.arch?'Restore project':'Archive project'}</button><button class="stx" data-close>Close \u2715</button>`;
+ $('stMain').innerHTML=V[sec](p);if(sec==='msg')fillMsg()}
+function fillMsg(){const p=curP();if(!p)return;const t=TPL[$('tplSel').value],bal=(+p.amount||0)-paidOf(p),m={client:p.client||'there',project:p.name,date:p.date?fmt(p.date):'the agreed date',link:p.link||'[gallery link]',amount:S.cfg.cur+' '+(bal>0?bal:(+p.amount||0)).toLocaleString(),me:S.cfg.me||''};
+  const g=x=>x.replace(/\{(\w+)\}/g,(_,k)=>m[k]??'{'+k+'}');$('msgSub').value=g(t.s);$('msgBody').value=g(t.b);edited=false;links()}
+function links(){const p=curP(),s=encodeURIComponent($('msgSub').value),b=encodeURIComponent($('msgBody').value),ph=(p.phone||'').trim();let d=ph.replace(/\D/g,'');if(ph.startsWith('0'))d=S.cfg.cc+d.slice(1);
+  $('aMail').href='mailto:'+(p.email||'').trim()+'?subject='+s+'&body='+b;$('aWa').href='https://wa.me/'+d+'?text='+b}
+$('studio').onclick=e=>{const p=curP(),b=e.target.closest('button,a');if(!p||!b)return;const d=b.dataset;
+ if(d.sec){sec=d.sec;renderStudio()}
+ else if('close' in d)closeStudio();
+ else if(b.id==='aMail'||b.id==='aWa'){logIt(p,b.id==='aMail'?'Email':'WhatsApp',$('msgSub').value);save()}
+ else if(d.rm){(d.rm==='pay'?p.pay:p[d.rm]).splice(+d.i,1);save();renderStudio();render()}
+ else if(d.act==='st')setStep(p,d.st,d.v)
+ else if(d.act==='cyc')setStep(p,d.st,ORD[(ORD.indexOf(p.cells[d.st]||'')+1)%4])
+ else if(d.act==='pay'){const a=+$('payA').value;if(!a)return;(p.pay=p.pay||[]).push({date:$('payD').value||key(new Date()),amt:a,note:$('payN').value});logIt(p,'Payment',money(a));save();renderStudio();render()}
+ else if(d.act==='payrem'){tplPick='Payment reminder';sec='msg';renderStudio()}
+ else if(d.act==='copy'){try{navigator.clipboard.writeText('Subject: '+$('msgSub').value+'\n\n'+$('msgBody').value);b.textContent='Copied'}catch(_){b.textContent='Copy failed'}logIt(p,'Copied',$('msgSub').value);save();setTimeout(()=>b.textContent='Copy',1500)}
+ else if(d.act==='arch'){p.arch=!p.arch;save();closeStudio()}
+ else if(d.act==='print'){try{window.print()}catch(_){b.textContent='Printing is blocked here. Use Copy as text.'}}
+ else if(d.act==='cpinv'){const tx=['Invoice '+p.inv,S.cfg.me||'','','Billed to: '+(p.client||''),'For: '+p.name,'Total: '+money(p.amount)].concat((p.pay||[]).map(x=>'Paid '+fmt(x.date)+': '+money(x.amt)),['Balance due: '+money((+p.amount||0)-paidOf(p))]).join('\n');try{navigator.clipboard.writeText(tx);b.textContent='Copied'}catch(_){b.textContent='Copy failed'}setTimeout(()=>b.textContent='Copy as text',1500)}
+ else if(d.act==='stamp'){p.notes=(p.notes?p.notes+'\n':'')+'['+stamp()+'] ';save();renderStudio();const n=$('stMain').querySelector('textarea');n.focus();n.setSelectionRange(n.value.length,n.value.length)}};
+$('studio').oninput=e=>{const t=e.target,p=curP();if(!p)return;const f=t.dataset.f;
+ if(f&&f!=='amount'){p[f]=t.value;save()}
+ else if(t.id==='msgSub'||t.id==='msgBody'){edited=true;links()}};
+$('studio').onchange=e=>{const t=e.target,p=curP();if(!p)return;const d=t.dataset;
+ if(d.f==='amount'){p.amount=+t.value||0;save();renderStudio();render()}
+ else if(d.chk){p[d.chk][+d.i].d=t.checked;save();renderStudio()}
+ else if(d.due!==undefined){p.due=p.due||{};t.value?p.due[d.due]=t.value:delete p.due[d.due];save();renderStudio()}
+ else if(d.cn!==undefined){p.counts=p.counts||{};const c=p.counts[d.cn]=p.counts[d.cn]||{};c[d.k]=+t.value||0;if(c.t>0&&c.d>=c.t)p.cells[d.cn]='done';else if(c.d>0&&!p.cells[d.cn])p.cells[d.cn]='started';save();renderStudio();render()}
+ else if(t.id==='tplSel'){tplPick=t.value;fillMsg()}};
+$('studio').onkeydown=e=>{const t=e.target;if(e.key==='Enter'&&t.dataset.add&&t.value.trim()){const p=curP(),k=t.dataset.add;(p[k]=p[k]||[]).push({t:t.value.trim(),d:false});save();renderStudio();$('stMain').querySelector(`[data-add="${k}"]`).focus()}};
+$('q').oninput=e=>{S.q=e.target.value;renderBoard()};$('vf').onchange=e=>{S.vf=e.target.value;save();renderBoard()};$('sf').onchange=e=>{S.sf=e.target.value;save();renderBoard()};
+/* settings */
+function openSet(){
+  $('set').innerHTML=`<h2>Settings</h2><h3>Appearance</h3><div class="sr"><label for="sTheme">Theme</label><select id="sTheme"><option value="auto">Match system</option><option value="light">Light</option><option value="dark">Dark</option></select></div>
+  <div class="sr"><label for="sCur">Currency label</label><input type="text" id="sCur" value="${esc(S.cfg.cur)}" style="width:90px"></div>
+  <h3>Phases and steps (steps separated by commas)</h3>`+S.phases.map((p,i)=>`<div class="sr"><input type="color" data-pc="${i}" value="${p.c}" aria-label="Color for ${esc(p.n)}"><input type="text" class="w" data-pn="${i}" value="${esc(p.n)}" aria-label="Phase name" style="flex:1"><input type="text" class="w" data-ps="${i}" value="${esc(p.s.join(', '))}" aria-label="Steps for ${esc(p.n)}"></div>`).join('')+
+  `<div class="sr"><label for="sMe">Your name (message sign-off)</label><input type="text" id="sMe" value="${esc(S.cfg.me)}" style="width:140px"></div><div class="sr"><label for="sCc">Country code for WhatsApp numbers</label><input type="text" id="sCc" value="${esc(S.cfg.cc)}" style="width:90px"></div><h3>Bubble</h3><div class="sr"><label for="sSize">Size (${S.cfg.size}px)</label><input type="range" id="sSize" min="32" max="80" value="${S.cfg.size}"></div><div class="sr"><label for="sFade">Fade when idle</label><input type="checkbox" id="sFade" ${S.cfg.fade?'checked':''}></div>
+  <h3>Backup</h3><div class="sr"><button class="btn" id="bkCopy">Copy backup</button><button class="btn" id="bkRestore">Restore from box</button></div><textarea id="bkBox" rows="3" aria-label="Backup text" placeholder="Backup text appears here. To restore, paste a backup here and press Restore."></textarea>
+  <div class="sr" style="margin-top:14px"><button class="btn" id="rst">Reset settings</button><span style="flex:1"></span><button class="go" id="done">Done</button></div>`;
+  $('sTheme').value=S.cfg.theme}
+
+
+$('set').onclick=e=>{const id=e.target.id;
+  if(id==='bkCopy'){S.lb=Date.now();save();renderBoard();const j=JSON.stringify({projects:S.projects,phases:S.phases,cfg:S.cfg});$('bkBox').value=j;$('bkBox').select();try{navigator.clipboard.writeText(j)}catch(_){}}
+  if(id==='bkRestore'){try{const o=JSON.parse($('bkBox').value);if(!Array.isArray(o.projects))throw 0;S.projects=o.projects;if(Array.isArray(o.phases)&&o.phases.length)S.phases=o.phases;S.cfg=Object.assign({},DEF,o.cfg);save();render();$('bkBox').value='Restored.'}catch(_){$('bkBox').value='That text is not a valid backup.'}}
+  if(e.target.id==='done'){S.view='B';render()}
+  if(e.target.id==='rst'){S.cfg=Object.assign({},DEF);S.phases=JSON.parse(JSON.stringify(PH));S.phase=Math.min(S.phase,2);save();render();openSet()}};
+$('set').oninput=e=>{const t=e.target,d=t.dataset;
+  if(t.id==='sTheme')S.cfg.theme=t.value;else if(t.id==='sMe')S.cfg.me=t.value;else if(t.id==='sCc')S.cfg.cc=t.value.replace(/\D/g,'');else if(t.id==='sCur')S.cfg.cur=t.value;else if(t.id==='sSize'){S.cfg.size=+t.value;t.previousElementSibling.textContent='Size ('+t.value+'px)'}
+  else if(t.id==='sFade')S.cfg.fade=t.checked;
+  else if(d.pc)S.phases[d.pc].c=t.value;else if(d.pn)S.phases[d.pn].n=t.value||' ';
+  else if(d.ps){const a=t.value.split(',').map(x=>x.trim()).filter(Boolean);if(!a.length)return;migrate(S.phases[d.ps].s,a);S.phases[d.ps].s=a}else return;save();render()};
+/* bubble */
+const bub=$('bubble'),M=14;let idleT,drag=null;
+const BW=()=>S.cfg.size;
+function setBubble(){const x=S.side==='l'?M:innerWidth-BW()-M;S.y=Math.max(M,Math.min(innerHeight-BW()-M,S.y));bub.style.left=x+'px';bub.style.top=S.y+'px'}
+function wake(){bub.classList.remove('idle');clearTimeout(idleT);if(S.cfg.fade)idleT=setTimeout(()=>{if(!$('bar').classList.contains('open'))bub.classList.add('idle')},3000)}
+function place(){setBubble();const bar=$('bar');if(!bar.classList.contains('open'))return;
+  const W=({B:800,C:620,P:480,S:420})[S.view]||380;bar.style.width=Math.min(W,innerWidth-24)+'px';const r=bub.getBoundingClientRect(),w=bar.offsetWidth,h=bar.offsetHeight,n=innerWidth<520;
+  const l=n?(innerWidth-w)/2:S.side==='l'?r.right+10:r.left-10-w,t=n?(r.top>innerHeight/2?r.top-h-10:r.bottom+10):r.top;
+  bar.style.left=Math.max(8,Math.min(innerWidth-w-8,l))+'px';bar.style.top=Math.max(8,Math.min(innerHeight-h-8,t))+'px'}
+bub.addEventListener('pointerdown',e=>{bub.setPointerCapture(e.pointerId);drag={sx:e.clientX,sy:e.clientY,ox:bub.offsetLeft,oy:bub.offsetTop,moved:false};wake()});
+bub.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy;
+  if(!drag.moved&&Math.hypot(dx,dy)>5){drag.moved=true;bub.classList.add('drag')}
+  if(drag.moved){bub.style.left=drag.ox+dx+'px';bub.style.top=drag.oy+dy+'px';$('bar').style.left=$('bar').style.top='-999px'}});
+bub.addEventListener('pointerup',()=>{if(!drag)return;const m=drag.moved;drag=null;bub.classList.remove('drag');
+  if(m){S.side=(bub.offsetLeft+BW()/2)<innerWidth/2?'l':'r';S.y=bub.offsetTop;save();place()}else toggle();wake()});
+function toggle(force){const bar=$('bar'),o=force===undefined?!bar.classList.contains('open'):force;
+  bar.classList.toggle('open',o);bub.setAttribute('aria-expanded',o);render();wake()}
+addEventListener('keydown',e=>{if(e.altKey&&e.code==='Space'){e.preventDefault();if(!NAT)toggle()}
+  else if(e.key==='Escape'){if(!$('studio').hidden)closeStudio();else toggle(false)}
+  });
+addEventListener('resize',place);
+document.addEventListener('pointerdown',e=>{if($('bar').classList.contains('open')&&!e.target.closest('#bar,#bubble'))toggle(false)});
+S.q='';render();$('vf').value=S.vf||'act';$('sf').value=S.sf||'add';wake();
+function notifyDue(){const td=key(new Date());if(S.ln===td)return;const c=cols();let n=0;S.projects.forEach(p=>{if(p.arch)return;Object.entries(p.due||{}).forEach(([x,d])=>{if(d<=td&&p.cells[x]!=='done'&&c.includes(x))n++})});if(n){NAT.notify('StudioAid',n+' step'+(n===1?'':'s')+' due or overdue');S.ln=td;save()}}
+if(NAT){document.documentElement.classList.add('native');let on=false;
+ document.addEventListener('mousemove',e=>{const i=!!e.target.closest('#bubble,#bar,#studio,#toast');if(i!==on){on=i;NAT.interactive(i)}});
+ NAT.onToggle(f=>toggle(f));
+ addEventListener('blur',()=>{if($('studio').hidden&&$('bar').classList.contains('open'))toggle(false)});
+ notifyDue();setInterval(notifyDue,36e5)}
+</script>
+</body>
+</html>
