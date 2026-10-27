@@ -38,6 +38,14 @@ This folder includes a ready-made GitHub recipe that builds the Mac installer (.
 3. In the repository, open the **Actions** tab, choose "Build installers", and press "Run workflow".
 4. After a few minutes, open the finished run and download the two files under Artifacts: one contains the .dmg (Mac), the other the .exe (Windows).
 
+## Which file do I download?
+
+- **Windows:** `StudioAid-Setup-<version>.exe`
+- **Mac with an Apple chip (M1, M2, M3 and later):** `StudioAid-<version>-mac-arm64.dmg`
+- **Mac with an Intel chip:** `StudioAid-<version>-mac-x64.dmg`
+
+Not sure which Mac you have? Click the Apple menu, then About This Mac. If it says Chip, it is Apple; if it says Processor, it is Intel. The app's own "Check for updates" picks the right file for you.
+
 ## Building on your own computer instead
 
 - On a Mac: `npm run dist:mac` makes one .dmg that works on both Apple Silicon and Intel Macs, in the `dist` folder.

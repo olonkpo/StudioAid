@@ -53,7 +53,8 @@ async function checkUpdate() {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const j = await r.json();
     const latest = String(j.tag_name || '').replace(/^v/, '');
-    const asset = (j.assets || []).find(a => a.name.endsWith(IS_MAC ? '.dmg' : '.exe'));
+    const want = process.arch === 'arm64' ? 'arm64' : 'x64';
+    const asset = (j.assets || []).find(a => a.name.endsWith(IS_MAC ? '.dmg' : '.exe') && (!IS_MAC || a.name.includes(want)));
     return { ok: true, current: app.getVersion(), latest, newer: cmpVer(latest, app.getVersion()) > 0, url: asset ? asset.browser_download_url : j.html_url };
   } catch (e) { return { ok: false, error: String(e.message || e) }; }
 }
