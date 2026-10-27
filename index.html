@@ -137,13 +137,47 @@ html.native:root{color-scheme:light!important}.native body{background:transparen
 .cell{font-size:11px;padding:0 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .ph{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .gear.upd{position:relative}.gear.upd::after{content:"";position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:#d64545}
+.stbar{display:flex;gap:8px;margin-bottom:12px}.stbar select{flex:1;margin:0!important}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:12px}
+.pcard{display:flex;flex-direction:column;gap:3px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;color:inherit}.pcard:hover{border-color:var(--mute)}
+.set textarea{flex:2;background:var(--chip);border:1px solid var(--line);border-radius:8px;padding:7px 9px;color:var(--ink);font:inherit;min-width:0}
+.paper{background:#fff;color:#1c2a33;border:1px solid #d3dadd;border-radius:10px;padding:28px 30px;max-width:720px;margin-top:14px;box-shadow:0 4px 18px rgba(0,0,0,.08);font-size:13px}
+.paper small{display:block;color:#667780;font-size:12px;font-weight:400}
+.lr input{margin:0!important;width:auto!important}.lr input[data-k=d]{flex:1}.lr input[type=number]{width:88px!important}
+.paper2{background:#fff;color:#3a3a3a;border:1px solid #d9d9d9;max-width:720px;margin-top:14px;font-size:13px;box-shadow:0 4px 18px rgba(0,0,0,.1);overflow:hidden}
+.paper2 .lb{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8a8a8a;margin-right:8px}
+.pp-band{background:linear-gradient(90deg,var(--ac),color-mix(in srgb,var(--ac) 78%,#fff));color:#fff;padding:28px 30px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.pp-ttl{font-family:Optima,Didot,"Bodoni 72",Georgia,serif;font-weight:300;font-size:44px;letter-spacing:.1em;text-transform:uppercase;line-height:1}
+.pp-sub{margin-top:10px;font-size:11px;letter-spacing:.28em;text-transform:uppercase;opacity:.88}
+.pp-logo{flex:none;width:92px;height:92px;border:2px solid #fff;display:grid;place-items:center;padding:8px}.pp-logo img{max-width:100%;max-height:100%;object-fit:contain}
+.pp-body{padding:24px 30px 8px}.pp-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:18px}.pp-who{font-size:15px;margin:4px 0}.pp-ref{text-align:right;line-height:1.7}
+.pp-lines{width:100%;border-collapse:collapse;border-top:1px solid #bbb}.pp-lines th{font-size:11px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:#8a8a8a;text-align:left;padding:10px 6px}
+.pp-lines td{padding:11px 6px;border-top:1px solid #e6e6e6;letter-spacing:.06em;text-transform:uppercase;font-size:12px;vertical-align:top}.pp-lines th:not(:first-child),.pp-lines td:not(:first-child){text-align:right}
+.pp-sum{margin:14px 0 14px auto;width:270px}.pp-sum div{display:flex;justify-content:space-between;padding:4px 0;letter-spacing:.1em;text-transform:uppercase;font-size:12px}.pp-sum .tt{border-top:1px solid #bbb;margin-top:4px;padding-top:8px;font-size:13px}.pp-sum .tt b{font-size:16px}
+.pp-grey{background:#fff;padding:20px 30px 6px;margin-top:10px}.pp-notes{background:#fff;border:1px solid #555;min-height:90px;padding:10px 12px;font-size:12.5px;line-height:1.5}.pp-pay{margin-top:10px}
+.pp-thx{font-family:"Snell Roundhand","Segoe Script","Brush Script MT",cursive;font-size:24px;text-align:center;padding:18px 0 14px;color:#333}
+.pp-foot{background:var(--ac);color:#fff;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:16px 30px;font-size:12px;line-height:1.5}.pp-foot div:last-child{text-align:right}.pp-bn{font-family:Optima,Didot,"Bodoni 72",Georgia,serif;font-size:18px;letter-spacing:.06em;text-align:center}
+@media print{.paper2{box-shadow:none;border:0;max-width:none}.pp-band,.pp-foot,.pp-grey{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+@media(max-width:560px){.pp-foot{grid-template-columns:1fr}.pp-foot div:last-child{text-align:left}.pp-ttl{font-size:32px}}
+.pl{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;background:var(--chip);color:var(--mute);vertical-align:middle}
+.pl.paid,.pl.completed{background:#e0f2e6;color:#1b6b34}.pl.past{background:#fbe3e3;color:#b03030}.pl.upcoming,.pl.progress{background:#fdf0d5;color:#8a5a00}.pl.canceled{text-decoration:line-through}
+.av2{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--chip);font-size:10.5px;font-weight:700;color:var(--mute);flex:none;font-style:normal}
+.tiles{display:flex;gap:30px;flex-wrap:wrap;margin:10px 0 14px}.tiles span{display:block;font-size:12px;color:var(--mute)}.tiles b{font-size:22px;font-weight:600}
+.tabs2{display:flex;gap:16px;border-bottom:1px solid var(--line);margin:10px 0;flex-wrap:wrap}.tabs2 button{border:0;background:none;padding:6px 0;color:var(--mute);border-bottom:2px solid transparent}.tabs2 button[aria-pressed=true]{color:var(--ink);border-color:var(--ink)}
+.trow{display:grid;gap:10px;align-items:center;width:100%;text-align:left;padding:9px 4px;border:0;border-top:1px solid var(--line);background:none;color:inherit;font-size:13px}.trow>*{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.thead{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}.who{display:flex;gap:8px;align-items:center}
+.hc{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:14px}.hc>div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}.hc h3{margin:0 0 6px}
+.dline{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border:0;border-top:1px solid var(--line);width:100%;background:none;color:inherit;text-align:left;font-size:13px}.dline:hover{background:var(--chip)}
+.bar2{height:8px;background:var(--done);border-radius:4px;min-width:2px}.pkr input,.pkr select{margin:0!important}.pkr input:first-child{flex:1}
+.docpaper{display:none}@media print{.docpaper{display:block;padding:24px;font-size:13px;line-height:1.6;color:#000;background:#fff}}
+.st-side .back{align-self:flex-start;font-size:20px;line-height:1;padding:6px 12px;color:var(--mute);margin-bottom:4px}.st-side .back:hover{color:var(--ink);background:var(--chip)}
 </style>
 </head>
 <body>
 <div class="desk"><div><b>Your editing app goes here</b>Tap the bubble or press Option+Space.</div></div>
 <button id="bubble" aria-label="Open StudioAid panel" aria-expanded="false"></button>
 <div id="bar" role="dialog" aria-label="StudioAid panel">
-<div class="mt" id="mt"><button class="btn" data-v="B">Board</button><button class="btn" data-v="C">Calendar</button><span class="sp"></span><span class="sum" id="sum"></span><button class="btn gear" data-v="S" aria-label="Settings" title="Settings">⚙</button></div>
+<div class="mt" id="mt"><button class="btn" data-v="B">Board</button><button class="btn" data-v="C">Calendar</button><button class="btn" data-ws="home">Studio</button><span class="sp"></span><span class="sum" id="sum"></span><button class="btn gear" data-v="S" aria-label="Settings" title="Settings">⚙</button></div>
 <section id="vB" hidden><div id="bk"></div><div id="due"></div><div class="tb"><input id="q" placeholder="Search projects" aria-label="Search projects"><select id="vf" aria-label="Show"><option value="act">Active</option><option value="arch">Archived</option><option value="all">All</option></select><select id="sf" aria-label="Sort"><option value="add">Added</option><option value="date">Date</option><option value="name">Name</option></select></div><div id="board" class="board"></div><div class="addrow"><input id="pn" placeholder="+ New project" aria-label="New project name"><select id="pt" aria-label="Template"><option value="">Blank</option><option>Wedding</option><option>Graduation</option><option>Event</option><option>Tour + photo bundle</option></select></div></section>
 <section id="vC" hidden><div id="cal"></div></section>
 <section id="set" class="set" hidden></section></div>
@@ -152,6 +186,7 @@ html.native:root{color-scheme:light!important}.native body{background:transparen
 <script>
 const PH=[{n:'Booked',c:'#3b6ea5',s:['Confirm Booking','Send Reminder']},{n:'Processing',c:'#6a5aa5',s:['Meeting','Event','Completion','Delivery']},{n:'Post-project',c:'#2f8a6b',s:['Social Posts','Follow-up','Referrals']}];
 const DEF={theme:'auto',size:44,fade:true,cur:'GHS',me:'Ebenezer',cc:'233'};
+const DEF_INV={biz:'',tagline:'',contact:'',pay:'',foot:'Thank you!',color:'#2b2b2b',title:'Invoice',logo:'',tax:'0',social:''};const INV=()=>Object.assign({},DEF_INV,S.cfg.inv||{});
 const ORD=['','started','done','paused'],LBL={'':'',started:'Started',done:'Done',paused:'Paused'};
 let S={projects:[],phases:JSON.parse(JSON.stringify(PH)),phase:1,y:200,side:'r',cfg:{},view:'board'};
 const NAT=window.native||null;const VER=NAT?NAT.version():'preview';try{Object.assign(S,JSON.parse((NAT?NAT.load():localStorage.getItem('shootbar2'))||'{}'))}catch(e){}
@@ -191,12 +226,12 @@ function renderBar(){
   [$('bubble'),$('bar')].forEach(e=>e.style.setProperty('--c','var(--ink)'));
   $('bubble').innerHTML='\ud83d\udcf7'+(open?`<small>${open}</small>`:'');
 }
-function render(){applyCfg();renderBoard();renderCal();renderBar();['B','C'].forEach(v=>$('v'+v).hidden=S.view!==v);$('set').hidden=S.view!=='S';document.querySelectorAll('#mt [data-v]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.view));place()}
+function render(){applyCfg();renderBoard();renderCal();renderBar();fillPt();['B','C'].forEach(v=>$('v'+v).hidden=S.view!==v);$('set').hidden=S.view!=='S';document.querySelectorAll('#mt [data-v]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.view));place()}
 const TEMPL={'Wedding':{shots:['Getting ready','Ceremony','Couple portraits','Family groups','Reception details','Cake cutting','First dance'],gear:['Two camera bodies','Wide and telephoto lenses','Flash','Spare batteries','Memory cards']},
 'Graduation':{shots:['Portraits in gown','Family photos','Friends group','Diploma moment','Campus backdrop'],gear:['Camera and standard lens','Reflector','Spare batteries','Memory cards']},
 'Event':{shots:['Venue overview','Guest candids','Speeches','Key moments','Group photos','Details'],gear:['Camera','Flash','Spare batteries','Memory cards']},
 'Tour + photo bundle':{shots:['Arrival','Landmarks','Candid moments','Group photo','Golden hour','Portraits'],gear:['Camera and lenses','Power bank','Rain cover','Memory cards']}};
-function addProject(name,amount,date,tp){name=name.trim();if(!name)return;const o={id:Date.now()+Math.random().toString(36).slice(2,5),name,amount:+amount||0,date:date||'',cells:{}};const T=TEMPL[tp];if(T){o.shots=T.shots.map(t=>({t,d:false}));o.gear=T.gear.map(t=>({t,d:false}))}S.projects.push(o);save();render()}
+function addProject(name,amount,date,tp){name=name.trim();if(!name)return;const o={id:Date.now()+Math.random().toString(36).slice(2,5),name,amount:+amount||0,date:date||'',cells:{}};let T=TEMPL[tp];const pk=(tp||'').startsWith('pk:')?(S.packages||[]).find(x=>x.id===tp.slice(3)):null;if(pk){o.amount=+pk.price||0;o.pkg=pk.name;o.items=[{d:pk.name,price:+pk.price||0,qty:1}];T=TEMPL[pk.starter]}if(T){o.shots=T.shots.map(t=>({t,d:false}));o.gear=T.gear.map(t=>({t,d:false}))}S.projects.push(o);save();render()}
 let tT;function toast(m,lbl,fn){const t=$('toast');t.innerHTML=`<span>${esc(m)}</span><button>${lbl}</button>`;t.hidden=false;t.querySelector('button').onclick=()=>{fn();t.hidden=true};clearTimeout(tT);tT=setTimeout(()=>t.hidden=true,8000)}
 function delProject(id){const i=S.projects.findIndex(p=>p.id===id);if(i<0)return;const p=S.projects.splice(i,1)[0];toast('Deleted '+p.name,'Undo',()=>{S.projects.splice(Math.min(i,S.projects.length),0,p);save();render()})}
 function migrate(o,n){if(o.length!==n.length)return;o.forEach((x,i)=>{if(x===n[i]||o.includes(n[i]))return;S.projects.forEach(p=>['cells','due','counts'].forEach(k=>{if(p[k]&&x in p[k]){p[k][n[i]]=p[k][x];delete p[k][x]}}))})}
@@ -213,6 +248,7 @@ $('cal').onclick=e=>{const m=e.target.closest('[data-mv]'),h=e.target.closest('[
 /* bar */
 $('bar').onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
   if(d.open){openStudio(d.open,d.sec0);return}
+  if(d.ws){openWs(d.ws);return}
   if(d.v){S.view=d.v;if(d.v==='S')openSet();render();return}
   if(d.ph){if(d.ph==='all')S.all=true;else{S.all=false;S.phase=+d.ph}}
   else if(d.qp){const p=S.projects.find(p=>p.id===d.qp),k=d.qs,nx=ORD[(ORD.indexOf(p.cells[k]||'')+1)%4];nx?p.cells[k]=nx:delete p.cells[k]}else return;save();render()};
@@ -223,17 +259,29 @@ const TPL={'Booking confirmation':{s:'Booking confirmed: {project}',b:'Hi {clien
 'Follow-up and review':{s:'Thank you, {client}',b:'Hi {client},\n\nThank you for choosing me for {project}. If you enjoyed the experience, a short review or a referral to friends and family would mean a lot.\n\nWarm regards,\n{me}'},
 'Payment reminder':{s:'Payment reminder: {project}',b:'Hi {client},\n\nA gentle reminder about the outstanding payment of {amount} for {project}. Please let me know if you have any questions.\n\nThank you,\n{me}'}};
 const curP=()=>S.projects.find(x=>x.id===S.pid);let edited=false;
-let tplPick='Booking confirmation',sec='ov';
+let tplPick='Booking confirmation',sec='ov',pq='';
 const logIt=(p,k,t)=>{p.log=(p.log||[]).concat({ts:Date.now(),k,t}).slice(-80)};
 const paidOf=p=>(p.pay||[]).reduce((a,x)=>a+(+x.amt||0),0);
 const money=n=>S.cfg.cur+' '+(+n||0).toLocaleString();
 const stamp=()=>new Date().toLocaleString(undefined,{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
 function openStudio(id,s0){S.pid=id;sec=s0||'ov';toggle(false);$('studio').hidden=false;renderStudio()}
-function closeStudio(){$('studio').hidden=true;save();render()}
+function closeStudio(){$('studio').hidden=true;S.view='B';save();toggle(true)}
 function setStep(p,x,v){v?p.cells[x]=v:delete p.cells[x];logIt(p,'Step',x+' \u2192 '+(LBL[v]||'Not started'));save();renderStudio();render()}
 const fld=(p,k,l,t)=>`<label>${l}<input data-f="${k}" type="${t||'text'}" value="${esc(p[k]||'')}"></label>`;
 const lst=(p,k,l)=>`<h3>${l}</h3>`+(p[k]||[]).map((x,i)=>`<div class="row2"><input type="checkbox" data-chk="${k}" data-i="${i}" ${x.d?'checked':''} aria-label="${esc(x.t)}"><span class="${x.d?'dn':''}">${esc(x.t)}</span><span class="sp"></span><button class="x" style="opacity:1" data-rm="${k}" data-i="${i}" aria-label="Remove">\u2715</button></div>`).join('')+`<input class="addi" data-add="${k}" placeholder="+ Add item, press Enter">`;
 const logRow=(l,full)=>`<div class="row2"><span>${esc(l.k)}: ${esc(l.t)}</span><span class="sp"></span><span class="m">${new Date(l.ts).toLocaleString(undefined,full?{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}:{day:'numeric',month:'short'})}</span></div>`;
+const nl=x=>esc(x||'').replace(/\n/g,'<br>');
+const money2=n=>S.cfg.cur+' '+(+n||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+function calc(p){const I=INV(),ls=p.items&&p.items.length?p.items:[{d:p.invDesc||p.pkg||p.name,price:+p.amount||0,qty:1}],sub=ls.reduce((a,x)=>a+(+x.price||0)*(+x.qty||0),0),disc=Math.min(Math.max(+p.invDisc||0,0),sub),r=(p.invTax!==undefined&&String(p.invTax).trim()!==''?+p.invTax:+I.tax)||0,tax=(sub-disc)*r/100,total=sub-disc+tax,paid=paidOf(p);return{ls,sub,disc,r,tax,total,paid,bal:total-paid}}
+const syncBtn=p=>Math.abs(calc(p).total-(+p.amount||0))>0.005?'<button class="btn" data-act="syncamt">Set project amount to invoice total</button>':'';
+function paper(p){const I=INV(),c=calc(p),who=p.client||p.name,ac=/^#[0-9a-f]{6}$/i.test(I.color)?I.color:'#2b2b2b',ttl=I.title||'Invoice',biz=I.biz||S.cfg.me||'Your business';
+ return `<div class="paper2" style="--ac:${ac}"><div class="pp-band"><div><div class="pp-ttl">${esc(ttl)}</div><div class="pp-sub">${esc(biz)}${I.tagline?' \u00b7 '+esc(I.tagline):''}</div></div>${I.logo?`<div class="pp-logo"><img src="${esc(I.logo)}" alt=""></div>`:''}</div>
+ <div class="pp-body"><div class="pp-row"><div><span class="lb">Billed to</span><div class="pp-who">${esc(who)}</div>${p.email?`<div>${esc(p.email)}</div>`:''}${p.phone?`<div>${esc(p.phone)}</div>`:''}</div><div class="pp-ref"><div><span class="lb">No.</span>${esc(p.inv)}</div>${p.client?`<div><span class="lb">Project</span>${esc(p.name)}</div>`:''}<div><span class="lb">Issued</span>${fmt(p.invDate)}</div>${p.invDue?`<div><span class="lb">Due</span>${fmt(p.invDue)}</div>`:''}</div></div>
+ <table class="pp-lines"><thead><tr><th>Description</th><th>Price</th><th>Qty</th><th>Amount</th></tr></thead><tbody>${c.ls.map(x=>`<tr><td>${esc(x.d||'')}</td><td>${money2(x.price)}</td><td>${+x.qty||0}</td><td>${money2((+x.price||0)*(+x.qty||0))}</td></tr>`).join('')}</tbody></table>
+ <div class="pp-sum"><div><span>Subtotal</span><b>${money2(c.sub)}</b></div>${c.disc?`<div><span>Discount</span><b>\u2212 ${money2(c.disc)}</b></div>`:''}${c.r?`<div><span>Tax (${c.r}%)</span><b>${money2(c.tax)}</b></div>`:''}<div class="tt"><span>Total</span><b>${money2(c.total)}</b></div>${c.paid?`<div><span>Paid</span><b>\u2212 ${money2(c.paid)}</b></div><div class="tt"><span>${c.bal<=0?'Paid in full':'Balance due'}</span><b>${money2(Math.max(c.bal,0))}</b></div>`:''}</div></div>
+ <div class="pp-grey"><div class="pp-notes"><span class="lb">Notes</span>${p.invNote?nl(p.invNote):''}${I.pay?`<div class="pp-pay"><span class="lb">Payment details</span>${nl(I.pay)}</div>`:''}</div><div class="pp-thx">${esc(I.foot)}</div></div>
+ <div class="pp-foot"><div>${nl(I.contact)}</div><div class="pp-bn">${esc(biz)}</div><div>${esc(I.social||'')}</div></div></div>`}
+const pickHTML=()=>{const q=pq.toLowerCase(),c=cols();return S.projects.filter(p=>!p.arch&&(p.name+' '+(p.client||'')).toLowerCase().includes(q)).map(p=>{const d=c.filter(x=>p.cells[x]==='done').length;return `<button class="pcard" data-open2="${p.id}"><b>${esc(p.name)}</b><span class="m">${esc(p.client||'No client')}${p.date?' \u00b7 '+fmt(p.date):''}</span><div class="prog2"><i style="width:${c.length?d/c.length*100:0}%"></i></div></button>`}).join('')||'<div class="m">No projects found.</div>'};
 const V={
 ov(p){const c=cols(),d=c.filter(x=>p.cells[x]==='done').length,paid=paidOf(p),nx=c.find(x=>p.cells[x]!=='done'),td=key(new Date());
  const due=c.filter(x=>p.due&&p.due[x]&&p.cells[x]!=='done').sort((a,b)=>p.due[a]<p.due[b]?-1:1).slice(0,5);
@@ -243,7 +291,7 @@ ov(p){const c=cols(),d=c.filter(x=>p.cells[x]==='done').length,paid=paidOf(p),nx
  <h3>Next up</h3>${nx?`<div class="row2"><b>${esc(nx)}</b><span class="m">${LBL[p.cells[nx]||'']||'Not started'}</span><span class="sp"></span><button class="btn" data-act="st" data-st="${esc(nx)}" data-v="started">Start</button><button class="btn" data-act="st" data-st="${esc(nx)}" data-v="done">Done</button></div>`:'<div class="m">Every step is done.</div>'}
  <h3>Due soon</h3>${due.length?due.map(x=>`<div class="row2"><span>${esc(x)}</span><span class="sp"></span><span class="${p.due[x]<td?'od':'m'}">${fmt(p.due[x])}</span></div>`).join(''):'<div class="m">No due dates set. Add them in Workflow.</div>'}
  <h3>Recent activity</h3>${(p.log||[]).slice(-5).reverse().map(l=>logRow(l)).join('')||'<div class="m">Nothing yet.</div>'}`},
-cs(p){return `<h2>Client &amp; shoot</h2><div class="g2">${fld(p,'client','Client name')}${fld(p,'email','Email','email')}${fld(p,'phone','Phone / WhatsApp','tel')}${fld(p,'link','Gallery link','url')}${fld(p,'date','Date','date')}${fld(p,'time','Time','time')}${fld(p,'location','Location')}${fld(p,'pkg','Package')}</div>
+cs(p){return `<h2>Client &amp; shoot</h2>${contactSel(p)}<div class="g2">${fld(p,'client','Client name')}${fld(p,'email','Email','email')}${fld(p,'phone','Phone / WhatsApp','tel')}${fld(p,'link','Gallery link','url')}${fld(p,'date','Date','date')}${fld(p,'time','Time','time')}${fld(p,'location','Location')}${fld(p,'pkg','Package')}</div>
  <label>Brief and deliverables<textarea data-f="brief" rows="3">${esc(p.brief||'')}</textarea></label>
  <div class="g2"><div>${lst(p,'shots','Shot list')}</div><div>${lst(p,'gear','Gear checklist')}</div></div>`},
 wf(p){const td=key(new Date());return `<h2>Workflow</h2>`+S.phases.map(ph=>`<h3 style="color:${ph.c}">${esc(ph.n)}</h3>`+ph.s.map(x=>{const st=p.cells[x]||'',du=(p.due||{})[x]||'',ct=(p.counts||{})[x]||{};
@@ -253,19 +301,21 @@ pay(p){const paid=paidOf(p),bal=(+p.amount||0)-paid;return `<h2>Payments</h2><di
  `<div class="row2 pf"><input type="date" id="payD" value="${key(new Date())}" aria-label="Payment date"><input type="number" id="payA" min="0" placeholder="Amount" aria-label="Payment amount"><input id="payN" placeholder="Note (deposit, balance)" aria-label="Note"><button class="btn" data-act="pay">Add payment</button></div>${bal>0?'<div class="acts2"><button class="btn" data-act="payrem">Write payment reminder</button></div>':''}`},
 msg(p){return `<h2>Messages</h2><label>Template<select id="tplSel">${Object.keys(TPL).map(k=>`<option${k===tplPick?' selected':''}>${k}</option>`).join('')}</select></label><label>Subject<input id="msgSub"></label><label>Message<textarea id="msgBody" rows="8"></textarea></label>
  <div class="acts2"><a class="btn" id="aMail" target="_blank" rel="noopener">Email</a><a class="btn" id="aWa" target="_blank" rel="noopener">WhatsApp</a><button class="btn" data-act="copy">Copy</button></div><div class="m" style="margin-top:6px">If Email or WhatsApp does not open, use Copy and paste into your app.</div><h3>Sent log</h3>`+((p.log||[]).filter(l=>['Email','WhatsApp','Copied'].includes(l.k)).slice(-8).reverse().map(l=>logRow(l,1)).join('')||'<div class="m">Nothing logged yet.</div>')},
-inv(p){const paid=paidOf(p),bal=(+p.amount||0)-paid;p.inv=p.inv||'INV-'+key(new Date()).replace(/-/g,'')+'-'+p.id.slice(-3).toUpperCase();
- return `<div class="invd"><h2>Invoice ${esc(p.inv)}</h2><div class="m">${esc(S.cfg.me||'')} \u00b7 Issued ${fmt(key(new Date()))}</div><h3>Billed to</h3><div>${esc(p.client||'Client')}${p.email?'<br>'+esc(p.email):''}${p.phone?'<br>'+esc(p.phone):''}</div><h3>For</h3><div>${esc(p.name)}${p.pkg?' \u2014 '+esc(p.pkg):''}${p.date?' \u00b7 '+fmt(p.date):''}</div>
- <div class="row2"><span>Total</span><span class="sp"></span><b>${money(p.amount)}</b></div>`+(p.pay||[]).map(x=>`<div class="row2"><span>Payment received ${fmt(x.date)}${x.note?' \u00b7 '+esc(x.note):''}</span><span class="sp"></span><span>\u2212 ${money(x.amt)}</span></div>`).join('')+`<div class="row2"><b>Balance due</b><span class="sp"></span><b>${money(bal)}</b></div></div><div class="acts2 noprint"><button class="btn" data-act="print">Print or save as PDF</button><button class="btn" data-act="cpinv">Copy as text</button></div>`},
+inv(p){p.inv=p.inv||nextInv();p.invDate=p.invDate||key(new Date());const c=calc(p);
+ const rows=p.items&&p.items.length?p.items.map((x,i)=>`<div class="row2 lr"><input data-it="${i}" data-k="d" value="${esc(x.d||'')}" placeholder="Description" aria-label="Line description"><input data-it="${i}" data-k="price" type="number" min="0" step="0.01" value="${x.price||''}" placeholder="Price" aria-label="Price"><input data-it="${i}" data-k="qty" type="number" min="0" step="1" value="${x.qty??1}" aria-label="Quantity"><button class="x" style="opacity:1" data-rm="items" data-i="${i}" aria-label="Remove line">\u2715</button></div>`).join('')+`<div class="acts2"><button class="btn" data-act="addline">+ Add line</button><button class="btn" data-act="resetlines">Back to project amount</button></div>`:`<div class="m">One line using the project amount. <button class="btn" data-act="addline">Edit lines</button></div>`;
+ return `<div class="noprint"><h2>${esc(INV().title||'Invoice')} ${pill(invStatus(p))}</h2><div class="g2">${fld(p,'inv','Number')}${fld(p,'invDate','Issue date','date')}${fld(p,'invDue','Due date','date')}${fld(p,'invTax','Tax % (blank = default)','number')}${fld(p,'invDisc','Discount (amount)','number')}</div><h3>Lines</h3>${rows}<label>Notes on this invoice<textarea data-f="invNote" rows="2">${esc(p.invNote||'')}</textarea></label><div class="acts2"><button class="btn" data-w="invsent">${p.invSent?'Mark as draft':'Mark as sent'}</button><button class="btn" data-w="invcancel">${p.invCancel?'Restore invoice':'Cancel invoice'}</button><button class="btn" data-act="invset">Change look, logo and business details</button><span id="syncHost">${syncBtn(p)}</span></div></div><div id="paperHost">${paper(p)}</div><div class="acts2 noprint"><button class="btn" data-act="print">Print or save as PDF</button><button class="btn" data-act="cpinv">Copy as text</button></div>`},
 nt(p){return `<h2>Notes</h2><textarea data-f="notes" rows="16" aria-label="Notes">${esc(p.notes||'')}</textarea><div class="acts2"><button class="btn" data-act="stamp">Insert date and time</button></div>`}};
-function renderStudio(){const p=curP();if(!p){closeStudio();return}
+function renderStudio(){const p=curP();
+ if(!p){renderWs();return}
  const secs=[['ov','Overview'],['cs','Client & shoot'],['wf','Workflow'],['pay','Payments'],['msg','Messages'],['inv','Invoice'],['nt','Notes']];
- $('stSide').innerHTML=`<div class="stn"><b>${esc(p.name)}</b><span class="m">${esc(p.client||'No client yet')}</span></div>`+secs.map(([k,l])=>`<button data-sec="${k}" aria-pressed="${sec===k}">${l}</button>`).join('')+`<button data-act="arch">${p.arch?'Restore project':'Archive project'}</button><button class="stx" data-close>Close \u2715</button>`;
- $('stMain').innerHTML=V[sec](p);if(sec==='msg')fillMsg()}
-function fillMsg(){const p=curP();if(!p)return;const t=TPL[$('tplSel').value],bal=(+p.amount||0)-paidOf(p),m={client:p.client||'there',project:p.name,date:p.date?fmt(p.date):'the agreed date',link:p.link||'[gallery link]',amount:S.cfg.cur+' '+(bal>0?bal:(+p.amount||0)).toLocaleString(),me:S.cfg.me||''};
+ $('stSide').innerHTML=`<button class="back" data-w="back" aria-label="Back" title="Back">\u2190</button><div class="stn"><b>${esc(p.name)}</b><span class="m">${esc(p.client||'No client yet')}</span></div>`+secs.map(([k,l])=>`<button data-sec="${k}" aria-pressed="${sec===k}">${l}</button>`).join('')+`<button data-act="arch">${p.arch?'Restore project':'Archive project'}</button>`;
+ const opts=S.projects.filter(x=>!x.arch||x.id===p.id).map(x=>`<option value="${x.id}"${x.id===p.id?' selected':''}>${esc(x.name)}${x.client?' \u2014 '+esc(x.client):''}</option>`).join('');
+ $('stMain').innerHTML=`<div class="stbar noprint"><select id="stSel" aria-label="Switch project">${opts}</select><button class="btn" data-act="deselect" aria-label="Close this project and pick another">\u2715 Close project</button></div>`+V[sec](p);if(sec==='msg')fillMsg()}
+function fillMsg(){const p=curP();if(!p)return;const t=mtpl($('tplSel').value),bal=(+p.amount||0)-paidOf(p),m={client:p.client||'there',project:p.name,date:p.date?fmt(p.date):'the agreed date',link:p.link||'[gallery link]',amount:S.cfg.cur+' '+(bal>0?bal:(+p.amount||0)).toLocaleString(),me:S.cfg.me||''};
   const g=x=>x.replace(/\{(\w+)\}/g,(_,k)=>m[k]??'{'+k+'}');$('msgSub').value=g(t.s);$('msgBody').value=g(t.b);edited=false;links()}
 function links(){const p=curP(),s=encodeURIComponent($('msgSub').value),b=encodeURIComponent($('msgBody').value),ph=(p.phone||'').trim();let d=ph.replace(/\D/g,'');if(ph.startsWith('0'))d=S.cfg.cc+d.slice(1);
   $('aMail').href='mailto:'+(p.email||'').trim()+'?subject='+s+'&body='+b;$('aWa').href='https://wa.me/'+d+'?text='+b}
-$('studio').onclick=e=>{const p=curP(),b=e.target.closest('button,a');if(!p||!b)return;const d=b.dataset;
+$('studio').onclick=e=>{if(wsClick(e))return;const o=e.target.closest('[data-open2]');if(o){S.pid=o.dataset.open2;renderStudio();return}const p=curP(),b=e.target.closest('button,a');if(!b)return;const d=b.dataset;if('close' in d){closeStudio();return}if(!p)return;
  if(d.sec){sec=d.sec;renderStudio()}
  else if('close' in d)closeStudio();
  else if(b.id==='aMail'||b.id==='aWa'){logIt(p,b.id==='aMail'?'Email':'WhatsApp',$('msgSub').value);save()}
@@ -275,14 +325,19 @@ $('studio').onclick=e=>{const p=curP(),b=e.target.closest('button,a');if(!p||!b)
  else if(d.act==='pay'){const a=+$('payA').value;if(!a)return;(p.pay=p.pay||[]).push({date:$('payD').value||key(new Date()),amt:a,note:$('payN').value});logIt(p,'Payment',money(a));save();renderStudio();render()}
  else if(d.act==='payrem'){tplPick='Payment reminder';sec='msg';renderStudio()}
  else if(d.act==='copy'){try{navigator.clipboard.writeText('Subject: '+$('msgSub').value+'\n\n'+$('msgBody').value);b.textContent='Copied'}catch(_){b.textContent='Copy failed'}logIt(p,'Copied',$('msgSub').value);save();setTimeout(()=>b.textContent='Copy',1500)}
+ else if(d.act==='addline'){if(!p.items)p.items=[{d:p.invDesc||p.pkg||p.name,price:+p.amount||0,qty:1}];p.items.push({d:'',price:0,qty:1});save();renderStudio()}
+ else if(d.act==='resetlines'){delete p.items;save();renderStudio()}
+ else if(d.act==='syncamt'){p.amount=Math.round(calc(p).total*100)/100;save();renderStudio();render()}
+ else if(d.act==='deselect'){S.pid=null;wk='projects';renderStudio()}
+ else if(d.act==='invset'){closeStudio();S.view='S';openSet();toggle(true)}
  else if(d.act==='arch'){p.arch=!p.arch;save();closeStudio()}
  else if(d.act==='print'){try{window.print()}catch(_){b.textContent='Printing is blocked here. Use Copy as text.'}}
- else if(d.act==='cpinv'){const tx=['Invoice '+p.inv,S.cfg.me||'','','Billed to: '+(p.client||''),'For: '+p.name,'Total: '+money(p.amount)].concat((p.pay||[]).map(x=>'Paid '+fmt(x.date)+': '+money(x.amt)),['Balance due: '+money((+p.amount||0)-paidOf(p))]).join('\n');try{navigator.clipboard.writeText(tx);b.textContent='Copied'}catch(_){b.textContent='Copy failed'}setTimeout(()=>b.textContent='Copy as text',1500)}
+ else if(d.act==='cpinv'){const I=INV(),c=calc(p);const tx=[(I.title||'Invoice')+' '+p.inv,I.biz||S.cfg.me||'','','Billed to: '+(p.client||p.name),p.client?'Project: '+p.name:'','Issued: '+fmt(p.invDate)].concat(p.invDue?['Due: '+fmt(p.invDue)]:[],[''],c.ls.map(x=>(x.d||'')+': '+(+x.qty||0)+' x '+money2(x.price)+' = '+money2((+x.price||0)*(+x.qty||0))),['Subtotal: '+money2(c.sub)],c.disc?['Discount: -'+money2(c.disc)]:[],c.r?['Tax ('+c.r+'%): '+money2(c.tax)]:[],['Total: '+money2(c.total)],c.paid?['Paid: '+money2(c.paid),'Balance due: '+money2(Math.max(c.bal,0))]:[],I.pay?['','Payment details:',I.pay]:[]).join('\n');try{navigator.clipboard.writeText(tx);b.textContent='Copied'}catch(_){b.textContent='Copy failed'}setTimeout(()=>b.textContent='Copy as text',1500)}
  else if(d.act==='stamp'){p.notes=(p.notes?p.notes+'\n':'')+'['+stamp()+'] ';save();renderStudio();const n=$('stMain').querySelector('textarea');n.focus();n.setSelectionRange(n.value.length,n.value.length)}};
-$('studio').oninput=e=>{const t=e.target,p=curP();if(!p)return;const f=t.dataset.f;
- if(f&&f!=='amount'){p[f]=t.value;save()}
+$('studio').oninput=e=>{const t=e.target;if(wsField(e,'input'))return;if(t.id==='pq'){pq=t.value;$('pickList').innerHTML=pickHTML();return}const p=curP();if(!p)return;if(t.dataset.it!==undefined){const x=p.items[+t.dataset.it],k=t.dataset.k;x[k]=k==='d'?t.value:(+t.value||0);save();$('paperHost').innerHTML=paper(p);$('syncHost').innerHTML=syncBtn(p);return}const f=t.dataset.f;
+ if(f&&f!=='amount'){p[f]=t.value;save();if(sec==='inv'&&$('paperHost')){$('paperHost').innerHTML=paper(p);$('syncHost').innerHTML=syncBtn(p)}}
  else if(t.id==='msgSub'||t.id==='msgBody'){edited=true;links()}};
-$('studio').onchange=e=>{const t=e.target,p=curP();if(!p)return;const d=t.dataset;
+$('studio').onchange=e=>{const t=e.target;if(wsField(e,'change'))return;if(t.id==='stSel'){S.pid=t.value;renderStudio();return}const p=curP();if(!p)return;const d=t.dataset;
  if(d.f==='amount'){p.amount=+t.value||0;save();renderStudio();render()}
  else if(d.chk){p[d.chk][+d.i].d=t.checked;save();renderStudio()}
  else if(d.due!==undefined){p.due=p.due||{};t.value?p.due[d.due]=t.value:delete p.due[d.due];save();renderStudio()}
@@ -296,6 +351,17 @@ function openSet(){
   <div class="sr"><label for="sCur">Currency label</label><input type="text" id="sCur" value="${esc(S.cfg.cur)}" style="width:90px"></div>
   <h3>Phases and steps (steps separated by commas)</h3>`+S.phases.map((p,i)=>`<div class="sr"><input type="color" data-pc="${i}" value="${p.c}" aria-label="Color for ${esc(p.n)}"><input type="text" class="w" data-pn="${i}" value="${esc(p.n)}" aria-label="Phase name" style="flex:1"><input type="text" class="w" data-ps="${i}" value="${esc(p.s.join(', '))}" aria-label="Steps for ${esc(p.n)}"></div>`).join('')+
   `<div class="sr"><label for="sMe">Your name (message sign-off)</label><input type="text" id="sMe" value="${esc(S.cfg.me)}" style="width:140px"></div><div class="sr"><label for="sCc">Country code for WhatsApp numbers</label><input type="text" id="sCc" value="${esc(S.cfg.cc)}" style="width:90px"></div><h3>Bubble</h3><div class="sr"><label for="sSize">Size (${S.cfg.size}px)</label><input type="range" id="sSize" min="32" max="80" value="${S.cfg.size}"></div><div class="sr"><label for="sFade">Fade when idle</label><input type="checkbox" id="sFade" ${S.cfg.fade?'checked':''}></div>
+  <h3>Invoice</h3>
+  <div class="sr"><label for="iBiz">Business name</label><input type="text" class="w" id="iBiz" data-inv="biz" value="${esc(INV().biz)}"></div>
+  <div class="sr"><label for="iTag">Tagline</label><input type="text" class="w" id="iTag" data-inv="tagline" value="${esc(INV().tagline)}"></div>
+  <div class="sr"><label for="iTitle">Document title</label><input type="text" class="w" id="iTitle" data-inv="title" value="${esc(INV().title)}"></div>
+  <div class="sr"><label for="iCon">Contact details (footer)</label><textarea id="iCon" data-inv="contact" rows="2">${esc(INV().contact)}</textarea></div>
+  <div class="sr"><label for="iPay">Payment details</label><textarea id="iPay" data-inv="pay" rows="3" placeholder="Mobile money number, bank account, etc.">${esc(INV().pay)}</textarea></div>
+  <div class="sr"><label for="iFoot">Thank-you message</label><input type="text" class="w" id="iFoot" data-inv="foot" value="${esc(INV().foot)}"></div>
+  <div class="sr"><label for="iTax">Default tax (%)</label><input type="number" id="iTax" data-inv="tax" min="0" step="0.1" value="${esc(INV().tax)}" style="width:90px"></div>
+  <div class="sr"><label for="iSoc">Handle or website (footer)</label><input type="text" class="w" id="iSoc" data-inv="social" value="${esc(INV().social)}"></div>
+  <div class="sr"><label for="iCol">Accent color</label><input type="color" id="iCol" data-inv="color" value="${esc(INV().color)}"></div>
+  <div class="sr"><label for="sInvLogo">Logo</label>${INV().logo?`<img src="${esc(INV().logo)}" alt="" style="max-height:30px;max-width:80px">`:''}<input type="file" id="sInvLogo" accept="image/*" style="max-width:150px"><button class="btn" id="invLogoRm">Remove</button></div>
   <h3>Updates</h3><div class="sr"><span class="m">Version ${esc(VER)}</span><span style="flex:1"></span><button class="btn" id="updChk">Check for updates</button></div><div id="updMsg" class="m"></div>
   <h3>Backup</h3><div class="sr"><button class="btn" id="bkCopy">Copy backup</button><button class="btn" id="bkRestore">Restore from box</button></div><textarea id="bkBox" rows="3" aria-label="Backup text" placeholder="Backup text appears here. To restore, paste a backup here and press Restore."></textarea>
   <div class="sr" style="margin-top:14px"><button class="btn" id="rst">Reset settings</button><span style="flex:1"></span><button class="go" id="done">Done</button></div>`;
@@ -304,16 +370,18 @@ function openSet(){
 
 $('set').onclick=e=>{const id=e.target.id;
   if(id==='updChk')checkUpd(true);
+  if(id==='invLogoRm'){(S.cfg.inv=S.cfg.inv||{}).logo='';save();openSet()}
   if(id==='updGo'&&UPD){NAT?NAT.openExternal(UPD.url):0}
   if(id==='bkCopy'){S.lb=Date.now();save();renderBoard();const j=JSON.stringify({projects:S.projects,phases:S.phases,cfg:S.cfg});$('bkBox').value=j;$('bkBox').select();try{navigator.clipboard.writeText(j)}catch(_){}}
   if(id==='bkRestore'){try{const o=JSON.parse($('bkBox').value);if(!Array.isArray(o.projects))throw 0;S.projects=o.projects;if(Array.isArray(o.phases)&&o.phases.length)S.phases=o.phases;S.cfg=Object.assign({},DEF,o.cfg);save();render();$('bkBox').value='Restored.'}catch(_){$('bkBox').value='That text is not a valid backup.'}}
   if(e.target.id==='done'){S.view='B';render()}
   if(e.target.id==='rst'){S.cfg=Object.assign({},DEF);S.phases=JSON.parse(JSON.stringify(PH));S.phase=Math.min(S.phase,2);save();render();openSet()}};
+$('set').onchange=e=>{if(e.target.id!=='sInvLogo')return;const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,240/im.height),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);(S.cfg.inv=S.cfg.inv||{}).logo=c.toDataURL('image/png');save();openSet()};im.src=r.result};r.readAsDataURL(f)};
 $('set').oninput=e=>{const t=e.target,d=t.dataset;
   if(t.id==='sTheme')S.cfg.theme=t.value;else if(t.id==='sMe')S.cfg.me=t.value;else if(t.id==='sCc')S.cfg.cc=t.value.replace(/\D/g,'');else if(t.id==='sCur')S.cfg.cur=t.value;else if(t.id==='sSize'){S.cfg.size=+t.value;t.previousElementSibling.textContent='Size ('+t.value+'px)'}
   else if(t.id==='sFade')S.cfg.fade=t.checked;
   else if(d.pc)S.phases[d.pc].c=t.value;else if(d.pn)S.phases[d.pn].n=t.value||' ';
-  else if(d.ps){const a=t.value.split(',').map(x=>x.trim()).filter(Boolean);if(!a.length)return;migrate(S.phases[d.ps].s,a);S.phases[d.ps].s=a}else return;save();render()};
+  else if(d.ps){const a=t.value.split(',').map(x=>x.trim()).filter(Boolean);if(!a.length)return;migrate(S.phases[d.ps].s,a);S.phases[d.ps].s=a}else if(d.inv){(S.cfg.inv=S.cfg.inv||{})[d.inv]=t.value}else return;save();render()};
 /* bubble */
 const bub=$('bubble'),M=14;let idleT,drag=null;
 const BW=()=>S.cfg.size;
@@ -332,10 +400,113 @@ bub.addEventListener('pointerup',()=>{if(!drag)return;const m=drag.moved;drag=nu
 function toggle(force){const bar=$('bar'),o=force===undefined?!bar.classList.contains('open'):force;
   bar.classList.toggle('open',o);bub.setAttribute('aria-expanded',o);render();wake()}
 addEventListener('keydown',e=>{if(e.altKey&&e.code==='Space'){e.preventDefault();if(!NAT)toggle()}
-  else if(e.key==='Escape'){if(!$('studio').hidden)closeStudio();else toggle(false)}
+  else if(e.key==='Escape'){if(!$('studio').hidden)goBack();else toggle(false)}
   });
 addEventListener('resize',place);
 document.addEventListener('pointerdown',e=>{if($('bar').classList.contains('open')&&!e.target.closest('#bar,#bubble'))toggle(false)});
+const m2=money2;
+/* ===== Studio workspace: Home, Contacts, Money, Documents, Packages, Reports ===== */
+let wk='home',cId=null,docId=null,mTab='all',mQ='',mRange='all',dKind='contract',dTab='all',cQ='';
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const ini=n=>(n||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
+const PL={draft:'Draft',upcoming:'Upcoming',past:'Past due',paid:'Paid',canceled:'Canceled',progress:'In progress',completed:'Completed'};
+const pill=s=>`<span class="pl ${s}">${PL[s]||s}</span>`;
+const nextInv=()=>String(S.invN=(S.invN||999)+1);
+function ensureInv(p){if(!p.inv)p.inv=nextInv();if(!p.invDate)p.invDate=key(new Date())}
+function invStatus(p){const c=calc(p),td=key(new Date());if(p.invCancel)return 'canceled';if(c.total>0&&c.bal<=0)return 'paid';if(!p.invSent&&!c.paid)return 'draft';if(p.invDue&&p.invDue<td)return 'past';return 'upcoming'}
+const invList=()=>{const a=S.projects.filter(p=>p.inv||(+p.amount>0));a.forEach(ensureInv);return a};
+const DTPL={contract:`PHOTOGRAPHY SERVICES AGREEMENT\n\nThis agreement is between {me} ("the Photographer") and {client} ("the Client") for {project} on {date}.\n\n1. Services. The Photographer will provide photography services as agreed for {project}.\n2. Fee and payment. The total fee is {amount}. A deposit secures the date, and the balance is due by the date agreed in writing.\n3. Cancellation. If the Client cancels, the deposit is non-refundable. If the Photographer must cancel, the deposit will be refunded.\n4. Delivery. Edited images will be delivered through an online gallery within the time agreed in writing.\n5. Usage and copyright. The Photographer keeps the copyright. The Client may use the images for personal use. The Photographer may use selected images for portfolio and promotion unless the Client asks otherwise in writing.\n6. Changes. Any change to this agreement must be agreed in writing by both parties.\n\nClient signature: ____________________   Date: ____________\n\nPhotographer signature: ____________________   Date: ____________`,
+quote:`QUOTE\n\nPrepared for: {client}\nProject: {project}\nDate: {date}\n\n{lines}\n\nTotal: {amount}\n\nThis quote is valid for 30 days.\n\n{me}`,
+questionnaire:`QUESTIONNAIRE for {project}\n\n1. Names and phone numbers of the main people involved:\n\n2. Date, start time and location(s):\n\n3. Number of guests or people expected:\n\n4. Must-have photos or moments:\n\n5. People or situations to avoid photographing:\n\n6. Who is the contact on the day:\n\n7. Anything else we should know:`};
+const KL={contract:'Contracts',quote:'Quotes',questionnaire:'Questionnaires'};
+const dtpl=k=>S.dtpl&&S.dtpl[k]!==undefined?S.dtpl[k]:DTPL[k];
+const mtpl=n=>(S.mtpl&&S.mtpl[n])||TPL[n];
+function mergeDoc(t,p){const m={client:p&&p.client||'[client]',project:p?p.name:'[project]',date:p&&p.date?fmt(p.date):'[date]',amount:p?money(calc(p).total):'[amount]',me:S.cfg.me||'',lines:p?calc(p).ls.map(x=>'- '+(x.d||'Item')+': '+(+x.qty||0)+' x '+m2(x.price)+' = '+m2((+x.price||0)*(+x.qty||0))).join('\n'):'[lines]'};return t.replace(/\{(\w+)\}/g,(_,k)=>m[k]!==undefined?m[k]:'{'+k+'}')}
+function ensureContacts(){S.contacts=S.contacts||[];S.projects.forEach(p=>{const n=(p.client||'').trim();if(!n||p.cid)return;let c=S.contacts.find(x=>x.name.toLowerCase()===n.toLowerCase());if(!c){c={id:uid(),name:n,email:p.email||'',phone:p.phone||'',notes:''};S.contacts.push(c)}p.cid=c.id})}
+const contactSel=p=>`<label>Linked contact<select data-wf="p.cid"><option value="">None</option>${(S.contacts||[]).map(c=>`<option value="${c.id}"${p.cid===c.id?' selected':''}>${esc(c.name)}</option>`).join('')}</select></label>`;
+const WS=[['home','Home'],['projects','Projects'],['contacts','Contacts'],['money','Money'],['docs','Documents'],['pk','Packages'],['rep','Reports']];
+function goBack(){if(S.pid){S.pid=null;renderStudio()}else if(cId||docId){cId=docId=null;renderStudio()}else closeStudio()}
+function openWs(pg){S.pid=null;wk=pg||'home';toggle(false);$('studio').hidden=false;renderStudio()}
+function renderWs(){$('stSide').innerHTML=`<button class="back" data-w="back" aria-label="Back" title="Back">\u2190</button><div class="stn"><b>Studio</b><span class="m">${esc(INV().biz||S.cfg.me||'')}</span></div>`+WS.map(([k,l])=>`<button data-w="nav" data-p="${k}" aria-pressed="${wk===k}">${l}</button>`).join('')+``;
+ $('stMain').innerHTML=({home:wHome,projects:wProjects,contacts:wContacts,money:wMoney,docs:wDocs,pk:wPk,rep:wRep})[wk]()}
+const opn=(id,s,t)=>`<button class="dline" data-w="open" data-id="${id}" data-s="${s||'ov'}">${t}</button>`;
+function wHome(){const td=key(new Date()),c=cols(),act=S.projects.filter(p=>!p.arch),due=[],soon=[];const lim=new Date();lim.setDate(lim.getDate()+14);const lk=key(lim);
+ act.forEach(p=>{Object.entries(p.due||{}).forEach(([x,d])=>{if(d<=td&&p.cells[x]!=='done'&&c.includes(x))due.push([p,x,d])});if(p.date&&p.date>=td&&p.date<=lk)soon.push(p)});
+ due.sort((a,b)=>a[2]<b[2]?-1:1);soon.sort((a,b)=>a.date<b.date?-1:1);
+ const unp=invList().filter(p=>['past','upcoming'].includes(invStatus(p))).sort((a,b)=>invStatus(a)==='past'?-1:1),log=[];
+ S.projects.forEach(p=>(p.log||[]).forEach(l=>log.push([p,l])));log.sort((a,b)=>b[1].ts-a[1].ts);
+ return `<h2>Welcome${S.cfg.me?', '+esc(S.cfg.me):''}</h2><div class="m">${new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div><div class="hc">
+ <div><h3>Due or overdue</h3>${due.slice(0,6).map(([p,x,d])=>opn(p.id,'wf',`<span>${esc(p.name)} \u2014 ${esc(x)}</span><span class="${d<td?'od':'m'}">${d<td?'overdue':'today'}</span>`)).join('')||'<div class="m">Nothing due.</div>'}</div>
+ <div><h3>Shoots in the next 14 days</h3>${soon.slice(0,6).map(p=>opn(p.id,'ov',`<span>${esc(p.name)}</span><span class="m">${fmt(p.date)}</span>`)).join('')||'<div class="m">No upcoming shoots.</div>'}</div>
+ <div><h3>Unpaid invoices</h3>${unp.slice(0,6).map(p=>{const c2=calc(p);return opn(p.id,'inv',`<span>${esc(p.client||p.name)}</span><span>${pill(invStatus(p))} ${money(c2.bal)}</span>`)}).join('')||'<div class="m">All paid up.</div>'}</div>
+ <div><h3>Recent activity</h3>${log.slice(0,6).map(([p,l])=>opn(p.id,'ov',`<span>${esc(p.name)}: ${esc(l.k)} ${esc(l.t)}</span>`)).join('')||'<div class="m">Nothing yet.</div>'}</div></div>`}
+const wProjects=()=>`<h2>Projects</h2><input id="pq" placeholder="Search projects" aria-label="Search projects" value="${esc(pq)}"><div class="pick" id="pickList">${pickHTML()}</div>`;
+function wContacts(){ensureContacts();const c=S.contacts.find(x=>x.id===cId);
+ if(c){const ps=S.projects.filter(p=>p.cid===c.id),f=(k,l,t)=>`<label>${l}<input data-wf="c.${k}" type="${t||'text'}" value="${esc(c[k]||'')}"></label>`;
+  return `<button class="btn" data-w="cback">\u2039 Contacts</button><h2>${esc(c.name)}</h2><div class="g2">${f('name','Name')}${f('email','Email','email')}${f('phone','Phone / WhatsApp','tel')}</div><label>Notes<textarea data-wf="c.notes" rows="3">${esc(c.notes||'')}</textarea></label><h3>Projects</h3>${ps.map(p=>opn(p.id,'ov',`<span>${esc(p.name)}</span><span class="m">${p.date?fmt(p.date):''}</span>`)).join('')||'<div class="m">No projects linked yet. Link one from the project\u2019s Client &amp; shoot section.</div>'}<div class="acts2"><button class="btn" data-w="cdel">Delete contact</button></div>`}
+ const q=cQ.toLowerCase(),L=S.contacts.filter(x=>(x.name+' '+(x.email||'')).toLowerCase().includes(q));
+ return `<h2>Contacts</h2><div class="stbar"><input id="cq" data-wf="cq" placeholder="Search contacts" aria-label="Search contacts" value="${esc(cQ)}" style="margin:0"><input id="cNewName" placeholder="New contact name" aria-label="New contact name" style="margin:0"><button class="btn" data-w="cnew">+ Add</button></div><div id="cList">${cRows(L)}</div>`}
+const cRows=L=>`<div class="trow thead" style="grid-template-columns:1.4fr 1.4fr 1fr 70px"><span>Name</span><span>Email</span><span>Phone</span><span>Projects</span></div>`+(L.map(c=>`<button class="trow" data-w="cpick" data-id="${c.id}" style="grid-template-columns:1.4fr 1.4fr 1fr 70px"><span class="who"><i class="av2">${esc(ini(c.name))}</i><span>${esc(c.name)}</span></span><span class="m">${esc(c.email||'')}</span><span class="m">${esc(c.phone||'')}</span><span>${S.projects.filter(p=>p.cid===c.id).length}</span></button>`).join('')||'<div class="empty">No contacts yet.</div>');
+function mRows(){const td=key(new Date()),mo=td.slice(0,7),yr=td.slice(0,4),q=mQ.toLowerCase();
+ return invList().filter(p=>{const s=invStatus(p);return(mTab==='all'||mTab===s)&&((p.client||'')+' '+p.name+' '+p.inv).toLowerCase().includes(q)&&(mRange==='all'||(mRange==='month'?p.invDate.slice(0,7)===mo:p.invDate.slice(0,4)===yr))}).sort((a,b)=>(+b.inv||0)-(+a.inv||0)).map(p=>{const c=calc(p),w=p.client||p.name;
+  return `<button class="trow" data-w="open" data-id="${p.id}" data-s="inv" style="grid-template-columns:60px 100px 110px 1.3fr 1.3fr 95px 95px"><b>${esc(p.inv)}</b><span>${pill(invStatus(p))}</span><span>${money(c.total)}</span><span class="who"><i class="av2">${esc(ini(w))}</i><span>${esc(w)}</span></span><span>${esc(p.name)}</span><span class="m">${p.invDue?fmt(p.invDue):''}</span><span class="m">${fmt(p.invDate)}</span></button>`}).join('')||'<div class="empty">No invoices here.</div>'}
+function wMoney(){const L=invList().filter(p=>invStatus(p)!=='canceled'),paid=L.reduce((a,p)=>a+calc(p).paid,0),sum=s=>L.filter(p=>invStatus(p)===s).reduce((a,p)=>a+Math.max(calc(p).bal,0),0);
+ const T=[['all','All invoices'],['draft','Draft'],['upcoming','Upcoming'],['past','Past due'],['paid','Paid'],['canceled','Canceled']];
+ return `<h2>Money</h2><div class="tiles"><div><span>Paid</span><b>${money(paid)}</b></div><div><span>Upcoming</span><b>${money(sum('upcoming'))}</b></div><div><span>Past due</span><b class="od">${money(sum('past'))}</b></div></div>
+ <div class="stbar"><input data-wf="m.q" placeholder="Search client, project or number" aria-label="Search invoices" value="${esc(mQ)}" style="margin:0"><select data-wf="m.range" aria-label="Date range" style="max-width:130px;margin:0"><option value="all"${mRange==='all'?' selected':''}>All time</option><option value="month"${mRange==='month'?' selected':''}>This month</option><option value="year"${mRange==='year'?' selected':''}>This year</option></select><select id="newInvSel" aria-label="Project for new invoice" style="margin:0">${S.projects.filter(p=>!p.arch).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select><button class="btn" data-w="newinv">New invoice</button></div>
+ <div class="tabs2">${T.map(([k,l])=>`<button data-w="mtab" data-v="${k}" aria-pressed="${mTab===k}">${l}</button>`).join('')}</div>
+ <div class="trow thead" style="grid-template-columns:60px 100px 110px 1.3fr 1.3fr 95px 95px"><span>Invoice</span><span>Status</span><span>Amount</span><span>Client</span><span>Project</span><span>Due on</span><span>Created</span></div><div id="mTable">${mRows()}</div>`}
+const dRows=()=>{const L=(S.docs||[]).filter(d=>d.kind===dKind&&(dTab==='all'||d.status===dTab));return L.map(d=>{const p=S.projects.find(x=>x.id===d.pid);return `<button class="trow" data-w="dopen" data-id="${d.id}" style="grid-template-columns:1.6fr 110px 1.2fr 1.2fr 95px"><b>${esc(d.name)}</b><span>${pill(d.status)}</span><span class="who"><i class="av2">${esc(ini(p&&p.client||'?'))}</i><span>${esc(p&&p.client||'')}</span></span><span class="m">${esc(p?p.name:'')}</span><span class="m">${fmt(d.created)}</span></button>`}).join('')||'<div class="empty">Nothing here yet.</div>'};
+function wDocs(){S.docs=S.docs||[];const d=S.docs.find(x=>x.id===docId);
+ if(d){const opt=(a,v)=>a.map(([k,l])=>`<option value="${k}"${v===k?' selected':''}>${l}</option>`).join('');
+  return `<div class="noprint"><button class="btn" data-w="cback">\u2039 ${KL[d.kind]}</button><h2>${esc(d.name)} ${pill(d.status)}</h2><div class="g2"><label>Name<input data-wf="d.name" value="${esc(d.name)}"></label><label>Status<select data-wf="d.status">${opt([['draft','Draft'],['progress','In progress'],['completed','Completed'],['canceled','Canceled']],d.status)}</select></label><label>Project<select data-wf="d.pid"><option value="">None</option>${opt(S.projects.map(p=>[p.id,p.name]),d.pid)}</select></label></div><label>Text<textarea data-wf="d.body" rows="18">${esc(d.body)}</textarea></label><div class="acts2"><button class="btn" data-w="dprint">Print or save as PDF</button><button class="btn" data-w="dcopy">Copy text</button><button class="btn" data-w="ddel">Delete</button></div></div><div class="docpaper">${nl(d.body)}</div>`}
+ const K=[...Object.entries(KL),['templates','Templates']],ST=[['all','All'],['draft','Draft'],['progress','In progress'],['completed','Completed'],['canceled','Canceled']];
+ if(dKind==='templates')return `<h2>Documents</h2><div class="tabs2">${K.map(([k,l])=>`<button data-w="dkind" data-v="${k}" aria-pressed="${dKind===k}">${l}</button>`).join('')}</div>${wTemplates()}`;
+ return `<h2>Documents</h2><div class="tabs2">${K.map(([k,l])=>`<button data-w="dkind" data-v="${k}" aria-pressed="${dKind===k}">${l}</button>`).join('')}</div><div class="stbar"><select id="dNewSel" aria-label="Project" style="margin:0"><option value="">No project</option>${S.projects.filter(p=>!p.arch).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select><button class="btn" data-w="dnew">+ New ${dKind}</button></div><div class="tabs2">${ST.map(([k,l])=>`<button data-w="dtab" data-v="${k}" aria-pressed="${dTab===k}">${l}</button>`).join('')}</div><div class="trow thead" style="grid-template-columns:1.6fr 110px 1.2fr 1.2fr 95px"><span>Name</span><span>Status</span><span>Client</span><span>Project</span><span>Created</span></div>${dRows()}<div class="m" style="margin-top:10px">These are general templates, not legal advice. Have your contract reviewed for your situation. Signing is recorded by you here; it is not an electronic signature service.</div>`}
+function wTemplates(){return `<div class="m">Use {client} {project} {date} {amount} {me} {link}. Quotes also take {lines}.</div>`+Object.keys(KL).map(k=>`<h3>${KL[k].replace(/s$/,'')} template <button class="btn" data-w="tplreset" data-k="d.${k}">Reset</button></h3><textarea data-wf="dt.${k}" rows="6">${esc(dtpl(k))}</textarea>`).join('')+`<h3>Message templates</h3>`+Object.keys(TPL).map(n=>{const t=mtpl(n);return `<h3 style="font-weight:500">${esc(n)} <button class="btn" data-w="tplreset" data-k="m.${esc(n)}">Reset</button></h3><input data-wf="mt.s" data-n="${esc(n)}" value="${esc(t.s)}" aria-label="Subject"><textarea data-wf="mt.b" data-n="${esc(n)}" rows="4" aria-label="Message">${esc(t.b)}</textarea>`}).join('')}
+const wPk=()=>`<h2>Packages</h2><div class="m">Pick a package when you add a project: it fills in the price, invoice line and a starter shot list.</div>`+(S.packages||[]).map(k=>`<div class="row2 pkr"><input data-wf="pk.name" data-id="${k.id}" value="${esc(k.name)}" placeholder="Name" aria-label="Package name"><input data-wf="pk.price" data-id="${k.id}" type="number" min="0" value="${k.price||''}" placeholder="Price" aria-label="Price" style="width:110px"><input data-wf="pk.duration" data-id="${k.id}" value="${esc(k.duration||'')}" placeholder="Duration" aria-label="Duration" style="width:110px"><select data-wf="pk.starter" data-id="${k.id}" aria-label="Starter list"><option value="">No starter list</option>${Object.keys(TEMPL).map(t=>`<option${k.starter===t?' selected':''}>${t}</option>`).join('')}</select><button class="x" style="opacity:1" data-w="pkdel" data-id="${k.id}" aria-label="Delete package">\u2715</button></div>`).join('')+`<div class="acts2"><button class="btn" data-w="pknew">+ New package</button></div>`;
+function wRep(){const L=invList().filter(p=>invStatus(p)!=='canceled'&&invStatus(p)!=='draft'),inv=L.reduce((a,p)=>a+calc(p).total,0),rec=L.reduce((a,p)=>a+calc(p).paid,0),mo={},pk={},cl={};
+ const d=new Date();for(let i=11;i>=0;i--){const x=new Date(d.getFullYear(),d.getMonth()-i,1);mo[key(x).slice(0,7)]=0}
+ S.projects.forEach(p=>(p.pay||[]).forEach(x=>{const k=(x.date||'').slice(0,7);if(k in mo)mo[k]+=+x.amt||0}));
+ L.forEach(p=>{const c=calc(p);pk[p.pkg||'No package']=(pk[p.pkg||'No package']||0)+c.total;const w=p.client||p.name;cl[w]=(cl[w]||0)+c.total});
+ const bars=(o,top)=>{const e=Object.entries(o).sort(top?(a,b)=>b[1]-a[1]:undefined).slice(0,top||99),mx=Math.max(1,...e.map(x=>x[1]));return e.map(([k,v])=>`<div class="row2"><span style="width:110px">${esc(top?k:new Date(k+'-01T00:00').toLocaleDateString(undefined,{month:'short',year:'2-digit'}))}</span><div style="flex:1"><div class="bar2" style="width:${v/mx*100}%"></div></div><b style="width:120px;text-align:right">${money(v)}</b></div>`).join('')};
+ return `<h2>Reports</h2><div class="tiles"><div><span>Invoiced</span><b>${money(inv)}</b></div><div><span>Received</span><b>${money(rec)}</b></div><div><span>Outstanding</span><b class="od">${money(inv-rec)}</b></div></div><h3>Payments received, last 12 months</h3>${bars(mo)}<h3>Invoiced by package</h3>${bars(pk,8)}<h3>Top clients</h3>${bars(cl,8)}<div class="m" style="margin-top:8px">Draft and canceled invoices are not counted.</div>`}
+function wsClick(e){const b=e.target.closest('[data-w]');if(!b)return false;const d=b.dataset,a=d.w,p=curP();
+ if(a==='back'){goBack()}
+ else if(a==='nav'){S.pid=null;wk=d.p;cId=docId=null;renderStudio()}
+ else if(a==='open'){S.pid=d.id;sec=d.s||'ov';renderStudio()}
+ else if(a==='mtab'){mTab=d.v;renderStudio()}
+ else if(a==='newinv'){const id=$('newInvSel').value;if(id){S.pid=id;sec='inv';renderStudio()}}
+ else if(a==='invsent'&&p){p.invSent=!p.invSent;save();renderStudio()}
+ else if(a==='invcancel'&&p){p.invCancel=!p.invCancel;save();renderStudio()}
+ else if(a==='cnew'){const n=($('cNewName').value||'').trim();if(n){const c={id:uid(),name:n,email:'',phone:'',notes:''};S.contacts.push(c);cId=c.id;save();renderStudio()}}
+ else if(a==='cpick'){cId=d.id;renderStudio()}
+ else if(a==='cback'){cId=docId=null;renderStudio()}
+ else if(a==='cdel'){S.projects.forEach(x=>{if(x.cid===cId)delete x.cid});S.contacts=S.contacts.filter(x=>x.id!==cId);cId=null;save();renderStudio()}
+ else if(a==='dkind'){dKind=d.v;dTab='all';renderStudio()}
+ else if(a==='dtab'){dTab=d.v;renderStudio()}
+ else if(a==='dnew'){const pr=S.projects.find(x=>x.id===$('dNewSel').value),n={contract:'Contract',quote:'Quote',questionnaire:'Questionnaire'}[dKind]+' \u2014 '+(pr?pr.name:'Untitled');const doc={id:uid(),kind:dKind,name:n,pid:pr?pr.id:'',status:'draft',body:mergeDoc(dtpl(dKind),pr),created:key(new Date())};S.docs.push(doc);docId=doc.id;save();renderStudio()}
+ else if(a==='dopen'){docId=d.id;renderStudio()}
+ else if(a==='ddel'){S.docs=S.docs.filter(x=>x.id!==docId);docId=null;save();renderStudio()}
+ else if(a==='dprint'){try{window.print()}catch(_){b.textContent='Printing is blocked here. Use Copy text.'}}
+ else if(a==='dcopy'){const x=S.docs.find(y=>y.id===docId);try{navigator.clipboard.writeText(x.body);b.textContent='Copied'}catch(_){b.textContent='Copy failed'}setTimeout(()=>b.textContent='Copy text',1500)}
+ else if(a==='tplreset'){const[k,n]=[d.k.slice(0,1),d.k.slice(2)];if(k==='d'){if(S.dtpl)delete S.dtpl[n]}else if(S.mtpl)delete S.mtpl[n];save();renderStudio()}
+ else if(a==='pknew'){(S.packages=S.packages||[]).push({id:uid(),name:'New package',price:0,duration:'',starter:''});save();renderStudio();render()}
+ else if(a==='pkdel'){S.packages=S.packages.filter(x=>x.id!==d.id);save();renderStudio();render()}
+ else return false;
+ return true}
+function wsField(e,ev){const t=e.target,wf=t.dataset.wf;if(!wf)return false;const sel=t.tagName==='SELECT'||t.type==='date';if((ev==='change')!==sel)return true;const[sc,k]=wf.split('.'),v=t.value;
+ if(sc==='c'){const c=S.contacts.find(x=>x.id===cId);if(c){c[k]=v;S.projects.forEach(p=>{if(p.cid===c.id){p.client=c.name;p.email=c.email;p.phone=c.phone}});save()}}
+ else if(sc==='cq'){cQ=v;$('cList').innerHTML=cRows(S.contacts.filter(x=>(x.name+' '+(x.email||'')).toLowerCase().includes(cQ.toLowerCase())))}
+ else if(sc==='m'){if(k==='q'){mQ=v;$('mTable').innerHTML=mRows()}else{mRange=v;renderStudio()}}
+ else if(sc==='p'){const p=curP();if(p){p.cid=v||undefined;const c=S.contacts.find(x=>x.id===v);if(c){p.client=c.name;p.email=c.email;p.phone=c.phone}save();renderStudio();render()}}
+ else if(sc==='d'){const x=S.docs.find(y=>y.id===docId);if(x){x[k]=v;save();if(k==='body'){const pp=document.querySelector('.docpaper');if(pp)pp.innerHTML=nl(v)}else renderStudio()}}
+ else if(sc==='dt'){(S.dtpl=S.dtpl||{})[k]=v;save()}
+ else if(sc==='mt'){S.mtpl=S.mtpl||{};const n=t.dataset.n,cur=Object.assign({},mtpl(n));cur[k]=v;S.mtpl[n]=cur;save()}
+ else if(sc==='pk'){const x=S.packages.find(y=>y.id===t.dataset.id);if(x){x[k]=k==='price'?(+v||0):v;save();render()}}
+ return true}
+function fillPt(){const el=$('pt'),v=el.value;el.innerHTML='<option value="">Blank</option>'+((S.packages||[]).length?`<optgroup label="Packages">${S.packages.map(k=>`<option value="pk:${k.id}">${esc(k.name)}${k.price?' \u2014 '+money(k.price):''}</option>`).join('')}</optgroup>`:'')+`<optgroup label="Starter lists">${Object.keys(TEMPL).map(t=>`<option>${t}</option>`).join('')}</optgroup>`;el.value=[...el.options].some(o=>o.value===v)?v:''}
+
 S.q='';render();$('vf').value=S.vf||'act';$('sf').value=S.sf||'add';wake();
 let UPD=null,UPS='';
 function renderUpd(){const m=$('updMsg');if(!m)return;
