@@ -8,6 +8,8 @@ const IS_MAC = process.platform === 'darwin';
 const SHORTCUTS = IS_MAC ? ['Alt+Space', 'Control+Alt+Space'] : ['Control+Alt+Space', 'Control+Shift+Space'];
 
 let win, tray;
+let quitting = false;
+const alive = () => win && !win.isDestroyed();
 const dataFile = () => path.join(app.getPath('userData'), 'data.json');
 const backupDir = () => path.join(app.getPath('userData'), 'backups');
 
@@ -22,13 +24,19 @@ function createWindow() {
   win.setAlwaysOnTop(true, IS_MAC ? 'floating' : 'screen-saver');
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   win.setIgnoreMouseEvents(true, { forward: true }); // click-through until the pointer is over the bubble or panel
+  // Closing the window (for example Cmd+W) only hides it; it is destroyed only when the app quits.
+  win.on('close', e => { if (!quitting) { e.preventDefault(); win.hide(); } });
+  win.on('closed', () => { win = null; });
   win.loadFile('index.html');
   const external = url => { if (/^(https?|mailto):/i.test(url)) shell.openExternal(url); };
   win.webContents.setWindowOpenHandler(({ url }) => { external(url); return { action: 'deny' }; });
   win.webContents.on('will-navigate', (e, url) => { if (url !== win.webContents.getURL()) { e.preventDefault(); external(url); } });
 }
 
-function togglePanel() { win.show(); win.focus(); win.webContents.send('toggle'); }
+function togglePanel() {
+  if (!alive()) { createWindow(); win.webContents.once('did-finish-load', () => win.webContents.send('toggle')); return; }
+  win.show(); win.focus(); win.webContents.send('toggle');
+}
 
 function saveData(json) {
   try {
@@ -62,7 +70,7 @@ ipcMain.handle('update-check', checkUpdate);
 ipcMain.on('version', e => { e.returnValue = app.getVersion(); });
 ipcMain.on('open-external', (_e, url) => { if (typeof url === 'string' && url.startsWith(`https://github.com/${REPO}/`)) shell.openExternal(url); });
 
-ipcMain.on('interactive', (_e, on) => win && win.setIgnoreMouseEvents(!on, { forward: true }));
+ipcMain.on('interactive', (_e, on) => alive() && win.setIgnoreMouseEvents(!on, { forward: true }));
 ipcMain.on('save', (_e, json) => saveData(json));
 ipcMain.on('load', e => { try { e.returnValue = fs.existsSync(dataFile()) ? fs.readFileSync(dataFile(), 'utf8') : null; } catch (_) { e.returnValue = null; } });
 ipcMain.on('notify', (_e, { title, body }) => {
@@ -96,10 +104,13 @@ app.whenReady().then(() => {
   if (!IS_MAC) tray.on('click', togglePanel);
   for (const s of SHORTCUTS) if (globalShortcut.register(s, togglePanel)) break;
 
-  screen.on('display-metrics-changed', () => {
+  const fit = () => {
+    if (!alive()) return;
     const a = screen.getPrimaryDisplay().workArea;
     win.setBounds({ x: a.x, y: a.y, width: a.width, height: a.height });
-  });
+  };
+  ['display-metrics-changed', 'display-added', 'display-removed'].forEach(ev => screen.on(ev, fit));
 });
 
+app.on('before-quit', () => { quitting = true; });
 app.on('will-quit', () => globalShortcut.unregisterAll());
