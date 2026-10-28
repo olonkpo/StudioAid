@@ -34,10 +34,25 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
       - uses: actions/download-artifact@v4
         with:
           path: installers
           merge-multiple: true
-      - run: gh release create "v0.1.${{ github.run_number }}" installers/* --repo "${{ github.repository }}" --title "StudioAid build ${{ github.run_number }}" --notes "Mac (.dmg) and Windows (.exe) installers."
+      - name: Build the small update package
+        run: |
+          VER="0.1.${{ github.run_number }}"
+          npm version "$VER" --no-git-tag-version --allow-same-version
+          mkdir pkg
+          cp package.json core.js updater.js preload.js index.html pkg/
+          cp -r assets pkg/assets
+          npx --yes @electron/asar pack pkg installers/app-update.asar
+          SHA=$(sha256sum installers/app-update.asar | cut -d' ' -f1)
+          printf '{"version":"%s","file":"app-update.asar","sha256":"%s","shell":1}\n' "$VER" "$SHA" > installers/update.json
+          cat installers/update.json
+      - run: gh release create "v0.1.${{ github.run_number }}" installers/* --repo "${{ github.repository }}" --title "StudioAid build ${{ github.run_number }}" --notes "Mac (.dmg) and Windows (.exe) installers, plus the small update package used by the app's built-in updater."
         env:
           GH_TOKEN: ${{ github.token }}

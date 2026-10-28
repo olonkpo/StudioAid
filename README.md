@@ -60,6 +60,14 @@ The installers are not signed with a paid developer certificate, so the computer
 
 Removing these warnings entirely requires paid developer accounts (Apple Developer Program for Mac, a code-signing certificate for Windows).
 
+## Updates
+
+Open Settings, then Updates, and press Check for updates. Most updates are small (about 0.1 MB): the app downloads only the changed program files, checks them against a fingerprint, and restarts. You do not reinstall anything. A full installer is only needed now and then, when the app's engine itself changes; the app tells you when. If a small update ever fails to start, the app switches back to the installed version by itself.
+
+## Dock and Force Quit (Mac)
+
+By default StudioAid shows in the Dock, so it appears in the Force Quit window (Command+Option+Esc). If you prefer a menu-bar-only app that can float over full-screen apps, turn off "Show in the Dock and Force Quit list" in Settings. The menu bar icon always has Quit.
+
 ## Notes
 
 - The bubble lives on your main screen only.

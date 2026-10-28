@@ -362,6 +362,7 @@ function openSet(){
   <div class="sr"><label for="iSoc">Handle or website (footer)</label><input type="text" class="w" id="iSoc" data-inv="social" value="${esc(INV().social)}"></div>
   <div class="sr"><label for="iCol">Accent color</label><input type="color" id="iCol" data-inv="color" value="${esc(INV().color)}"></div>
   <div class="sr"><label for="sInvLogo">Logo</label>${INV().logo?`<img src="${esc(INV().logo)}" alt="" style="max-height:30px;max-width:80px">`:''}<input type="file" id="sInvLogo" accept="image/*" style="max-width:150px"><button class="btn" id="invLogoRm">Remove</button></div>
+  ${NAT&&NAT.platform==='darwin'?`<div class="sr"><label for="sDock">Show in the Dock and Force Quit list (restarts the app)</label><input type="checkbox" id="sDock" ${NAT.getDock()?'checked':''}></div>`:''}
   <h3>Updates</h3><div class="sr"><span class="m">Version ${esc(VER)}</span><span style="flex:1"></span><button class="btn" id="updChk">Check for updates</button></div><div id="updMsg" class="m"></div>
   <h3>Backup</h3><div class="sr"><button class="btn" id="bkCopy">Copy backup</button><button class="btn" id="bkRestore">Restore from box</button></div><textarea id="bkBox" rows="3" aria-label="Backup text" placeholder="Backup text appears here. To restore, paste a backup here and press Restore."></textarea>
   <div class="sr" style="margin-top:14px"><button class="btn" id="rst">Reset settings</button><span style="flex:1"></span><button class="go" id="done">Done</button></div>`;
@@ -371,13 +372,13 @@ function openSet(){
 $('set').onclick=e=>{const id=e.target.id;
   if(id==='updChk')checkUpd(true);
   if(id==='invLogoRm'){(S.cfg.inv=S.cfg.inv||{}).logo='';save();openSet()}
-  if(id==='updGo'&&UPD){NAT?NAT.openExternal(UPD.url):0}
+  if(id==='updGo'&&UPD){if(UPD.patch&&NAT){UPS='installing';renderUpd();NAT.installUpdate().then(r=>{if(!r||!r.ok){UPS='error';renderUpd()}})}else if(NAT)NAT.openExternal(UPD.url)}
   if(id==='bkCopy'){S.lb=Date.now();save();renderBoard();const j=JSON.stringify({projects:S.projects,phases:S.phases,cfg:S.cfg});$('bkBox').value=j;$('bkBox').select();try{navigator.clipboard.writeText(j)}catch(_){}}
   if(id==='bkRestore'){try{const o=JSON.parse($('bkBox').value);if(!Array.isArray(o.projects))throw 0;S.projects=o.projects;if(Array.isArray(o.phases)&&o.phases.length)S.phases=o.phases;S.cfg=Object.assign({},DEF,o.cfg);save();render();$('bkBox').value='Restored.'}catch(_){$('bkBox').value='That text is not a valid backup.'}}
   if(e.target.id==='done'){S.view='B';render()}
   if(e.target.id==='rst'){S.cfg=Object.assign({},DEF);S.phases=JSON.parse(JSON.stringify(PH));S.phase=Math.min(S.phase,2);save();render();openSet()}};
 $('set').onchange=e=>{if(e.target.id!=='sInvLogo')return;const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,240/im.height),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);(S.cfg.inv=S.cfg.inv||{}).logo=c.toDataURL('image/png');save();openSet()};im.src=r.result};r.readAsDataURL(f)};
-$('set').oninput=e=>{const t=e.target,d=t.dataset;
+$('set').oninput=e=>{const t=e.target,d=t.dataset;if(t.id==='sDock'){NAT.setDock(t.checked);return}
   if(t.id==='sTheme')S.cfg.theme=t.value;else if(t.id==='sMe')S.cfg.me=t.value;else if(t.id==='sCc')S.cfg.cc=t.value.replace(/\D/g,'');else if(t.id==='sCur')S.cfg.cur=t.value;else if(t.id==='sSize'){S.cfg.size=+t.value;t.previousElementSibling.textContent='Size ('+t.value+'px)'}
   else if(t.id==='sFade')S.cfg.fade=t.checked;
   else if(d.pc)S.phases[d.pc].c=t.value;else if(d.pn)S.phases[d.pn].n=t.value||' ';
@@ -510,7 +511,7 @@ function fillPt(){const el=$('pt'),v=el.value;el.innerHTML='<option value="">Bla
 S.q='';render();$('vf').value=S.vf||'act';$('sf').value=S.sf||'add';wake();
 let UPD=null,UPS='';
 function renderUpd(){const m=$('updMsg');if(!m)return;
-  m.innerHTML=UPS==='checking'?'Checking\u2026':UPS==='error'?'Could not check for updates. Check your internet connection.':UPD?`Version ${esc(UPD.latest)} is available. <button class="btn" id="updGo">Download</button>${UPD.demo?' (preview example)':''}`:UPS==='latest'?'You have the latest version.':''}
+  m.innerHTML=UPS==='checking'?'Checking\u2026':UPS==='error'?'Could not update. Check your internet connection and try again.':UPS==='installing'?'Downloading the update. The app restarts when it is ready\u2026':UPD?(UPD.patch||UPD.demo?`Version ${esc(UPD.latest)} is available: a small update${UPD.patch?' (about '+(UPD.patch.size/1e6).toFixed(1)+' MB)':''}. <button class="btn" id="updGo">Install update</button> The app restarts.`:`Version ${esc(UPD.latest)} is available as a full download. <button class="btn" id="updGo">Download</button>`)+(UPD.demo?' (preview example)':''):UPS==='latest'?'You have the latest version.':''}
 async function checkUpd(manual){if(manual){UPS='checking';renderUpd()}
   let r;try{r=NAT?await NAT.checkUpdate():{ok:true,latest:'0.1.2',newer:true,url:'',demo:true}}catch(e){r={ok:false}}
   if(!r.ok){if(manual){UPS='error';renderUpd()}return}

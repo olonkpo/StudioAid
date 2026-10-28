@@ -19,6 +19,8 @@
     "productName": "StudioAid",
     "files": [
       "main.js",
+      "core.js",
+      "updater.js",
       "preload.js",
       "index.html",
       "assets/**"
