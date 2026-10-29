@@ -21,6 +21,8 @@
       "main.js",
       "core.js",
       "updater.js",
+      "cloud.js",
+      "cloud-config.js",
       "preload.js",
       "index.html",
       "assets/**"

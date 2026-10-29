@@ -64,6 +64,12 @@ Removing these warnings entirely requires paid developer accounts (Apple Develop
 
 Open Settings, then Updates, and press Check for updates. Most updates are small (about 0.1 MB): the app downloads only the changed program files, checks them against a fingerprint, and restarts. You do not reinstall anything. A full installer is only needed now and then, when the app's engine itself changes; the app tells you when. If a small update ever fails to start, the app switches back to the installed version by itself.
 
+## Cloud backup (Google Drive)
+
+Settings, then Cloud backup, then Sign in with Google. Your browser opens, you approve, and StudioAid keeps a private backup in a hidden app folder of your own Google Drive. Only StudioAid can see it, and your other Drive files are not touched. After that it backs up automatically a few seconds after you change something. On a new computer, sign in and your data is fetched. If two computers have different data, the app asks which to keep before anything is overwritten, and it keeps a safety copy of the local data first.
+
+Maintainers: the Google client ID and secret are not stored in the repository. Add them as repository secrets named GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET (Settings, Secrets and variables, Actions) and the build writes them into the app.
+
 ## Dock and Force Quit (Mac)
 
 By default StudioAid shows in the Dock, so it appears in the Force Quit window (Command+Option+Esc). If you prefer a menu-bar-only app that can float over full-screen apps, turn off "Show in the Dock and Force Quit list" in Settings. The menu bar icon always has Quit.

@@ -364,13 +364,15 @@ function openSet(){
   <div class="sr"><label for="sInvLogo">Logo</label>${INV().logo?`<img src="${esc(INV().logo)}" alt="" style="max-height:30px;max-width:80px">`:''}<input type="file" id="sInvLogo" accept="image/*" style="max-width:150px"><button class="btn" id="invLogoRm">Remove</button></div>
   ${NAT&&NAT.platform==='darwin'?`<div class="sr"><label for="sDock">Show in the Dock and Force Quit list (restarts the app)</label><input type="checkbox" id="sDock" ${NAT.getDock()?'checked':''}></div>`:''}
   <h3>Updates</h3><div class="sr"><span class="m">Version ${esc(VER)}</span><span style="flex:1"></span><button class="btn" id="updChk">Check for updates</button></div><div id="updMsg" class="m"></div>
+  <h3>Cloud backup</h3><div id="cloudBox" class="m"></div>
   <h3>Backup</h3><div class="sr"><button class="btn" id="bkCopy">Copy backup</button><button class="btn" id="bkRestore">Restore from box</button></div><textarea id="bkBox" rows="3" aria-label="Backup text" placeholder="Backup text appears here. To restore, paste a backup here and press Restore."></textarea>
   <div class="sr" style="margin-top:14px"><button class="btn" id="rst">Reset settings</button><span style="flex:1"></span><button class="go" id="done">Done</button></div>`;
-  $('sTheme').value=S.cfg.theme;renderUpd()}
+  $('sTheme').value=S.cfg.theme;renderUpd();cloudRefresh()}
 
 
 $('set').onclick=e=>{const id=e.target.id;
   if(id==='updChk')checkUpd(true);
+  cloudClick(id);
   if(id==='invLogoRm'){(S.cfg.inv=S.cfg.inv||{}).logo='';save();openSet()}
   if(id==='updGo'&&UPD){if(UPD.patch&&NAT){UPS='installing';renderUpd();NAT.installUpdate().then(r=>{if(!r||!r.ok){UPS='error';renderUpd()}})}else if(NAT)NAT.openExternal(UPD.url)}
   if(id==='bkCopy'){S.lb=Date.now();save();renderBoard();const j=JSON.stringify({projects:S.projects,phases:S.phases,cfg:S.cfg});$('bkBox').value=j;$('bkBox').select();try{navigator.clipboard.writeText(j)}catch(_){}}
@@ -509,6 +511,22 @@ function wsField(e,ev){const t=e.target,wf=t.dataset.wf;if(!wf)return false;cons
 function fillPt(){const el=$('pt'),v=el.value;el.innerHTML='<option value="">Blank</option>'+((S.packages||[]).length?`<optgroup label="Packages">${S.packages.map(k=>`<option value="pk:${k.id}">${esc(k.name)}${k.price?' \u2014 '+money(k.price):''}</option>`).join('')}</optgroup>`:'')+`<optgroup label="Starter lists">${Object.keys(TEMPL).map(t=>`<option>${t}</option>`).join('')}</optgroup>`;el.value=[...el.options].some(o=>o.value===v)?v:''}
 
 S.q='';render();$('vf').value=S.vf||'act';$('sf').value=S.sf||'add';wake();
+let CL={status:null,msg:''};
+async function cloudRefresh(){if(!NAT||!NAT.cloudStatus){renderCloud();return}try{CL.status=await NAT.cloudStatus()}catch(_){}renderCloud()}
+function renderCloud(){const b=$('cloudBox');if(!b)return;const s=CL.status;
+ if(!NAT||!NAT.cloudStatus){b.textContent='Cloud backup is available in the desktop app.';return}
+ if(!s){b.textContent='Loading\u2026';return}
+ if(!s.configured){b.textContent='Cloud sign-in is not set up in this build.';return}
+ const note=CL.msg?`<div class="m" style="margin-top:6px">${esc(CL.msg)}</div>`:'';
+ if(!s.signedIn){b.innerHTML=`Keep a private backup in your own Google Drive. Only StudioAid can see it. <div class="acts2"><button class="btn" id="cSignIn">Sign in with Google</button></div>${note}`;return}
+ b.innerHTML=`Signed in as <b>${esc(s.email)}</b>. ${s.lastAt?'Last backup: '+new Date(s.lastAt).toLocaleString():'No backup yet.'}`+(s.conflict?`<div class="od" style="margin-top:6px">Your cloud backup has different data (from another computer, or this one is new). Choose which to keep.</div><div class="acts2"><button class="btn" id="cUseCloud">Use the cloud copy</button><button class="btn" id="cKeepLocal">Keep this computer's data</button></div>`:`<div class="acts2"><button class="btn" id="cBackup">Back up now</button><button class="btn" id="cRestore">Restore from cloud</button><button class="btn" id="cSignOut">Sign out</button></div>`)+note}
+function applyCloud(json){try{const o=JSON.parse(json);if(!Array.isArray(o.projects))throw 0;const skip=['y','side','pid','q','view','un','ln','lb','all'];Object.keys(o).forEach(k=>{if(!skip.includes(k))S[k]=o[k]});S.cfg=Object.assign({},DEF,S.cfg);save();render();toast('Updated from your cloud backup','OK',()=>{})}catch(_){}}
+function cloudClick(id){if(!NAT||!NAT.cloudStatus)return;const done=m=>{CL.msg=m||'';cloudRefresh()};
+ if(id==='cSignIn'){CL.msg='Your browser will open so you can sign in\u2026';renderCloud();NAT.cloudSignIn().then(r=>done(r.ok?'':(r.error||'Sign-in failed.')))}
+ else if(id==='cSignOut')NAT.cloudSignOut().then(()=>done(''))
+ else if(id==='cBackup'){CL.msg='Backing up\u2026';renderCloud();NAT.cloudBackup(false).then(r=>done(r.ok?'Backed up.':r.conflict?'':(r.error||'Backup failed.')))}
+ else if(id==='cKeepLocal')NAT.cloudBackup(true).then(r=>done(r.ok?'Your data replaced the cloud copy.':(r.error||'Backup failed.')))
+ else if(id==='cUseCloud'||id==='cRestore')NAT.cloudPull().then(r=>{if(r.ok&&r.json){applyCloud(r.json);done('Restored from your cloud backup.')}else done(r.ok?'There is no cloud backup yet.':(r.error||'Restore failed.'))})}
 let UPD=null,UPS='';
 function renderUpd(){const m=$('updMsg');if(!m)return;
   m.innerHTML=UPS==='checking'?'Checking\u2026':UPS==='error'?'Could not update. Check your internet connection and try again.':UPS==='installing'?'Downloading the update. The app restarts when it is ready\u2026':UPD?(UPD.patch||UPD.demo?`Version ${esc(UPD.latest)} is available: a small update${UPD.patch?' (about '+(UPD.patch.size/1e6).toFixed(1)+' MB)':''}. <button class="btn" id="updGo">Install update</button> The app restarts.`:`Version ${esc(UPD.latest)} is available as a full download. <button class="btn" id="updGo">Download</button>`)+(UPD.demo?' (preview example)':''):UPS==='latest'?'You have the latest version.':''}
@@ -521,6 +539,7 @@ function notifyDue(){const td=key(new Date());if(S.ln===td)return;const c=cols()
 if(NAT){document.documentElement.classList.add('native');let on=false;
  document.addEventListener('mousemove',e=>{const i=!!e.target.closest('#bubble,#bar,#studio,#toast');if(i!==on){on=i;NAT.interactive(i)}});
  NAT.onToggle(f=>toggle(f));
+ if(NAT.onCloud)NAT.onCloud((k,p)=>{if(k==='apply'){applyCloud(p);CL.msg='Updated from your cloud backup.'}cloudRefresh()});
  addEventListener('blur',()=>{if($('studio').hidden&&$('bar').classList.contains('open'))toggle(false)});
  notifyDue();setInterval(notifyDue,36e5);setTimeout(()=>checkUpd(false),5000);setInterval(()=>checkUpd(false),432e5)}
 </script>

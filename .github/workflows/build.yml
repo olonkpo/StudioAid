@@ -20,6 +20,11 @@ jobs:
           node-version: 20
       - run: npm version 0.1.${{ github.run_number }} --no-git-tag-version --allow-same-version
       - run: npm install
+      - name: Write cloud sign-in settings
+        run: node -e "require('fs').writeFileSync('cloud-config.js','module.exports='+JSON.stringify({clientId:process.env.GID||'',clientSecret:process.env.GSEC||''}))"
+        env:
+          GID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GSEC: ${{ secrets.GOOGLE_CLIENT_SECRET }}
       - run: npm run dist
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
@@ -42,12 +47,17 @@ jobs:
         with:
           path: installers
           merge-multiple: true
+      - name: Write cloud sign-in settings
+        run: node -e "require('fs').writeFileSync('cloud-config.js','module.exports='+JSON.stringify({clientId:process.env.GID||'',clientSecret:process.env.GSEC||''}))"
+        env:
+          GID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GSEC: ${{ secrets.GOOGLE_CLIENT_SECRET }}
       - name: Build the small update package
         run: |
           VER="0.1.${{ github.run_number }}"
           npm version "$VER" --no-git-tag-version --allow-same-version
           mkdir pkg
-          cp package.json core.js updater.js preload.js index.html pkg/
+          cp package.json core.js updater.js cloud.js cloud-config.js preload.js index.html pkg/
           cp -r assets pkg/assets
           npx --yes @electron/asar pack pkg installers/app-update.asar
           SHA=$(sha256sum installers/app-update.asar | cut -d' ' -f1)

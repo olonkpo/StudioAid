@@ -1,4 +1,6 @@
-const { app, BrowserWindow, Tray, Menu, globalShortcut, ipcMain, screen, shell, Notification, nativeImage, net } = require('electron');
+const { app, BrowserWindow, Tray, Menu, globalShortcut, ipcMain, screen, shell, Notification, nativeImage, net, safeStorage } = require('electron');
+const os = require('os');
+const makeCloud = require('./cloud');
 const path = require('path');
 const fs = require('fs');
 const makeUpdater = require('./updater');
@@ -62,6 +64,60 @@ function saveData(json) {
   } catch (e) { console.error('save failed', e); }
 }
 
+// ---- Cloud backup (Google Drive)
+let cfgCloud = {}; try { cfgCloud = require('./cloud-config'); } catch (_) {}
+const testEp = (!app.isPackaged && process.env.STUDIOAID_TEST_ENDPOINTS) ? JSON.parse(process.env.STUDIOAID_TEST_ENDPOINTS) : undefined; // test hook, development only
+let cmem = null;
+const cloudFile = () => path.join(app.getPath('userData'), 'cloud.bin');
+const cstore = {
+  get() { if (cmem) return cmem; try { const b = fs.readFileSync(cloudFile()); cmem = JSON.parse(safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(b) : b.toString()); } catch (_) { cmem = {}; } return cmem; },
+  set(o) { cmem = o; try { fs.mkdirSync(app.getPath('userData'), { recursive: true }); const enc = safeStorage.isEncryptionAvailable(); const s = JSON.stringify(enc ? o : Object.assign({}, o, { refresh_token: '' })); fs.writeFileSync(cloudFile(), enc ? safeStorage.encryptString(s) : Buffer.from(s)); } catch (_) {} }
+};
+const cloud = makeCloud({
+  clientId: process.env.STUDIOAID_GOOGLE_ID || cfgCloud.clientId || '', clientSecret: process.env.STUDIOAID_GOOGLE_SECRET || cfgCloud.clientSecret || '',
+  fetch: (u, o) => net.fetch(u, o), store: cstore, device: os.hostname(), endpoints: testEp,
+  openUrl: u => { if (testEp && process.env.STUDIOAID_TEST_OPENFILE) fs.writeFileSync(process.env.STUDIOAID_TEST_OPENFILE, u); else shell.openExternal(u); }
+});
+const readData = () => { try { return fs.readFileSync(dataFile(), 'utf8'); } catch (_) { return null; } };
+const send = (ch, p) => { if (alive()) win.webContents.send(ch, p); };
+let bt;
+function scheduleBackup() { // back up 20 seconds after the last change
+  const s = cloud.status(); if (!s.signedIn) return;
+  cloud.markDirty(); if (s.conflict) return;
+  clearTimeout(bt);
+  bt = setTimeout(async () => { const json = readData(); if (!json) return; const r = await cloud.backup(json); send('cloud-event', { kind: r.ok ? 'backup' : r.conflict ? 'conflict' : 'error', error: r.error }); }, 20000);
+}
+async function startupSync() {
+  const s = cloud.status(); if (!s.signedIn || s.conflict) return;
+  const c = await cloud.check(); if (!c.ok) return;
+  if (c.state === 'newer') {
+    if (!s.dirty) { const p = await cloud.pull(); if (p.ok && p.json) send('cloud-apply', p.json); }
+    else { cloud.setConflict(); send('cloud-event', { kind: 'conflict' }); }
+  } else if (c.state === 'none' || (c.state === 'same' && s.dirty)) {
+    const json = readData(); if (json) { const r = await cloud.backup(json); send('cloud-event', { kind: r.ok ? 'backup' : 'error', error: r.error }); }
+  }
+}
+ipcMain.handle('cloud-status', () => cloud.status());
+ipcMain.handle('cloud-signin', async () => {
+  const r = await cloud.signIn(); if (!r.ok) return r;
+  const c = await cloud.check();
+  if (c.ok && c.state === 'none') { const json = readData(); if (json) await cloud.backup(json); }
+  else if (c.ok && c.state === 'newer') {
+    let local = null; try { local = JSON.parse(readData() || 'null'); } catch (_) {}
+    if (!local || !(local.projects || []).length) { const p = await cloud.pull(); if (p.ok && p.json) send('cloud-apply', p.json); } // new computer: just fetch it
+    else cloud.setConflict(); // both sides have data: let the user choose
+  }
+  return r;
+});
+ipcMain.handle('cloud-signout', () => cloud.signOut());
+ipcMain.handle('cloud-check', () => cloud.check());
+ipcMain.handle('cloud-backup', async (_e, force) => { const json = readData(); if (!json) return { ok: false, error: 'Nothing to back up yet.' }; return cloud.backup(json, { force }); });
+ipcMain.handle('cloud-pull', async () => {
+  const r = await cloud.pull();
+  if (r.ok && r.json) { try { fs.mkdirSync(backupDir(), { recursive: true }); const cur = readData(); if (cur) fs.writeFileSync(path.join(backupDir(), 'before-cloud-restore-' + Date.now() + '.json'), cur); } catch (_) {} } // safety copy
+  return r;
+});
+
 // ---- Updates
 const REPO = 'olonkpo/StudioAid';
 const updatesDir = () => path.join(app.getPath('userData'), 'updates');
@@ -83,7 +139,7 @@ ipcMain.on('set-dock', (_e, on) => { prefs.dock = !!on; savePrefs(); restartApp(
 ipcMain.on('open-external', (_e, url) => { if (typeof url === 'string' && url.startsWith(`https://github.com/${REPO}/`)) shell.openExternal(url); });
 
 ipcMain.on('interactive', (_e, on) => alive() && win.setIgnoreMouseEvents(!on, { forward: true }));
-ipcMain.on('save', (_e, json) => saveData(json));
+ipcMain.on('save', (_e, json) => { saveData(json); scheduleBackup(); });
 ipcMain.on('load', e => { try { e.returnValue = fs.existsSync(dataFile()) ? fs.readFileSync(dataFile(), 'utf8') : null; } catch (_) { e.returnValue = null; } });
 ipcMain.on('notify', (_e, { title, body }) => {
   if (!Notification.isSupported()) return;
@@ -103,6 +159,8 @@ app.whenReady().then(() => {
     if (prefs.dock) { app.dock.show(); app.dock.setMenu(Menu.buildFromTemplate([{ label: 'Show or hide panel', click: togglePanel }])); } else app.dock.hide();
   }
   createWindow();
+  win.webContents.once('did-finish-load', () => setTimeout(startupSync, 3000));
+  setInterval(startupSync, 30 * 60 * 1000);
   const readyAt = Date.now();
   app.on('activate', () => { if (Date.now() - readyAt > 2000) togglePanel(); }); // clicking the Dock icon
 
