@@ -206,7 +206,7 @@ test('the launcher falls back to the previous healthy update after three failed 
   const context = { global: {}, __dirname: root, console, require(name) {
     if (name === 'electron') return { app: { getPath: () => dir } };
     if (name === './package.json') return { version: '0.1.0' };
-    if (name.endsWith('.asar/core.js')) { loaded = name; return {}; }
+    if (name.endsWith(path.join('.asar', 'core.js'))) { loaded = name; return {}; }
     return require(name);
   } };
   vm.createContext(context); vm.runInContext(fs.readFileSync(path.join(root, 'main.js'), 'utf8'), context);
