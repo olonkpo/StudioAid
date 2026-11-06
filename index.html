@@ -239,20 +239,33 @@ textarea.sin{resize:none;font-size:13.5px}.tall{align-items:flex-start;padding-t
 #saveStatus[hidden]{display:none}#saveStatus button{color:inherit;font:inherit;background:none;border:1px solid var(--line);border-radius:6px;padding:6px 10px;white-space:nowrap}
 .invoice-preview .paper2{margin-top:0;box-shadow:none}.invoice-preview .pp-band{padding:20px 16px;flex-wrap:wrap}.invoice-preview .pp-ttl{font-size:28px;overflow-wrap:anywhere}.invoice-preview .pp-logo{width:60px;height:60px}.invoice-preview .pp-body{padding:18px 12px 8px}.invoice-preview .pp-lines{table-layout:fixed}.invoice-preview .pp-lines td,.invoice-preview .pp-lines th{overflow-wrap:anywhere;font-size:10px;letter-spacing:0;padding:9px 3px}.invoice-preview .pp-sum{max-width:100%}.invoice-preview .pp-grey{padding:16px 12px 6px}.invoice-preview .pp-foot{padding:16px 12px;grid-template-columns:1fr}.invoice-preview .pp-foot div:last-child{text-align:left}.invoice-preview .pp-bn{text-align:left}
 
+
+/* Project timelines, booking milestones, and keyboard quick actions. */
+.board.timeline-board{overflow-x:auto}.timeline-board .bg{min-width:1450px}.cell.unavailable{opacity:.45;display:grid;place-items:center}
+.booking-strip{display:flex;align-items:center;flex-wrap:wrap;gap:20px;border:1px solid var(--line);border-radius:10px;padding:14px;margin:16px 0;background:var(--panel)}
+.booking-strip label{min-width:160px;flex:1;margin:0}.booking-strip>div{display:grid;gap:3px;flex:1}.booking-strip small{font-size:12px}.booking-plan{border:1px solid var(--line);padding:16px;border-radius:10px;margin:16px 0;background:var(--panel)}.booking-plan summary{font-weight:600;margin-bottom:14px}.booking-milestones{display:flex;flex-wrap:wrap;gap:20px;padding:12px 0}.booking-milestones span{display:grid;gap:5px;font-size:12px;color:var(--mute)}.booking-milestones b{font-size:16px;color:var(--ink)}
+.timeline-controls{display:flex;gap:14px;align-items:end;flex-wrap:wrap;margin:18px 0}.timeline-controls label{flex:1;min-width:180px;margin:0}.timeline-controls .btn{margin-bottom:8px}.timeline-step .wn{min-width:130px}.timeline-step .wn small{display:block;font-size:11px;margin-top:4px}.timeline-step{flex-wrap:wrap}.timeline-step .dd{width:145px!important}.timeline-step .btn{font-size:11px}.booking-tag{font-size:11px;color:var(--mute);margin-top:6px}.projects-title{display:flex;justify-content:space-between;align-items:center;gap:12px}.booking-filters{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}.booking-filters button{font-size:12px}.booking-filters [aria-pressed=true]{background:var(--ink);color:var(--bg)}
+#quickDialog{position:fixed;inset:0;z-index:100;display:flex;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.36);padding:clamp(16px,8vh,70px) 16px;overflow:auto}#quickDialog[hidden]{display:none}.quick-panel{width:min(680px,100%);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 20px 70px rgba(0,0,0,.3);box-sizing:border-box}.quick-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.quick-heading h2{margin:0;font-size:21px}.quick-panel button,.quick-panel input,.quick-panel select{font:inherit;color:var(--ink)}.quick-heading button,.quick-tabs button{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:8px 12px;cursor:pointer}.quick-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}.quick-tabs button{font-size:12px}.quick-tabs [aria-pressed=true]{background:var(--ink);color:var(--bg)}.quick-panel label{display:grid;gap:6px;font-size:12px;margin-bottom:12px}.quick-panel input,.quick-panel select{background:var(--panel);border:1px solid var(--line);border-radius:8px;width:100%;min-width:0;box-sizing:border-box;padding:11px 12px;margin:0}.quick-panel #quickQuery{font-size:16px;margin-bottom:14px}.quick-result{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;background:none;border:0;border-radius:8px;padding:12px;text-align:left;cursor:pointer}.quick-result span:first-child{min-width:0}.quick-result b,.quick-result small{display:block;overflow-wrap:anywhere}.quick-result small{font-size:12px;color:var(--mute);margin-top:4px}.quick-result.is-active{background:var(--chip)}.quick-kind{font-size:11px;color:var(--mute);flex:none;text-transform:capitalize}.quick-empty{padding:20px 0;color:var(--mute);font-size:13px}.quick-foot{border-top:1px solid var(--line);margin-top:18px;padding-top:12px;font-size:11px;color:var(--mute)}.quick-panel .spb{margin-top:16px;color:var(--bg)}.quick-project{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}.quick-project h3{margin:0}.quick-panel #quickError{color:#d64545;font-size:13px;margin-top:12px}.quick-panel .g2{grid-template-columns:1fr 1fr}
+@media(max-width:540px){.quick-panel{padding:16px}.quick-panel .g2{grid-template-columns:1fr}.quick-panel input,.quick-panel select{font-size:16px}.quick-tabs button{flex:1}.booking-strip{gap:12px}.timeline-step .cnw{order:5}.timeline-step .dd{flex:1}}
+
 </style>
 </head>
 <body>
 <div class="desk"><div><img class="app-mark welcome-mark" src="assets/icon.png" alt=""><b>StudioAid</b>Tap the bubble or use your keyboard shortcut to open your studio.</div></div>
 <button id="bubble" aria-label="Open StudioAid panel" aria-expanded="false"></button>
 <div id="bar" role="dialog" aria-label="StudioAid panel">
-<div class="mt" id="mt"><img class="app-mark toolbar-mark" src="assets/icon.png" alt="StudioAid"><button class="btn" data-v="B">Board</button><button class="btn" data-v="C">Calendar</button><button class="btn" data-ws="home">Studio</button><span class="sp"></span><span class="sum" id="sum"></span><button class="btn gear" data-v="S" aria-label="Settings" title="Settings">⚙</button></div>
+<div class="mt" id="mt"><img class="app-mark toolbar-mark" src="assets/icon.png" alt="StudioAid"><button class="btn" data-v="B">Board</button><button class="btn" data-v="C">Calendar</button><button class="btn" data-ws="home">Studio</button><button class="btn" data-quick="search" aria-label="Quick actions">Search / actions</button><span class="sp"></span><span class="sum" id="sum"></span><button class="btn gear" data-v="S" aria-label="Settings" title="Settings">⚙</button></div>
 <section id="vB" hidden><div id="bk"></div><div id="due"></div><div class="tb"><input id="q" placeholder="Search projects" aria-label="Search projects"><select id="vf" aria-label="Show"><option value="act">Active</option><option value="arch">Archived</option><option value="all">All</option></select><select id="sf" aria-label="Sort"><option value="add">Added</option><option value="date">Date</option><option value="name">Name</option></select></div><div id="board" class="board"></div><div class="addrow"><input id="pn" placeholder="+ New project" aria-label="New project name"><select id="pt" aria-label="Template"><option value="">Blank</option><option>Wedding</option><option>Graduation</option><option>Event</option><option>Tour + photo bundle</option></select></div></section>
 <section id="vC" hidden><div id="cal"></div></section>
 <section id="set" class="set" hidden></section></div>
 <div id="toast" hidden></div><div id="saveStatus" role="status" hidden><span id="saveStatusText"></span><button id="retrySave" type="button">Retry save</button></div>
+<div id="quickDialog" role="dialog" aria-modal="true" aria-labelledby="quickTitle" hidden><div class="quick-panel"><div class="quick-heading"><h2 id="quickTitle">Quick actions</h2><button id="quickClose" type="button" aria-label="Close quick actions">Close</button></div><div class="quick-tabs" role="group" aria-label="Quick action type"><button type="button" data-qmode="search">Search</button><button type="button" data-qmode="new">New booking</button><button type="button" data-qmode="payment">Record payment</button><button type="button" data-qmode="task">Complete task</button></div><label id="quickSearchLabel" for="quickQuery">Search projects, clients, invoices and documents</label><input id="quickQuery" role="combobox" aria-autocomplete="list" aria-expanded="false" type="search" autocomplete="off" placeholder="Start typing…" aria-controls="quickResults"><div id="quickBody"></div><p id="quickError" role="alert" hidden></p><div class="quick-foot">Ctrl / ⌘ K to open · Esc to close</div></div></div>
 <div id="studio" hidden role="dialog" aria-label="Project studio"><div class="st-side" id="stSide"></div><div class="st-main pv" id="stMain"></div></div>
 <script src="studio-data.js"></script>
 <script src="studio-model.js"></script>
+<script src="studio-workflow.js"></script>
+<script src="studio-booking.js"></script>
+<script src="studio-search.js"></script>
 <script>
 const PH=[{n:'Booked',c:'#3b6ea5',s:['Confirm Booking','Send Reminder']},{n:'Processing',c:'#6a5aa5',s:['Meeting','Event','Completion','Delivery']},{n:'Post-project',c:'#2f8a6b',s:['Social Posts','Follow-up','Referrals']}];
 const DEF={theme:'auto',size:44,fade:true,cur:'GHS',me:'Ebenezer',cc:'233'};
@@ -291,33 +304,46 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const fmt=k=>{const[y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})};
-const cols=()=>S.phases.flatMap(p=>p.s);
+const projectPhases=p=>StudioWorkflow.getPhases(p,S.phases);
+const cols=p=>StudioWorkflow.getSteps(p,S.phases);
+let bookingFilter='all';
+function boardPhases(projects){const groups=[];projects.forEach(p=>projectPhases(p).forEach(phase=>{let group=groups.find(x=>x.n===phase.n);if(!group){group={n:phase.n,c:phase.c,s:[]};groups.push(group)}phase.s.forEach(step=>{if(!groups.some(g=>g.s.includes(step)))group.s.push(step)})}));return groups.filter(group=>group.s.length)}
+const activeWork=p=>!p.arch&&(!p.booking||p.booking.stage!=='canceled');
+const bookingSummary=p=>StudioBooking.summary(p,INV(),key(new Date()));
+const stageOptions=value=>StudioBooking.stages.map(stage=>`<option value="${stage.id}"${stage.id===value?' selected':''}>${stage.label}</option>`).join('');
+const presetOptions=value=>'<option value="">Studio default workflow</option>'+StudioWorkflow.presets().map(preset=>`<option value="${preset.id}"${preset.id===value?' selected':''}>${preset.name}</option>`).join('');
+function bookingStrip(p){const b=bookingSummary(p);return `<div class="booking-strip"><label>Booking stage<select data-book="stage" aria-label="Booking stage">${stageOptions(b.stage)}</select></label><div><span class="m">${b.depositRequired>0?'Deposit remaining':'Outstanding balance'}</span><b>${esc(invoiceMoney(p,b.depositRequired>0?b.depositRemaining:b.balance))}</b><small class="${b.overdue?'od':'m'}">${b.stage==='canceled'||p.invCancel?'Booking canceled · collection paused':b.nextDue?(b.overdue?'Overdue · ':'Next due · ')+fmt(b.nextDue):b.depositRequired>0&&b.depositRemaining===0?'Deposit received':b.balance===0?'No payment outstanding':'No payment date set'}</small></div><button class="btn" data-act="paymentplan">Payment plan</button></div>`}
+function paymentPlan(p){const b=bookingSummary(p),plan=p.booking||{depositType:'percent',depositValue:0,depositDue:'',balanceDue:''};return `<details class="booking-plan" open><summary>Booking & payment plan</summary><div class="g2"><label>Booking stage<select data-book="stage" aria-label="Booking stage">${stageOptions(b.stage)}</select></label><label>Deposit calculation<select data-book="depositType" aria-label="Deposit calculation"><option value="percent"${plan.depositType==='percent'?' selected':''}>Percentage of invoice total</option><option value="fixed"${plan.depositType==='fixed'?' selected':''}>Fixed amount</option></select></label><label>${plan.depositType==='percent'?'Deposit percentage':'Deposit amount'}<input data-book="depositValue" type="number" min="0" ${plan.depositType==='percent'?'max="100"':''} step="0.01" value="${plan.depositValue}"></label><label>Deposit due<input data-book="depositDue" type="date" value="${plan.depositDue}"></label><label>Balance due<input data-book="balanceDue" type="date" value="${plan.balanceDue}"></label></div><div id="bookingAmounts">${paymentPlanAmounts(p)}</div><p id="bookingError" role="alert" hidden></p></details>`}
+function paymentPlanAmounts(p){const b=bookingSummary(p);return `<div class="booking-milestones"><span>Deposit required <b>${esc(invoiceMoney(p,b.depositRequired))}</b></span><span>Received toward deposit <b>${esc(invoiceMoney(p,b.depositPaid))}</b></span><span>Deposit remaining <b>${esc(invoiceMoney(p,b.depositRemaining))}</b></span></div><p class="${b.overdue?'od':'m'}">${b.nextAmount>0?'Next payment: '+esc(invoiceMoney(p,b.nextAmount))+(b.nextDue?' · '+fmt(b.nextDue):' · no date set'):'No payment outstanding'}</p><p class="shelp">${b.stage==='canceled'||p.invCancel?'This booking is canceled. Payment history is kept and collection is paused.':b.depositRequired>0?(b.readyToBook?'Deposit received. You can mark this booking as booked.':'Record payments below as you receive them.'): 'Set a deposit to track the amount needed to confirm a booking.'} Booking stages are changed by you.</p>`}
+function changeBooking(p,key,value){try{const patch={[key]:key==='depositValue'?(value===''?0:Number(value)):value};if(key==='depositType'&&value==='percent'&&p.booking&&p.booking.depositValue>100)patch.depositValue=100;StudioBooking.configure(p,patch);save();if($('bookingAmounts'))$('bookingAmounts').innerHTML=paymentPlanAmounts(p);if($('bookingError'))$('bookingError').hidden=true;return true}catch(error){if($('bookingError')){$('bookingError').textContent=error.message;$('bookingError').hidden=false}else toast(error.message,'OK',()=>{});return false}}
+
 let view=new Date(),hl=null;view.setDate(1);S.view='B';S.all=true;if(S.cfg.size===58)S.cfg.size=44;
-function stat(p){const c=cols(),d=c.filter(x=>p.cells[x]==='done').length;return d===c.length?'--done':c.some(x=>p.cells[x])?'--start':'--mute'}
+function stat(p){const c=cols(p),d=c.filter(x=>p.cells[x]==='done').length;return d===c.length?'--done':c.some(x=>p.cells[x])?'--start':'--mute'}
 function applyCfg(){const r=document.documentElement;S.cfg.theme==='auto'?r.removeAttribute('data-theme'):r.setAttribute('data-theme',S.cfg.theme);
   const b=$('bubble');b.style.width=b.style.height=S.cfg.size+'px';b.style.fontSize=S.cfg.size*.32+'px'}
 function renderBoard(){
-  const c=cols(),n=c.length,list=vis(),tot=list.reduce((a,p)=>a+(+p.amount||0),0),td=key(new Date()),lb=S.lb;
+  const list=vis(),phases=boardPhases(list),c=phases.flatMap(ph=>ph.s),n=c.length,td=key(new Date()),lb=S.lb;
+  $('board').classList.toggle('timeline-board',list.some(p=>p.workflow));
   $('sum').textContent=list.length+' · '+currencySummary(list,p=>calc(p).total);
   $('bk').innerHTML=S.projects.length&&!NAT&&(!lb||Date.now()-lb>6048e5)?`<button class="bkn" data-v="S">${lb?'Last backup was over a week ago':'You have not backed up yet'} \u00b7 Back up now</button>`:'';
-  const due=[];S.projects.forEach(p=>{if(p.arch)return;Object.entries(p.due||{}).forEach(([x,d])=>{if(d<=td&&p.cells[x]!=='done'&&c.includes(x))due.push({p,x,d})})});due.sort((a,b)=>a.d<b.d?-1:1);
+  const due=[];S.projects.forEach(p=>{if(!activeWork(p))return;Object.entries(p.due||{}).forEach(([x,d])=>{if(d<=td&&p.cells[x]!=='done'&&cols(p).includes(x))due.push({p,x,d})})});due.sort((a,b)=>a.d<b.d?-1:1);
   $('due').innerHTML=due.length?`<div class="duel"><b>${due.length} due or overdue</b>`+due.slice(0,3).map(o=>`<button data-open="${o.p.id}" data-sec0="wf" class="${o.d<td?'od':''}">${esc(o.p.name)} \u2014 ${esc(o.x)} \u00b7 ${o.d<td?'overdue':'today'}</button>`).join('')+(due.length>3?`<span class="m">+${due.length-3} more</span>`:'')+'</div>':'';
   if(!list.length){$('board').innerHTML='<div class="empty">'+(S.projects.length?'No projects match.':'No projects yet. Add one below.')+'</div>';return}
   $('board').innerHTML=`<div class="bg all" style="grid-template-columns:minmax(130px,1.5fr) repeat(${n},minmax(0,1fr))"><div></div>`+
-  S.phases.map(p=>`<div class="ph" style="--c:${p.c};grid-column:span ${p.s.length}">${esc(p.n)}</div>`).join('')+'<div></div>'+
+  phases.map(p=>`<div class="ph" style="--c:${p.c};grid-column:span ${p.s.length}">${esc(p.n)}</div>`).join('')+'<div></div>'+
   c.map(x=>`<div class="sn">${esc(x)}</div>`).join('')+
-  list.map(p=>`<div class="pc${hl===p.id?' hl':''}" id="r${p.id}"><i class="dt" style="background:var(${stat(p)})"></i><button class="pn" data-open="${p.id}" aria-label="Open ${esc(p.name)} details"><b>${esc(p.name)}</b><span class="m">${p.date?fmt(p.date):'No date'}</span></button><button class="x" data-del="${p.id}" aria-label="Delete ${esc(p.name)}">\u2715</button></div>`+
-    c.map(x=>{const st=p.cells[x]||'',du=(p.due||{})[x],ct=(p.counts||{})[x],od=du&&du<td&&st!=='done',lab=ct&&ct.t&&st!=='done'?(ct.d||0)+'/'+ct.t:LBL[st];return `<button class="cell${od?' ovd':''}" data-s="${st}" data-p="${p.id}" data-c="${esc(x)}" title="${du?'Due '+fmt(du):''}" aria-label="${esc(p.name)}, ${esc(x)}: ${st||'not started'}${od?', overdue':''}">${lab}</button>`}).join('')).join('')+'</div>';
+  list.map(p=>`<div class="pc${hl===p.id?' hl':''}" id="r${p.id}"><i class="dt" style="background:var(${stat(p)})"></i><button class="pn" data-open="${p.id}" aria-label="Open ${esc(p.name)} details"><b>${esc(p.name)}</b><span class="m">${p.date?fmt(p.date):'No date'} · ${esc(bookingSummary(p).label)}</span></button><button class="x" data-del="${p.id}" aria-label="Delete ${esc(p.name)}">\u2715</button></div>`+
+    c.map(x=>{if(!cols(p).includes(x))return '<span class="cell unavailable" aria-label="Not part of this workflow">—</span>';const st=p.cells[x]||'',du=(p.due||{})[x],ct=(p.counts||{})[x],od=du&&du<td&&st!=='done',lab=ct&&ct.t&&st!=='done'?(ct.d||0)+'/'+ct.t:LBL[st];return `<button class="cell${od?' ovd':''}" data-s="${st}" data-p="${p.id}" data-c="${esc(x)}" title="${du?'Due '+fmt(du):''}" aria-label="${esc(p.name)}, ${esc(x)}: ${st||'not started'}${od?', overdue':''}">${lab}</button>`}).join('')).join('')+'</div>';
 }
 function renderCal(){
   const y=view.getFullYear(),m=view.getMonth(),start=new Date(y,m,1-view.getDay()),tk=key(new Date());
   let h=`<div class="cal-h"><button class="btn" data-mv="-1" aria-label="Previous month">‹</button><span class="mon">${view.toLocaleDateString(undefined,{month:'long',year:'numeric'})}</span><button class="btn" data-mv="1" aria-label="Next month">›</button><button class="btn" data-mv="0">Today</button></div><div class="dow">${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div>${d}</div>`).join('')}</div><div class="grid">`;
   for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);if(i>=35&&d.getMonth()!==m)break;const k=key(d);
-    h+=`<div class="day${d.getMonth()!==m?' out':''}${k===tk?' td':''}"><span class="n">${d.getDate()}</span>`+S.projects.filter(p=>!p.arch&&p.date===k).map(p=>`<button class="pill" data-hl="${p.id}" style="--c:var(${stat(p)})">${esc(p.name)}</button>`).join('')+S.projects.filter(p=>!p.arch).flatMap(p=>Object.entries(p.due||{}).filter(([x,dd])=>dd===k&&p.cells[x]!=='done').map(([x])=>`<button class="pill duep" data-open="${p.id}" data-sec0="wf">${esc(p.name)}: ${esc(x)}</button>`)).join('')+'</div>'}
+    h+=`<div class="day${d.getMonth()!==m?' out':''}${k===tk?' td':''}"><span class="n">${d.getDate()}</span>`+S.projects.filter(p=>activeWork(p)&&p.date===k).map(p=>`<button class="pill" data-hl="${p.id}" style="--c:var(${stat(p)})">${esc(p.name)}</button>`).join('')+S.projects.filter(activeWork).flatMap(p=>Object.entries(p.due||{}).filter(([x,dd])=>dd===k&&p.cells[x]!=='done'&&cols(p).includes(x)).map(([x])=>`<button class="pill duep" data-open="${p.id}" data-sec0="wf">${esc(p.name)}: ${esc(x)}</button>`)).join('')+'</div>'}
   $('cal').innerHTML=h+'</div>';
 }
 function renderBar(){
-  const cs=cols(),open=S.projects.filter(p=>!p.arch).reduce((a,p)=>a+cs.filter(x=>p.cells[x]!=='done').length,0);
+  const open=S.projects.filter(p=>!p.arch&&(!p.booking||p.booking.stage!=='canceled')).reduce((a,p)=>a+cols(p).filter(x=>p.cells[x]!=='done').length,0);
   $('bar').style.setProperty('--c','var(--ink)');$('bubble').style.setProperty('--c','#f7b52a');
   $('bubble').innerHTML=`<img src="${APP_LOGO}" alt="">`+(open?`<small>${open}</small>`:'');
 }
@@ -326,11 +352,11 @@ const TEMPL={'Wedding':{shots:['Getting ready','Ceremony','Couple portraits','Fa
 'Graduation':{shots:['Portraits in gown','Family photos','Friends group','Diploma moment','Campus backdrop'],gear:['Camera and standard lens','Reflector','Spare batteries','Memory cards']},
 'Event':{shots:['Venue overview','Guest candids','Speeches','Key moments','Group photos','Details'],gear:['Camera','Flash','Spare batteries','Memory cards']},
 'Tour + photo bundle':{shots:['Arrival','Landmarks','Candid moments','Group photo','Golden hour','Portraits'],gear:['Camera and lenses','Power bank','Rain cover','Memory cards']}};
-function addProject(name,amount,date,tp){name=name.trim();if(!name)return;const o={id:Date.now()+Math.random().toString(36).slice(2,5),name,amount:+amount||0,date:date||'',cells:{}};let T=TEMPL[tp];const pk=(tp||'').startsWith('pk:')?(S.packages||[]).find(x=>x.id===tp.slice(3)):null;if(pk){o.amount=+pk.price||0;o.pkg=pk.name;o.items=[{d:pk.name,price:+pk.price||0,qty:1}];T=TEMPL[pk.starter]}if(T){o.shots=T.shots.map(t=>({t,d:false}));o.gear=T.gear.map(t=>({t,d:false}))}S.projects.push(o);save();render()}
+function addProject(name,amount,date,tp){name=name.trim();if(!name)return;const o={id:Date.now()+Math.random().toString(36).slice(2,5),name,amount:+amount||0,date:date||'',cells:{}};let T=TEMPL[tp];const pk=(tp||'').startsWith('pk:')?(S.packages||[]).find(x=>x.id===tp.slice(3)):null;if(pk){o.amount=+pk.price||0;o.pkg=pk.name;o.items=[{d:pk.name,price:+pk.price||0,qty:1}];T=TEMPL[pk.starter]}if(T){o.shots=T.shots.map(t=>({t,d:false}));o.gear=T.gear.map(t=>({t,d:false}))}S.projects.push(o);StudioBooking.configure(o,{stage:'enquiry'});save();render();return o}
 let tT;function toast(m,lbl,fn){const t=$('toast');t.innerHTML=`<span>${esc(m)}</span><button>${lbl}</button>`;t.hidden=false;t.querySelector('button').onclick=()=>{fn();t.hidden=true};clearTimeout(tT);tT=setTimeout(()=>t.hidden=true,8000)}
 function delProject(id){const i=S.projects.findIndex(p=>p.id===id);if(i<0)return;const p=S.projects.splice(i,1)[0];toast('Deleted '+p.name,'Undo',()=>{S.projects.splice(Math.min(i,S.projects.length),0,p);save();render()})}
-function migrate(o,n){if(o.length!==n.length)return;o.forEach((x,i)=>{if(x===n[i]||o.includes(n[i]))return;S.projects.forEach(p=>['cells','due','counts'].forEach(k=>{if(p[k]&&x in p[k]){p[k][n[i]]=p[k][x];delete p[k][x]}}))})}
-function vis(){const q=(S.q||'').toLowerCase(),vf=S.vf||'act';let a=S.projects.filter(p=>(vf==='all'||(vf==='arch')===!!p.arch)&&p.name.toLowerCase().includes(q));const sf=S.sf||'add';if(sf==='date')a=a.slice().sort((x,y)=>(x.date||'9')<(y.date||'9')?-1:1);else if(sf==='name')a=a.slice().sort((x,y)=>x.name.localeCompare(y.name));return a}
+function migrate(o,n){if(o.length!==n.length)return;o.forEach((x,i)=>{if(x===n[i]||o.includes(n[i]))return;S.projects.filter(p=>!p.workflow).forEach(p=>['cells','due','counts'].forEach(k=>{if(p[k]&&x in p[k]){p[k][n[i]]=p[k][x];delete p[k][x]}}))})}
+function vis(){const q=(S.q||'').toLowerCase(),vf=S.vf||'act';let a=S.projects.filter(p=>(vf==='all'||(vf==='arch'?!!p.arch:activeWork(p)))&&p.name.toLowerCase().includes(q));const sf=S.sf||'add';if(sf==='date')a=a.slice().sort((x,y)=>(x.date||'9')<(y.date||'9')?-1:1);else if(sf==='name')a=a.slice().sort((x,y)=>x.name.localeCompare(y.name));return a}
 $('pn').onkeydown=e=>{if(e.key==='Enter'){addProject($('pn').value,0,key(new Date()),$('pt').value);$('pn').value=''}};
 $('board').onclick=e=>{const c=e.target.closest('.cell'),x=e.target.closest('[data-del]');
   if(c){const p=S.projects.find(p=>p.id===c.dataset.p),k=c.dataset.c,nx=ORD[(ORD.indexOf(p.cells[k]||'')+1)%4];nx?p.cells[k]=nx:delete p.cells[k]}
@@ -344,6 +370,7 @@ $('cal').onclick=e=>{const m=e.target.closest('[data-mv]'),h=e.target.closest('[
 $('bar').onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
   if(d.open){openStudio(d.open,d.sec0);return}
   if(d.ws){openWs(d.ws);return}
+  if(d.quick){openQuick(d.quick);return}
   if(d.v){S.view=d.v;if(d.v==='S')openSet('home');render();return}
   if(d.ph){if(d.ph==='all')S.all=true;else{S.all=false;S.phase=+d.ph}}
   else if(d.qp){const p=S.projects.find(p=>p.id===d.qp),k=d.qs,nx=ORD[(ORD.indexOf(p.cells[k]||'')+1)%4];nx?p.cells[k]=nx:delete p.cells[k]}else return;save();render();if(sp==='invoice'&&$('invMini'))$('invMini').innerHTML=miniInv()};
@@ -379,12 +406,12 @@ function paper(project){const I=StudioModel.invoiceDefaults(project,INV()),c=cal
  <div class="pp-sum"><div><span>Subtotal</span><b>${money2(c.sub)}</b></div>${c.disc?`<div><span>Discount</span><b>\u2212 ${money2(c.disc)}</b></div>`:''}${c.r?`<div><span>Tax (${c.r}%)</span><b>${money2(c.tax)}</b></div>`:''}<div class="tt"><span>Total</span><b>${money2(c.total)}</b></div>${c.paid?`<div><span>Paid</span><b>\u2212 ${money2(c.paid)}</b></div><div class="tt"><span>${c.bal<=0?'Paid in full':'Balance due'}</span><b>${money2(Math.max(c.bal,0))}</b></div>`:''}</div></div>
  <div class="pp-grey"><div class="pp-notes"><span class="lb">Notes</span>${p.invNote?nl(p.invNote):''}${I.pay?`<div class="pp-pay"><span class="lb">Payment details</span>${nl(I.pay)}</div>`:''}</div><div class="pp-thx">${esc(I.foot)}</div></div>
  <div class="pp-foot"><div>${nl(I.contact)}</div><div class="pp-bn">${esc(biz)}</div><div>${esc(I.social||'')}</div></div></div>`}
-const pickHTML=()=>{const q=pq.toLowerCase(),c=cols();return S.projects.filter(p=>!p.arch&&(p.name+' '+(p.client||'')).toLowerCase().includes(q)).map(p=>{const d=c.filter(x=>p.cells[x]==='done').length;return `<button class="pcard" data-open2="${p.id}"><b>${esc(p.name)}</b><span class="m">${esc(p.client||'No client')}${p.date?' \u00b7 '+fmt(p.date):''}</span><div class="prog2"><i style="width:${c.length?d/c.length*100:0}%"></i></div></button>`}).join('')||'<div class="m">No projects found.</div>'};
+const pickHTML=()=>{const q=pq.toLowerCase();return S.projects.filter(p=>!p.arch&&(bookingFilter==='all'||bookingSummary(p).stage===bookingFilter)&&(p.name+' '+(p.client||'')).toLowerCase().includes(q)).map(p=>{const c=cols(p),d=c.filter(x=>p.cells[x]==='done').length,b=bookingSummary(p);return `<button class="pcard" data-open2="${p.id}"><b>${esc(p.name)}</b><span class="m">${esc(p.client||'No client')}${p.date?' · '+fmt(p.date):''}</span><span class="booking-tag">${b.label}${b.depositRemaining>0?' · deposit pending':''}</span><div class="prog2"><i style="width:${c.length?d/c.length*100:0}%"></i></div></button>`}).join('')||'<div class="m">No projects found.</div>'};
 const V={
-ov(p){const c=cols(),d=c.filter(x=>p.cells[x]==='done').length,paid=calc(p).paid,nx=c.find(x=>p.cells[x]!=='done'),td=key(new Date());
+ov(p){const c=cols(p),d=c.filter(x=>p.cells[x]==='done').length,paid=calc(p).paid,nx=c.find(x=>p.cells[x]!=='done'),td=key(new Date());
  const due=c.filter(x=>p.due&&p.due[x]&&p.cells[x]!=='done').sort((a,b)=>p.due[a]<p.due[b]?-1:1).slice(0,5);
  return `<h2>${esc(p.name)}</h2><div class="m">${p.date?fmt(p.date):'No date'}${p.time?' \u00b7 '+esc(p.time):''}${p.location?' \u00b7 '+esc(p.location):''}${p.client?' \u00b7 '+esc(p.client):''}</div>
- <div class="prog2"><i style="width:${c.length?d/c.length*100:0}%"></i></div>
+ ${bookingStrip(p)}<div class="prog2"><i style="width:${c.length?d/c.length*100:0}%"></i></div>
  <div class="cards"><div><span class="m">Steps done</span><b>${d} of ${c.length}</b></div><div><span class="m">Amount</span><b>${formatMoney(calc(p).total,StudioModel.invoiceCurrency(p,S.cfg.cur))}</b></div><div><span class="m">Paid</span><b>${formatMoney(paid,StudioModel.invoiceCurrency(p,S.cfg.cur))}</b></div><div><span class="m">Balance</span><b>${formatMoney(calc(p).bal,StudioModel.invoiceCurrency(p,S.cfg.cur))}</b></div></div>
  <h3>Next up</h3>${nx?`<div class="row2"><b>${esc(nx)}</b><span class="m">${LBL[p.cells[nx]||'']||'Not started'}</span><span class="sp"></span><button class="btn" data-act="st" data-st="${esc(nx)}" data-v="started">Start</button><button class="btn" data-act="st" data-st="${esc(nx)}" data-v="done">Done</button></div>`:'<div class="m">Every step is done.</div>'}
  <h3>Due soon</h3>${due.length?due.map(x=>`<div class="row2"><span>${esc(x)}</span><span class="sp"></span><span class="${p.due[x]<td?'od':'m'}">${fmt(p.due[x])}</span></div>`).join(''):'<div class="m">No due dates set. Add them in Workflow.</div>'}
@@ -392,11 +419,10 @@ ov(p){const c=cols(),d=c.filter(x=>p.cells[x]==='done').length,paid=calc(p).paid
 cs(p){return `<h2>Client &amp; shoot</h2>${contactSel(p)}<div class="g2">${fld(p,'client','Client name')}${fld(p,'email','Email','email')}${fld(p,'phone','Phone / WhatsApp','tel')}${fld(p,'link','Gallery link','url')}${fld(p,'date','Date','date')}${fld(p,'time','Time','time')}${fld(p,'location','Location')}${fld(p,'pkg','Package')}</div>
  <label>Brief and deliverables<textarea data-f="brief" rows="3">${esc(p.brief||'')}</textarea></label>
  <div class="g2"><div>${lst(p,'shots','Shot list')}</div><div>${lst(p,'gear','Gear checklist')}</div></div>`},
-wf(p){const td=key(new Date());return `<h2>Workflow</h2>`+S.phases.map(ph=>`<h3 style="color:${ph.c}">${esc(ph.n)}</h3>`+ph.s.map(x=>{const st=p.cells[x]||'',du=(p.due||{})[x]||'',ct=(p.counts||{})[x]||{};
- return `<div class="row2"><span class="wn">${esc(x)}</span><button class="qb" data-s="${st}" data-act="cyc" data-st="${esc(x)}">${LBL[st]||'Not started'}</button><span class="cnw"><input type="number" min="0" class="cn" data-cn="${esc(x)}" data-k="d" value="${ct.d||''}" placeholder="0" aria-label="Photos done for ${esc(x)}">/<input type="number" min="0" class="cn" data-cn="${esc(x)}" data-k="t" value="${ct.t||''}" placeholder="total" aria-label="Photos total for ${esc(x)}"></span><input type="date" class="dd${du&&du<td&&st!=='done'?' od':''}" data-due="${esc(x)}" value="${du}" aria-label="Due date for ${esc(x)}"></div>`}).join('')).join('')},
-pay(p){const c=calc(p),paid=c.paid,bal=c.bal;return `<h2>Payments</h2><div class="cards"><div><span class="m">Total</span><b>${formatMoney(c.total,StudioModel.invoiceCurrency(p,S.cfg.cur))}</b></div><div><span class="m">Paid</span><b>${formatMoney(paid,StudioModel.invoiceCurrency(p,S.cfg.cur))}</b></div><div><span class="m">Balance</span><b class="${bal>0?'od':''}">${formatMoney(bal,StudioModel.invoiceCurrency(p,S.cfg.cur))}</b></div></div>
+wf(p){const td=key(new Date()),workflow=p.workflow;return `<h2>Workflow</h2><div class="timeline-controls"><label>Project timeline<select id="projectPreset" aria-label="Project timeline">${presetOptions(workflow&&workflow.preset)}</select></label><button class="btn" data-act="applypreset">Apply timeline</button><label>Shoot date<input type="date" data-f="date" value="${esc(p.date||'')}" aria-label="Timeline shoot date"></label></div><p class="shelp">${workflow?'Dates marked Automatic move with the shoot date. Manual and completed deadlines stay in place.':'Choose a timeline for this project. Your studio default steps stay available for projects without a preset.'}${!p.date?' Add a shoot date to schedule automatic deadlines.':''}</p>`+projectPhases(p).map(ph=>`<h3 style="color:${ph.c}">${esc(ph.n)}</h3>`+ph.s.map(x=>{const st=p.cells[x]||'',du=(p.due||{})[x]||'',ct=(p.counts||{})[x]||{},manual=workflow&&workflow.manualDates[x],automatic=workflow&&workflow.autoDates[x]&&!manual;return `<div class="row2 timeline-step"><span class="wn">${esc(x)}${workflow?`<small class="m">${manual?'Manual date':automatic?'Automatic'+(workflow.offsets[x]===0?' · shoot day':' · '+Math.abs(workflow.offsets[x])+' days '+(workflow.offsets[x]<0?'before':'after')):'Unscheduled'}</small>`:''}</span><button class="qb" data-s="${st}" data-act="cyc" data-st="${esc(x)}">${LBL[st]||'Not started'}</button><span class="cnw"><input type="number" min="0" class="cn" data-cn="${esc(x)}" data-k="d" value="${ct.d||''}" placeholder="0" aria-label="Photos done for ${esc(x)}">/<input type="number" min="0" class="cn" data-cn="${esc(x)}" data-k="t" value="${ct.t||''}" placeholder="total" aria-label="Photos total for ${esc(x)}"></span><input type="date" class="dd${du&&du<td&&st!=='done'?' od':''}" data-due="${esc(x)}" value="${du}" aria-label="Due date for ${esc(x)}">${manual&&st!=='done'?`<button class="btn" data-act="autodue" data-st="${esc(x)}">Use automatic date</button>`:''}</div>`}).join('')).join('')},
+pay(p){const c=calc(p),paid=c.paid,bal=c.bal;return `<h2>Payments</h2>${paymentPlan(p)}<div class="cards"><div><span class="m">Total</span><b>${formatMoney(c.total,StudioModel.invoiceCurrency(p,S.cfg.cur))}</b></div><div><span class="m">Paid</span><b>${formatMoney(paid,StudioModel.invoiceCurrency(p,S.cfg.cur))}</b></div><div><span class="m">Balance</span><b class="${bal>0?'od':''}">${formatMoney(bal,StudioModel.invoiceCurrency(p,S.cfg.cur))}</b></div></div>
  ${!p.invSent&&!(p.items&&p.items.length)?`<label>Project price before tax<input data-f="amount" type="number" min="0" step="0.01" value="${+p.amount||0}" aria-label="Project price before tax"></label>`:'<p class="shelp">The total comes from your invoice. Edit invoice lines or create an invoice revision to change it.</p>'}<h3>Payments received</h3>`+((p.pay||[]).map((x,i)=>`<div class="row2"><span>${fmt(x.date)}</span><b>${formatMoney(x.amt,StudioModel.invoiceCurrency(p,S.cfg.cur))}</b><span class="m">${esc(x.note||'')}</span><span class="sp"></span><button class="x" style="opacity:1" data-rm="pay" data-i="${i}" aria-label="Remove payment">\u2715</button></div>`).join('')||'<div class="m">No payments recorded.</div>')+
- `<div class="row2 pf"><input type="date" id="payD" value="${key(new Date())}" aria-label="Payment date"><input type="number" id="payA" min="0" placeholder="Amount" aria-label="Payment amount"><input id="payN" placeholder="Note (deposit, balance)" aria-label="Note"><button class="btn" data-act="pay">Add payment</button></div>${bal>0?'<div class="acts2"><button class="btn" data-act="payrem">Write payment reminder</button></div>':''}`},
+ `<div class="row2 pf"><input type="date" id="payD" value="${key(new Date())}" aria-label="Payment date"><input type="number" id="payA" min="0" placeholder="Amount" aria-label="Payment amount"><input id="payN" placeholder="Note (deposit, balance)" aria-label="Note"><button class="btn" data-act="pay">Add payment</button></div>${bal>0&&(!p.booking||p.booking.stage!=='canceled')?'<div class="acts2"><button class="btn" data-act="payrem">Write payment reminder</button></div>':''}`},
 msg(p){return `<h2>Messages</h2><label>Template<select id="tplSel">${Object.keys(TPL).map(k=>`<option${k===tplPick?' selected':''}>${k}</option>`).join('')}</select></label><label>Subject<input id="msgSub"></label><label>Message<textarea id="msgBody" rows="8"></textarea></label>
  <div class="acts2"><a class="btn" id="aMail" target="_blank" rel="noopener">Email</a><a class="btn" id="aWa" target="_blank" rel="noopener">WhatsApp</a><button class="btn" data-act="copy">Copy</button></div><div class="m" style="margin-top:6px">If Email or WhatsApp does not open, use Copy and paste into your app.</div><h3>Sent log</h3>`+((p.log||[]).filter(l=>['Email','WhatsApp','Copied'].includes(l.k)).slice(-8).reverse().map(l=>logRow(l,1)).join('')||'<div class="m">Nothing logged yet.</div>')},
 inv(p){if(p.invSent)p=StudioModel.invoiceView(p);p.inv=p.inv||nextInv();p.invDate=p.invDate||key(new Date());const c=calc(p);
@@ -409,7 +435,7 @@ function renderStudio(){const p=curP();
  $('stSide').innerHTML=`<button class="back" data-w="back" aria-label="Back" title="Back">\u2190</button><div class="stn">${appBrand()}<b>${esc(p.name)}</b><span class="m">${esc(p.client||'No client yet')}</span></div>`+secs.map(([k,l])=>`<button data-sec="${k}" aria-pressed="${sec===k}">${l}</button>`).join('')+`<button data-act="arch">${p.arch?'Restore project':'Archive project'}</button>`;
  const opts=S.projects.filter(x=>!x.arch||x.id===p.id).map(x=>`<option value="${x.id}"${x.id===p.id?' selected':''}>${esc(x.name)}${x.client?' \u2014 '+esc(x.client):''}</option>`).join('');
  $('stMain').innerHTML=`<div class="stbar noprint"><select id="stSel" aria-label="Switch project">${opts}</select><button class="btn" data-act="deselect" aria-label="Close this project and pick another">\u2715 Close project</button></div>`+V[sec](p);if(sec==='msg')fillMsg();if(sec==='inv'&&p.invSent){$('stMain').querySelectorAll('[data-f],[data-it],[data-rm="items"],[data-act="addline"],[data-act="resetlines"],[data-act="syncamt"]').forEach(el=>el.disabled=true)}}
-function fillMsg(){const p=curP();if(!p)return;const t=mtpl($('tplSel').value),bal=StudioModel.outstanding(p,INV()),m={client:p.client||'there',project:p.name,date:p.date?fmt(p.date):'the agreed date',link:p.link||'[gallery link]',amount:formatMoney(bal,StudioModel.invoiceCurrency(p,S.cfg.cur)),me:S.cfg.me||''};
+function fillMsg(){const p=curP();if(!p)return;const t=mtpl($('tplSel').value),bal=bookingSummary(p).balance,m={client:p.client||'there',project:p.name,date:p.date?fmt(p.date):'the agreed date',link:p.link||'[gallery link]',amount:formatMoney(bal,StudioModel.invoiceCurrency(p,S.cfg.cur)),me:S.cfg.me||''};
   const g=x=>x.replace(/\{(\w+)\}/g,(_,k)=>m[k]??'{'+k+'}');$('msgSub').value=g(t.s);$('msgBody').value=g(t.b);edited=false;links();if(tplPick==='Payment reminder'&&bal<=0){$('msgBody').value='There is no outstanding balance to collect.';$('aMail').removeAttribute('href');$('aWa').removeAttribute('href')}}
 function links(){const p=curP(),s=encodeURIComponent($('msgSub').value),b=encodeURIComponent($('msgBody').value),ph=(p.phone||'').trim();let d=ph.replace(/\D/g,'');if(ph.startsWith('0'))d=S.cfg.cc+d.slice(1);
   $('aMail').href='mailto:'+(p.email||'').trim()+'?subject='+s+'&body='+b;$('aWa').href='https://wa.me/'+d+'?text='+b}
@@ -421,6 +447,9 @@ $('studio').onclick=e=>{if(wsClick(e))return;const o=e.target.closest('[data-ope
  else if(d.act==='st')setStep(p,d.st,d.v)
  else if(d.act==='cyc')setStep(p,d.st,ORD[(ORD.indexOf(p.cells[d.st]||'')+1)%4])
  else if(d.act==='pay'){const a=+$('payA').value;if(!Number.isFinite(a)||a<=0)return;(p.pay=p.pay||[]).push({date:$('payD').value||key(new Date()),amt:a,note:$('payN').value});logIt(p,'Payment',money(a));save();renderStudio();render()}
+ else if(d.act==='paymentplan'){sec='pay';renderStudio()}
+ else if(d.act==='applypreset'){const preset=$('projectPreset').value;try{if(preset)StudioWorkflow.applyPreset(p,preset);else{delete p.workflow}logIt(p,'Timeline',preset||'Studio default');save();renderStudio();render()}catch(error){toast(error.message,'OK',()=>{})}}
+ else if(d.act==='autodue'){StudioWorkflow.resetDue(p,d.st);save();renderStudio();render()}
  else if(d.act==='payrem'){tplPick='Payment reminder';sec='msg';renderStudio()}
  else if(d.act==='copy'){try{navigator.clipboard.writeText('Subject: '+$('msgSub').value+'\n\n'+$('msgBody').value);b.textContent='Copied'}catch(_){b.textContent='Copy failed'}logIt(p,'Copied',$('msgSub').value);save();setTimeout(()=>b.textContent='Copy',1500)}
  else if(d.act==='addline'){if(!p.items)p.items=[{d:p.invDesc||p.pkg||p.name,price:+p.amount||0,qty:1}];p.items.push({d:'',price:0,qty:1});save();renderStudio()}
@@ -433,12 +462,15 @@ $('studio').onclick=e=>{if(wsClick(e))return;const o=e.target.closest('[data-ope
  else if(d.act==='cpinv'){const paperData=StudioModel.invoiceView(p),I=StudioModel.invoiceDefaults(p,INV()),c=calc(p),money2=n=>formatMoney(n,StudioModel.invoiceCurrency(p,S.cfg.cur));const tx=[(I.title||'Invoice')+' '+paperData.inv,I.biz||S.cfg.me||'','','Billed to: '+(paperData.client||paperData.name),paperData.client?'Project: '+paperData.name:'','Issued: '+fmt(paperData.invDate)].concat(paperData.invDue?['Due: '+fmt(paperData.invDue)]:[],[''],c.ls.map(x=>(x.d||'')+': '+(+x.qty||0)+' x '+money2(x.price)+' = '+money2((+x.price||0)*(+x.qty||0))),['Subtotal: '+money2(c.sub)],c.disc?['Discount: -'+money2(c.disc)]:[],c.r?['Tax ('+c.r+'%): '+money2(c.tax)]:[],['Total: '+money2(c.total)],c.paid?['Paid: '+money2(c.paid),'Balance due: '+money2(Math.max(c.bal,0))]:[],I.pay?['','Payment details:',I.pay]:[]).join('\n');try{navigator.clipboard.writeText(tx);b.textContent='Copied'}catch(_){b.textContent='Copy failed'}setTimeout(()=>b.textContent='Copy as text',1500)}
  else if(d.act==='stamp'){p.notes=(p.notes?p.notes+'\n':'')+'['+stamp()+'] ';save();renderStudio();const n=$('stMain').querySelector('textarea');n.focus();n.setSelectionRange(n.value.length,n.value.length)}};
 $('studio').oninput=e=>{const t=e.target;if(wsField(e,'input'))return;if(t.id==='pq'){pq=t.value;$('pickList').innerHTML=pickHTML();return}const p=curP();if(!p)return;if(t.dataset.it!==undefined){const x=p.items[+t.dataset.it],k=t.dataset.k;x[k]=k==='d'?t.value:(+t.value||0);save();$('paperHost').innerHTML=paper(p);$('syncHost').innerHTML=syncBtn(p);return}const f=t.dataset.f;
- if(f){p[f]=f==='amount'?(+t.value||0):t.value;save();if(sec==='inv'&&$('paperHost')){$('paperHost').innerHTML=paper(p);$('syncHost').innerHTML=syncBtn(p)}}
+ if(t.dataset.book){if(t.dataset.book==='depositValue')changeBooking(p,t.dataset.book,t.value);return}
+ if(f&&f!=='date'){p[f]=f==='amount'?(+t.value||0):t.value;save();if(sec==='inv'&&$('paperHost')){$('paperHost').innerHTML=paper(p);$('syncHost').innerHTML=syncBtn(p)}}
  else if(t.id==='msgSub'||t.id==='msgBody'){edited=true;links()}};
 $('studio').onchange=e=>{const t=e.target;if(wsField(e,'change'))return;if(t.id==='stSel'){S.pid=t.value;renderStudio();return}const p=curP();if(!p)return;const d=t.dataset;
- if(d.f==='amount'){p.amount=+t.value||0;save();renderStudio();render()}
+ if(d.book){if(changeBooking(p,d.book,t.value)){renderStudio();render()}return}
+ if(d.f==='date'){try{StudioWorkflow.reschedule(p,t.value);save();renderStudio();render()}catch(error){toast(error.message,'OK',()=>{})}}
+ else if(d.f==='amount'){p.amount=+t.value||0;save();renderStudio();render()}
  else if(d.chk){p[d.chk][+d.i].d=t.checked;save();renderStudio()}
- else if(d.due!==undefined){p.due=p.due||{};t.value?p.due[d.due]=t.value:delete p.due[d.due];save();renderStudio()}
+ else if(d.due!==undefined){try{StudioWorkflow.setDue(p,d.due,t.value);save();renderStudio();render()}catch(error){toast(error.message,'OK',()=>{})}}
  else if(d.cn!==undefined){p.counts=p.counts||{};const c=p.counts[d.cn]=p.counts[d.cn]||{};c[d.k]=+t.value||0;if(c.t>0&&c.d>=c.t)p.cells[d.cn]='done';else if(c.d>0&&!p.cells[d.cn])p.cells[d.cn]='started';save();renderStudio();render()}
  else if(t.id==='tplSel'){tplPick=t.value;fillMsg()}};
 $('studio').onkeydown=e=>{const t=e.target;if(e.key==='Enter'&&t.dataset.add&&t.value.trim()){const p=curP(),k=t.dataset.add;(p[k]=p[k]||[]).push({t:t.value.trim(),d:false});save();renderStudio();$('stMain').querySelector(`[data-add="${k}"]`).focus()}};
@@ -540,14 +572,17 @@ bub.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.s
 bub.addEventListener('pointerup',()=>{if(!drag)return;const m=drag.moved;drag=null;bub.classList.remove('drag');
   if(m){suppressBubbleClick=true;S.side=(bub.offsetLeft+BW()/2)<innerWidth/2?'l':'r';S.y=bub.offsetTop;save();place()}wake()});
 bub.addEventListener('click',e=>{if(suppressBubbleClick&&e.detail!==0){suppressBubbleClick=false;return}suppressBubbleClick=false;toggle();wake()});
+bub.addEventListener('contextmenu',e=>{e.preventDefault();openQuick('search')});
 bub.addEventListener('pointercancel',()=>{drag=null;bub.classList.remove('drag');place()});
 function toggle(force){const bar=$('bar'),o=force===undefined?!bar.classList.contains('open'):force;
   bar.classList.toggle('open',o);bub.setAttribute('aria-expanded',o);render();wake()}
-addEventListener('keydown',e=>{if(e.altKey&&e.code==='Space'){e.preventDefault();if(!NAT)toggle()}
+addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();if($('quickDialog').hidden)openQuick('search');else closeQuick();return}
+ if(!$('quickDialog').hidden)return;
+ if(e.altKey&&e.code==='Space'){e.preventDefault();if(!NAT)toggle()}
   else if(e.key==='Escape'){if(!$('studio').hidden)goBack();else toggle(false)}
   });
 addEventListener('resize',place);
-document.addEventListener('pointerdown',e=>{if($('bar').classList.contains('open')&&!e.target.closest('#bar,#bubble,#saveStatus'))toggle(false)});
+document.addEventListener('pointerdown',e=>{if($('bar').classList.contains('open')&&!e.target.closest('#bar,#bubble,#saveStatus,#quickDialog'))toggle(false)});
 const m2=money2;
 /* ===== Studio workspace: Home, Contacts, Money, Documents, Packages, Reports ===== */
 let wk='home',cId=null,docId=null,mTab='all',mQ='',mRange='all',dKind='contract',dTab='all',cQ='';
@@ -574,17 +609,17 @@ function openWs(pg){S.pid=null;wk=pg||'home';toggle(false);$('studio').hidden=fa
 function renderWs(){$('stSide').innerHTML=`<button class="back" data-w="back" aria-label="Back" title="Back">\u2190</button><div class="stn">${appBrand()}<b>Studio</b><span class="m">${esc(INV().biz||S.cfg.me||'')}</span></div>`+WS.map(([k,l])=>`<button data-w="nav" data-p="${k}" aria-pressed="${wk===k}">${l}</button>`).join('')+``;
  $('stMain').innerHTML=({home:wHome,projects:wProjects,contacts:wContacts,money:wMoney,docs:wDocs,pk:wPk,rep:wRep})[wk]()}
 const opn=(id,s,t)=>`<button class="dline" data-w="open" data-id="${id}" data-s="${s||'ov'}">${t}</button>`;
-function wHome(){const td=key(new Date()),c=cols(),act=S.projects.filter(p=>!p.arch),due=[],soon=[];const lim=new Date();lim.setDate(lim.getDate()+14);const lk=key(lim);
- act.forEach(p=>{Object.entries(p.due||{}).forEach(([x,d])=>{if(d<=td&&p.cells[x]!=='done'&&c.includes(x))due.push([p,x,d])});if(p.date&&p.date>=td&&p.date<=lk)soon.push(p)});
+function wHome(){const td=key(new Date()),act=S.projects.filter(activeWork),due=[],soon=[];const lim=new Date();lim.setDate(lim.getDate()+14);const lk=key(lim);
+ act.forEach(p=>{Object.entries(p.due||{}).forEach(([x,d])=>{if(d<=td&&p.cells[x]!=='done'&&cols(p).includes(x))due.push([p,x,d])});if(p.date&&p.date>=td&&p.date<=lk)soon.push(p)});
  due.sort((a,b)=>a[2]<b[2]?-1:1);soon.sort((a,b)=>a.date<b.date?-1:1);
  const unp=invList().filter(p=>['past','upcoming'].includes(invStatus(p))).sort((a,b)=>invStatus(a)==='past'?-1:1),log=[];
  S.projects.forEach(p=>(p.log||[]).forEach(l=>log.push([p,l])));log.sort((a,b)=>b[1].ts-a[1].ts);
  return `<h2>Welcome${S.cfg.me?', '+esc(S.cfg.me):''}</h2><div class="m">${new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div><div class="hc">
  <div><h3>Due or overdue</h3>${due.slice(0,6).map(([p,x,d])=>opn(p.id,'wf',`<span>${esc(p.name)} \u2014 ${esc(x)}</span><span class="${d<td?'od':'m'}">${d<td?'overdue':'today'}</span>`)).join('')||'<div class="m">Nothing due.</div>'}</div>
  <div><h3>Shoots in the next 14 days</h3>${soon.slice(0,6).map(p=>opn(p.id,'ov',`<span>${esc(p.name)}</span><span class="m">${fmt(p.date)}</span>`)).join('')||'<div class="m">No upcoming shoots.</div>'}</div>
- <div><h3>Unpaid invoices</h3>${unp.slice(0,6).map(p=>{const c2=calc(p);return opn(p.id,'inv',`<span>${esc(p.client||p.name)}</span><span>${pill(invStatus(p))} ${esc(invoiceMoney(p,c2.bal))}</span>`)}).join('')||'<div class="m">All paid up.</div>'}</div>
+ <div><h3>Next payments</h3>${act.map(p=>({p,b:bookingSummary(p)})).filter(x=>x.b.nextAmount>0&&x.b.nextDue).sort((a,b)=>a.b.nextDue.localeCompare(b.b.nextDue)).slice(0,5).map(({p,b})=>opn(p.id,'pay',`<span>${esc(p.name)}</span><span class="${b.overdue?'od':'m'}">${esc(invoiceMoney(p,b.nextAmount))} · ${fmt(b.nextDue)}</span>`)).join('')||'<div class="m">Set payment dates in a project payment plan.</div>'}</div><div><h3>Unpaid invoices</h3>${unp.slice(0,6).map(p=>{const c2=calc(p);return opn(p.id,'inv',`<span>${esc(p.client||p.name)}</span><span>${pill(invStatus(p))} ${esc(invoiceMoney(p,c2.bal))}</span>`)}).join('')||'<div class="m">All paid up.</div>'}</div>
  <div><h3>Recent activity</h3>${log.slice(0,6).map(([p,l])=>opn(p.id,'ov',`<span>${esc(p.name)}: ${esc(l.k)} ${esc(l.t)}</span>`)).join('')||'<div class="m">Nothing yet.</div>'}</div></div>`}
-const wProjects=()=>`<h2>Projects</h2><input id="pq" placeholder="Search projects" aria-label="Search projects" value="${esc(pq)}"><div class="pick" id="pickList">${pickHTML()}</div>`;
+const wProjects=()=>`<div class="projects-title"><h2>Projects</h2><button class="btn" data-w="quicknew">New booking</button></div><div class="booking-filters" role="group" aria-label="Booking stages">${[['all','All'],...StudioBooking.stages.map(s=>[s.id,s.label])].map(([id,label])=>`<button class="btn" data-w="bookingfilter" data-stage="${id}" aria-pressed="${bookingFilter===id}">${label} <span class="m">${S.projects.filter(p=>!p.arch&&(id==='all'||bookingSummary(p).stage===id)).length}</span></button>`).join('')}</div><input id="pq" placeholder="Search projects" aria-label="Search projects" value="${esc(pq)}"><div class="pick" id="pickList">${pickHTML()}</div>`;
 function wContacts(){ensureContacts();const c=S.contacts.find(x=>x.id===cId);
  if(c){const ps=S.projects.filter(p=>p.cid===c.id),f=(k,l,t)=>`<label>${l}<input data-wf="c.${k}" type="${t||'text'}" value="${esc(c[k]||'')}"></label>`;
   return `<button class="btn" data-w="cback">\u2039 Contacts</button><h2>${esc(c.name)}</h2><div class="g2">${f('name','Name')}${f('email','Email','email')}${f('phone','Phone / WhatsApp','tel')}</div><label>Notes<textarea data-wf="c.notes" rows="3">${esc(c.notes||'')}</textarea></label><h3>Projects</h3>${ps.map(p=>opn(p.id,'ov',`<span>${esc(p.name)}</span><span class="m">${p.date?fmt(p.date):''}</span>`)).join('')||'<div class="m">No projects linked yet. Link one from the project\u2019s Client &amp; shoot section.</div>'}<div class="acts2"><button class="btn" data-w="cdel">Delete contact</button></div>`}
@@ -618,6 +653,8 @@ function currencyReport(currency){const money=n=>esc(formatMoney(n,currency)),L=
 function wRep(){const currencies=[...new Set(S.projects.map(p=>StudioModel.invoiceCurrency(p,S.cfg.cur)))];return '<h2>Reports</h2>'+((currencies.length?currencies:[S.cfg.cur]).map(currencyReport).join(''))}
 function wsClick(e){const b=e.target.closest('[data-w]');if(!b)return false;const d=b.dataset,a=d.w,p=curP();
  if(a==='back'){goBack()}
+ else if(a==='quicknew'){openQuick('new')}
+ else if(a==='bookingfilter'){bookingFilter=d.stage;renderStudio()}
  else if(a==='nav'){S.pid=null;wk=d.p;cId=docId=null;renderStudio()}
  else if(a==='open'){S.pid=d.id;sec=d.s||'ov';renderStudio()}
  else if(a==='mtab'){mTab=d.v;renderStudio()}
@@ -651,6 +688,95 @@ function wsField(e,ev){const t=e.target,wf=t.dataset.wf;if(!wf)return false;cons
  else if(sc==='pk'){const x=S.packages.find(y=>y.id===t.dataset.id);if(x){x[k]=k==='price'?(+v||0):v;save();render()}}
  return true}
 function fillPt(){const el=$('pt'),v=el.value;el.innerHTML='<option value="">Blank</option>'+((S.packages||[]).length?`<optgroup label="Packages">${S.packages.map(k=>`<option value="pk:${k.id}">${esc(k.name)}${k.price?' \u2014 '+money(k.price):''}</option>`).join('')}</optgroup>`:'')+`<optgroup label="Starter lists">${Object.keys(TEMPL).map(t=>`<option>${t}</option>`).join('')}</optgroup>`;el.value=[...el.options].some(o=>o.value===v)?v:''}
+
+/* Quick actions stay local: navigate, create bookings, record payments and finish work. */
+let quickMode='search',quickRows=[],quickIndex=0,quickTarget='',quickPreviousFocus=null;
+function closeQuick(){
+ $('quickDialog').hidden=true;
+ if(quickPreviousFocus&&document.contains(quickPreviousFocus))quickPreviousFocus.focus();
+ quickTarget='';quickRows=[];
+}
+function openQuick(mode='search'){
+ quickPreviousFocus=document.activeElement;quickMode=mode;quickTarget=mode==='payment'&&curP()&&!curP().arch&&!curP().invCancel&&(!curP().booking||curP().booking.stage!=='canceled')?curP().id:'';
+ toggle(false);$('quickDialog').hidden=false;$('quickQuery').value='';$('quickError').hidden=true;renderQuick();
+ const focus=mode==='new'?$('quickName'):quickTarget?$('quickPayAmount'):$('quickQuery');if(focus)focus.focus();
+}
+function quickError(message){$('quickError').textContent=message;$('quickError').hidden=false;}
+function renderQuick(){
+ const q=$('quickQuery').value;
+ $('quickDialog').querySelectorAll('[data-qmode]').forEach(button=>button.setAttribute('aria-pressed',button.dataset.qmode===quickMode));
+ const labels={search:'Search projects, clients, invoices and documents',payment:'Choose a project to record a payment',task:'Find an unfinished task',new:'New booking'};
+ $('quickSearchLabel').textContent=labels[quickMode];$('quickTitle').textContent=quickMode==='new'?'New booking':'Quick actions';
+ $('quickQuery').hidden=$('quickSearchLabel').hidden=quickMode==='new';$('quickError').hidden=true;
+ quickRows=[];quickIndex=0;
+ if(quickMode==='new'){
+  $('quickQuery').setAttribute('aria-expanded','false');
+  $('quickBody').innerHTML=`<form id="quickNewForm"><div class="g2"><label>Project name<input id="quickName" required maxlength="200" placeholder="e.g. Ama & Kojo wedding"></label><label>Client name<input id="quickClient" maxlength="200" placeholder="Client or couple"></label><label>Shoot date<input id="quickDate" type="date" value="${key(new Date())}"></label><label>Price before tax (${esc(S.cfg.cur)})<input id="quickPrice" type="number" min="0" step="0.01" value="0"></label><label>Timeline<select id="quickPreset" aria-label="Timeline">${presetOptions('')}</select></label><label>Booking stage<select id="quickStage" aria-label="Booking stage">${stageOptions('enquiry')}</select></label></div><p class="shelp">Choose a timeline to schedule the preparation and delivery steps around the shoot date. Set the deposit in the project payment plan.</p><button type="submit" class="spb">Create booking</button></form>`;return;
+ }
+ if(quickMode==='payment'&&quickTarget){
+  const p=S.projects.find(p=>p.id===quickTarget);
+  if(p){const b=bookingSummary(p);$('quickQuery').hidden=$('quickSearchLabel').hidden=true;$('quickQuery').setAttribute('aria-expanded','false');
+   $('quickBody').innerHTML=`<form id="quickPaymentForm"><div class="quick-project"><div><h3>${esc(p.name)}</h3><p class="m">${esc(p.client||'No client')} · Outstanding ${esc(invoiceMoney(p,b.balance))}</p></div><button type="button" class="btn" data-qchoose>Choose another project</button></div><div class="g2"><label>Payment amount (${esc(StudioModel.invoiceCurrency(p,S.cfg.cur))})<input id="quickPayAmount" type="number" min="0.01" step="0.01" required value="${b.nextAmount||''}"></label><label>Payment date<input id="quickPayDate" type="date" required value="${key(new Date())}"></label></div><label>Payment note<input id="quickPayNote" placeholder="Deposit, balance, transfer reference…"></label><button type="submit" class="spb">Record payment</button></form>`;return;
+  }quickTarget='';
+ }
+ if(quickMode==='task')quickRows=StudioSearch.tasks(S,q);
+ else if(quickMode==='payment')quickRows=StudioSearch.search({...S,contacts:[],docs:[],projects:S.projects.filter(p=>!p.arch&&!p.invCancel&&(!p.booking||p.booking.stage!=='canceled'))},q,{limit:40}).filter(r=>r.kind==='project').slice(0,12);
+ else quickRows=StudioSearch.search(S,q);
+ $('quickQuery').setAttribute('aria-expanded',quickRows.length?'true':'false');
+ $('quickBody').innerHTML=`<div id="quickResults" role="listbox" aria-label="${quickMode==='task'?'Unfinished tasks':'Search results'}">${quickRows.map((r,i)=>`<button type="button" id="quick-result-${i}" role="option" aria-selected="${i===0}" data-qresult="${i}" class="quick-result${i===0?' is-active':''}"><span><b>${esc(r.title)}</b><small>${esc(r.detail||'')}${r.due?' · '+fmt(r.due):''}</small></span><span class="quick-kind">${r.kind==='task'?'Mark done':r.kind}</span></button>`).join('')||`<p class="quick-empty">${quickMode==='task'?'No unfinished tasks match.':quickMode==='payment'?'No active projects match. Create a booking first.':'No results. Try a project, client or invoice number.'}</p>`}</div>`;
+ if(quickRows.length)$('quickQuery').setAttribute('aria-activedescendant','quick-result-0');else $('quickQuery').removeAttribute('aria-activedescendant');
+}
+function activateQuick(index){
+ const r=quickRows[index];if(!r)return;
+ if(quickMode==='payment'){quickTarget=r.projectId;renderQuick();$('quickPayAmount').focus();return}
+ if(r.kind==='task'){
+  const p=S.projects.find(p=>p.id===r.projectId);if(!p||p.arch)return;const previous=p.cells[r.step]||'';
+  p.cells[r.step]='done';logIt(p,'Step',r.step+' → Done');save();closeQuick();render();if(!$('studio').hidden)renderStudio();
+  toast(r.step+' completed','Undo',()=>{if(!S.projects.includes(p))return;previous?p.cells[r.step]=previous:delete p.cells[r.step];logIt(p,'Step',r.step+' → '+(LBL[previous]||'Not started'));save();render();if(!$('studio').hidden)renderStudio()});return;
+ }
+ closeQuick();
+ if(r.kind==='project'||r.kind==='invoice')openStudio(r.projectId,r.section);
+ else if(r.kind==='contact'){cId=r.id;docId=null;openWs('contacts')}
+ else if(r.kind==='document'){docId=r.id;cId=null;dKind=r.documentKind;openWs('docs')}
+}
+$('quickClose').onclick=closeQuick;
+$('quickQuery').oninput=()=>{quickTarget='';renderQuick()};
+$('quickDialog').onclick=e=>{
+ if(e.target===$('quickDialog')){closeQuick();return}
+ const mode=e.target.closest('[data-qmode]');if(mode){quickMode=mode.dataset.qmode;quickTarget='';$('quickQuery').value='';renderQuick();(quickMode==='new'?$('quickName'):$('quickQuery')).focus();return}
+ if(e.target.closest('[data-qchoose]')){quickTarget='';renderQuick();$('quickQuery').focus();return}
+ const result=e.target.closest('[data-qresult]');if(result)activateQuick(Number(result.dataset.qresult));
+};
+$('quickDialog').onkeydown=e=>{
+ if(e.key==='Escape'){e.preventDefault();e.stopPropagation();closeQuick();return}
+ if(e.key==='Tab'){
+  const focusable=[...$('quickDialog').querySelectorAll('button,input,select,textarea,[href]')].filter(el=>!el.disabled&&el.getClientRects().length);
+  const first=focusable[0],last=focusable[focusable.length-1];
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}return;
+ }
+ if(e.target.id!=='quickQuery')return;
+ if((e.key==='ArrowDown'||e.key==='ArrowUp')&&quickRows.length){e.preventDefault();quickIndex=(quickIndex+(e.key==='ArrowDown'?1:-1)+quickRows.length)%quickRows.length;$('quickDialog').querySelectorAll('[data-qresult]').forEach((el,i)=>{el.classList.toggle('is-active',i===quickIndex);el.setAttribute('aria-selected',i===quickIndex)});$('quickQuery').setAttribute('aria-activedescendant','quick-result-'+quickIndex);$('quick-result-'+quickIndex).scrollIntoView({block:'nearest'});}
+ if(e.key==='Enter'&&quickRows.length){e.preventDefault();activateQuick(quickIndex)}
+};
+$('quickDialog').onsubmit=e=>{
+ e.preventDefault();
+ try{
+  if(e.target.id==='quickNewForm'){
+   const name=$('quickName').value.trim(),amount=Number($('quickPrice').value),date=$('quickDate').value;
+   if(!name)throw new Error('Enter a project name.');if(!Number.isFinite(amount)||amount<0)throw new Error('Enter a valid price.');
+   const p={id:uid(),name,client:$('quickClient').value.trim(),date,amount,cells:{}};
+   StudioBooking.configure(p,{stage:$('quickStage').value});
+   const preset=$('quickPreset').value;if(preset)StudioWorkflow.applyPreset(p,preset,date);else StudioWorkflow.reschedule(p,date);
+   // Validate before inserting so an invalid form never creates a partial booking.
+   StudioData.parseBackup({...S,projects:[...S.projects,p]});S.projects.push(p);save();closeQuick();render();openStudio(p.id,'ov');
+  }else if(e.target.id==='quickPaymentForm'){
+   const p=S.projects.find(p=>p.id===quickTarget);if(!p)throw new Error('Choose a project.');
+   const amount=Number($('quickPayAmount').value),date=$('quickPayDate').value;if(!Number.isFinite(amount)||amount<=0)throw new Error('Enter a payment greater than zero.');
+   const payment={amt:amount,date,note:$('quickPayNote').value.trim()};StudioData.parseBackup({...S,projects:[{...p,pay:[...(p.pay||[]),payment]}]});
+   (p.pay=p.pay||[]).push(payment);logIt(p,'Payment',invoiceMoney(p,amount));save();closeQuick();render();if(!$('studio').hidden)renderStudio();toast('Payment recorded for '+p.name,'OK',()=>{});
+  }
+ }catch(error){quickError(error.message)}
+};
 
 function freezeExistingInvoices(){let changed=false;S.projects.forEach(p=>{if(p.invSent&&!p.invSnapshot){StudioModel.issueInvoice(p,{...INV(),biz:INV().biz||S.cfg.me||'Your business'},S.cfg.cur);changed=true}});return changed}
 const migratedInvoices=freezeExistingInvoices();
@@ -700,9 +826,9 @@ async function checkUpd(manual){if(manual){UPS='checking';renderUpd()}
   if(!r.ok){if(manual){UPS='error';renderUpd()}return}
   UPD=r.newer?r:null;UPS=r.newer?'':'latest';renderUpd();if(S.view==='S'&&sp==='home')renderSet();const g=document.querySelector('.gear');if(g)g.classList.toggle('upd',!!UPD);
   if(!manual&&UPD&&NAT&&S.un!==r.latest){NAT.notify('StudioAid','Version '+r.latest+' is available. Open Settings to download it.');S.un=r.latest;save()}}
-function notifyDue(){const td=key(new Date());if(S.ln===td)return;const c=cols();let n=0;S.projects.forEach(p=>{if(p.arch)return;Object.entries(p.due||{}).forEach(([x,d])=>{if(d<=td&&p.cells[x]!=='done'&&c.includes(x))n++})});if(n){NAT.notify('StudioAid',n+' step'+(n===1?'':'s')+' due or overdue');S.ln=td;save()}}
+function notifyDue(){const td=key(new Date());if(S.ln===td)return;let n=0;S.projects.forEach(p=>{if(!activeWork(p))return;Object.entries(p.due||{}).forEach(([x,d])=>{if(d<=td&&p.cells[x]!=='done'&&cols(p).includes(x))n++})});if(n){NAT.notify('StudioAid',n+' step'+(n===1?'':'s')+' due or overdue');S.ln=td;save()}}
 if(NAT){document.documentElement.classList.add('native');let on=false;
- document.addEventListener('mousemove',e=>{const i=!!e.target.closest('#bubble,#bar,#studio,#toast,#saveStatus');if(i!==on){on=i;NAT.interactive(i)}});
+ document.addEventListener('mousemove',e=>{const i=!!e.target.closest('#bubble,#bar,#studio,#toast,#saveStatus,#quickDialog');if(i!==on){on=i;NAT.interactive(i)}});
  NAT.onToggle(f=>toggle(f));
  if(NAT.onCloud)NAT.onCloud(async(k,p)=>{if(k==='apply')await applyCloud(p,true);else if(p&&p.kind==='error')CL.msg=p.error||'Cloud backup failed.';cloudRefresh()});
  addEventListener('blur',()=>{if($('studio').hidden&&$('bar').classList.contains('open'))toggle(false)});

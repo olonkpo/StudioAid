@@ -114,6 +114,40 @@
     for (const key of ['amount', 'invDisc', 'invTax']) number(data[key], path + '.data.' + key);
     validateInvoiceItems(data.items, path + '.data.items');
   }
+  function validateProjectWorkflow(workflow, path) {
+    object(workflow, path);
+    if (!['wedding', 'portrait', 'event'].includes(workflow.preset)) fail(path + '.preset', 'is not a supported preset');
+    const phases = array(workflow.phases, path + '.phases');
+    if (!phases.length) fail(path + '.phases', 'must include a phase');
+    phases.forEach((phase, i) => {
+      const key = path + '.phases[' + i + ']';
+      object(phase, key); string(phase.n, key + '.n', true); string(phase.c, key + '.c');
+      if (!/^#[0-9a-f]{6}$/i.test(phase.c)) fail(key + '.c', 'must be a hex color');
+      const steps = array(phase.s, key + '.s');
+      if (!steps.length) fail(key + '.s', 'must include a step');
+      steps.forEach((step, n) => string(step, key + '.s[' + n + ']', true));
+    });
+    for (const [key, check] of [
+      ['offsets', (value, field) => { if (!Number.isSafeInteger(value)) fail(field, 'must be a whole number of days'); }],
+      ['autoDates', (value, field) => { date(value, field); if (!value) fail(field, 'must be a calendar date'); }],
+      ['manualDates', (value, field) => { if (typeof value !== 'boolean') fail(field, 'must be a boolean'); }]
+    ]) {
+      const values = object(workflow[key], path + '.' + key);
+      for (const step of Object.keys(values)) {
+        string(step, path + '.' + key + ' step', true);
+        check(values[step], path + '.' + key + '.' + step);
+      }
+    }
+  }
+  function validateBooking(booking, path) {
+    object(booking, path);
+    if (!['enquiry', 'quote', 'deposit', 'booked', 'completed', 'canceled'].includes(booking.stage)) fail(path + '.stage', 'is not a supported stage');
+    if (!['percent', 'fixed'].includes(booking.depositType)) fail(path + '.depositType', 'is not a supported deposit type');
+    number(booking.depositValue, path + '.depositValue', { min: 0 });
+    if (booking.depositType === 'percent' && Number(booking.depositValue) > 100) fail(path + '.depositValue', 'must not exceed 100 percent');
+    date(booking.depositDue, path + '.depositDue');
+    date(booking.balanceDue, path + '.balanceDue');
+  }
   function validateProject(p, path) {
     string(p.name, path + '.name');
     strings(p, ['client', 'email', 'phone', 'link', 'time', 'location', 'pkg', 'brief', 'notes', 'invDesc', 'invNote', 'invCurrency'], path);
@@ -121,6 +155,8 @@
     fields(p, ['date', 'invDate', 'invDue'], path, date);
     fields(p, ['amount', 'invDisc', 'invTax'], path, (v, k) => number(v, k, { blank: true }));
     booleans(p, ['arch', 'invSent', 'invCancel'], path);
+    if (own(p, 'workflow')) validateProjectWorkflow(p.workflow, path + '.workflow');
+    if (own(p, 'booking')) validateBooking(p.booking, path + '.booking');
     if (!own(p, 'cells')) p.cells = {};
     object(p.cells, path + '.cells');
     for (const key of Object.keys(p.cells)) if (!['', 'started', 'done', 'paused'].includes(p.cells[key])) fail(path + '.cells.' + key, 'is not a workflow status');

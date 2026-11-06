@@ -26,6 +26,9 @@
       "cloud-config.js",
       "studio-data.js",
       "studio-model.js",
+      "studio-workflow.js",
+      "studio-booking.js",
+      "studio-search.js",
       "preload.js",
       "index.html",
       "assets/**"

@@ -96,7 +96,7 @@ Run `npm test` to check the app's data and calculation behavior. These tests use
 
 Before distributing a release, also open the app on Mac and Windows and check the bubble and keyboard shortcut, settings navigation, invoice preview and printed output, backup export and restore, and updating from the previous version. Automated checks do not replace these desktop checks.
 
-The app and its small update package both include `studio-data.js` and `studio-model.js`. Keep their packaging lists in sync when adding shared app modules. The release workflow pins the ASAR packer version so its Node requirements do not change unexpectedly.
+The app and its small update package include the shared data, invoice model, workflow, booking and quick-search modules. Keep their packaging lists in sync when adding shared app modules. The release workflow pins the ASAR packer version so its Node requirements do not change unexpectedly.
 
 ## Invoice consistency and revisions
 
@@ -105,3 +105,19 @@ Invoice totals, payment balances and reminder amounts use the same calculation. 
 Existing sent invoices are frozen at their current saved values when this update first opens them. This cannot reconstruct an older invoice that was already changed by previous app versions. Compare important invoices against the PDFs you originally sent.
 
 Settings now previews the same invoice renderer used for printing. In browser-only use, export a backup separately; the desktop app provides the daily local backup copies.
+
+## Project workflows and scheduling
+
+Choose a Wedding, Portrait or Event workflow preset for an individual project. The preset supplies that project's phases and steps, with suggested task dates relative to the shoot date. Other projects keep their own workflow.
+
+When the shoot date changes, automatic task dates move with it. Dates you set manually are preserved, including manually managed tasks from an earlier preset. Review the task dates after applying a new preset or rescheduling a shoot.
+
+## Booking and payment milestones
+
+Track a project's booking stage from enquiry and quote through awaiting deposit, booked, completed or canceled. Set a deposit as a percentage or a fixed amount, plus optional deposit and balance due dates. Deposit percentages run from 0 to 100.
+
+Milestones use the project's invoice total and recorded payments to show what is still due. Recording money and changing the booking stage remain deliberate actions; a milestone does not send a message or collect a payment.
+
+## Quick actions
+
+While StudioAid has focus, press **Command+K** on Mac or **Control+K** on Windows to open quick actions. You can also choose **Search / actions** in the panel or right-click the bubble. Search projects, clients, invoices or documents and open the selected result from the keyboard. Quick actions also let you create a booking, record a payment or complete a task; completing a task offers Undo.
