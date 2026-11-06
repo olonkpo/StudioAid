@@ -207,6 +207,22 @@ textarea.sin{resize:none;font-size:13.5px}.tall{align-items:flex-start;padding-t
 .sph{display:flex;gap:10px;align-items:center;margin-bottom:8px}.sph input[type=color]{width:34px;height:30px;padding:0;border:1px solid var(--line);border-radius:8px;background:none}
 .sname{text-align:left!important;font-weight:600;flex:1;margin:0!important;width:auto!important}.sstep{width:100%!important;text-align:left!important;border:1px solid var(--line)!important;border-radius:10px;padding:8px 10px!important;margin:0!important;background:var(--bg)!important;box-sizing:border-box}
 .sbox{width:100%!important;text-align:left!important;border:1px solid var(--line)!important;border-radius:10px;padding:8px 10px!important;margin-top:10px!important;background:var(--bg)!important;box-sizing:border-box}
+
+/* Settings workspace: persistent navigation and live invoice defaults. */
+#bar.settings-open{max-height:calc(100vh - 24px);background:var(--bg)}
+.settings-head{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}
+.settings-shell{display:grid;grid-template-columns:190px minmax(0,1fr);min-height:540px}
+.settings-nav{border-right:1px solid var(--line);padding:24px 12px;display:flex;flex-direction:column;gap:6px}
+.settings-nav button{border:0;border-radius:8px;background:none;color:var(--ink);font:inherit;font-size:13px;padding:12px;text-align:left;cursor:pointer}
+.settings-nav button[aria-current]{background:var(--chip);font-weight:600}
+.settings-nav small{margin:30px 12px;color:var(--mute);font-size:11px}
+.settings-main{padding:26px;min-width:0}.settings-title{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.settings-title h2{margin:0;font-size:24px}.settings-title span{font-size:11px;color:var(--mute)}.settings-intro{margin:10px 0 26px}
+.settings-main .sh{display:none}.settings-main .sbody{padding:0}.settings-main .sin{background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:9px 10px;box-sizing:border-box}.settings-main .srow2{padding:10px 0;gap:10px}.settings-main .sin:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.invoice-workbench{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:26px}.invoice-fields .srow2{flex-direction:column;align-items:stretch;border:0;min-height:0;padding:7px 0}.invoice-fields .sin{width:100%;margin:0;text-align:left}.invoice-fields .sg:first-child{margin-top:0!important}.invoice-fields .sws{margin:8px 0;flex-wrap:wrap}.settings-advanced{border-top:1px solid var(--line);margin-top:20px;padding-top:16px}.settings-advanced summary{cursor:pointer;font-size:13px}
+.preview-caption{font-size:11px;color:var(--mute);margin-bottom:12px}.invoice-preview{min-width:0}.settings-paper{background:#fff;color:#253a30;border:1px solid #dfe6df;border-top:4px solid var(--invoice-color);padding:24px 20px;border-radius:6px;font-size:12px;overflow-wrap:anywhere}.settings-paper p{font-size:11px;margin:8px 0;color:#59685f}.settings-paper-brand{display:flex;gap:10px;justify-content:space-between;align-items:center}.settings-paper-brand b{font-size:18px;color:var(--invoice-color)}.settings-paper-brand img{max-height:45px;max-width:80px}.preview-lines{white-space:pre-line}.preview-invoice-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:24px 0;border-top:1px solid #dfe6df;padding-top:20px}.preview-invoice-title h3{margin:0;font-size:22px}.settings-paper small{display:block;font-size:9px;letter-spacing:.08em;margin-top:22px;color:#59685f}.preview-line{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #dfe6df;padding:12px 0}.preview-line span:last-child{white-space:nowrap}.preview-total{font-size:13px}.settings-paper footer{border-top:1px solid #dfe6df;margin-top:32px;padding-top:16px;font-size:10px;color:#59685f}
+@media(max-width:850px){.settings-shell{grid-template-columns:165px minmax(0,1fr)}.invoice-workbench{grid-template-columns:1fr}.invoice-preview{max-width:440px}.settings-main{padding:20px}}
+@media(max-width:540px){.settings-shell{display:block}.settings-nav{border-right:0;border-bottom:1px solid var(--line);flex-direction:row;flex-wrap:wrap;padding:10px;gap:4px}.settings-nav button{font-size:12px;padding:10px}.settings-nav small{display:none}.settings-main{padding:16px}.settings-main .srow2{flex-wrap:wrap}.settings-main .sseg{flex-wrap:wrap}.settings-main .sin{font-size:16px}.settings-main .sws{flex-wrap:wrap}}
+
 </style>
 </head>
 <body>
@@ -263,7 +279,7 @@ function renderBar(){
   $('bar').style.setProperty('--c','var(--ink)');$('bubble').style.setProperty('--c','#f7b52a');
   $('bubble').innerHTML=`<img src="${BUB_IMG}" alt="">`+(open?`<small>${open}</small>`:'');
 }
-function render(){applyCfg();renderBoard();renderCal();renderBar();fillPt();['B','C'].forEach(v=>$('v'+v).hidden=S.view!==v);$('set').hidden=S.view!=='S';document.querySelectorAll('#mt [data-v]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.view));place()}
+function render(){applyCfg();renderBoard();renderCal();renderBar();fillPt();['B','C'].forEach(v=>$('v'+v).hidden=S.view!==v);$('set').hidden=S.view!=='S';$('bar').classList.toggle('settings-open',S.view==='S');document.querySelectorAll('#mt [data-v]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.view));place()}
 const TEMPL={'Wedding':{shots:['Getting ready','Ceremony','Couple portraits','Family groups','Reception details','Cake cutting','First dance'],gear:['Two camera bodies','Wide and telephoto lenses','Flash','Spare batteries','Memory cards']},
 'Graduation':{shots:['Portraits in gown','Family photos','Friends group','Diploma moment','Campus backdrop'],gear:['Camera and standard lens','Reflector','Spare batteries','Memory cards']},
 'Event':{shots:['Venue overview','Guest candids','Speeches','Key moments','Group photos','Details'],gear:['Camera','Flash','Spare batteries','Memory cards']},
@@ -276,7 +292,7 @@ function vis(){const q=(S.q||'').toLowerCase(),vf=S.vf||'act';let a=S.projects.f
 $('pn').onkeydown=e=>{if(e.key==='Enter'){addProject($('pn').value,0,key(new Date()),$('pt').value);$('pn').value=''}};
 $('board').onclick=e=>{const c=e.target.closest('.cell'),x=e.target.closest('[data-del]');
   if(c){const p=S.projects.find(p=>p.id===c.dataset.p),k=c.dataset.c,nx=ORD[(ORD.indexOf(p.cells[k]||'')+1)%4];nx?p.cells[k]=nx:delete p.cells[k]}
-  else if(x){delProject(x.dataset.del)}else return;save();render()};
+  else if(x){delProject(x.dataset.del)}else return;save();render();if($('settingsSaved'))$('settingsSaved').textContent='Saved on this computer';if(sp==='invoice'&&$('invMini'))$('invMini').innerHTML=miniInv()};
 $('board').onchange=e=>{const a=e.target.dataset.amt;if(a){S.projects.find(p=>p.id===a).amount=+e.target.value||0;save();renderBoard()}};
 
 $('cal').onclick=e=>{const m=e.target.closest('[data-mv]'),h=e.target.closest('[data-hl]');
@@ -288,7 +304,7 @@ $('bar').onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.d
   if(d.ws){openWs(d.ws);return}
   if(d.v){S.view=d.v;if(d.v==='S')openSet('home');render();return}
   if(d.ph){if(d.ph==='all')S.all=true;else{S.all=false;S.phase=+d.ph}}
-  else if(d.qp){const p=S.projects.find(p=>p.id===d.qp),k=d.qs,nx=ORD[(ORD.indexOf(p.cells[k]||'')+1)%4];nx?p.cells[k]=nx:delete p.cells[k]}else return;save();render()};
+  else if(d.qp){const p=S.projects.find(p=>p.id===d.qp),k=d.qs,nx=ORD[(ORD.indexOf(p.cells[k]||'')+1)%4];nx?p.cells[k]=nx:delete p.cells[k]}else return;save();render();if($('settingsSaved'))$('settingsSaved').textContent='Saved on this computer';if(sp==='invoice'&&$('invMini'))$('invMini').innerHTML=miniInv()};
 /* project details + client messages */
 const TPL={'Booking confirmation':{s:'Booking confirmed: {project}',b:'Hi {client},\n\nThis is to confirm your booking for {project} on {date}. Please let me know if anything changes or if you have any questions.\n\nThank you,\n{me}'},
 'Session reminder':{s:'Reminder: {project} on {date}',b:'Hi {client},\n\nA friendly reminder about {project} on {date}. Let me know if you need to reschedule or have any special requests.\n\nSee you soon,\n{me}'},
@@ -384,15 +400,16 @@ $('studio').onkeydown=e=>{const t=e.target;if(e.key==='Enter'&&t.dataset.add&&t.
 $('q').oninput=e=>{S.q=e.target.value;renderBoard()};$('vf').onchange=e=>{S.vf=e.target.value;save();renderBoard()};$('sf').onchange=e=>{S.sf=e.target.value;save();renderBoard()};
 /* settings */
 /* ===== Settings: a short home list and one page per topic ===== */
-let sp='home';
+let sp='general';
 const THEMES={auto:'Auto',light:'Light',dark:'Dark'};
 const SCHEV='<svg class="schev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
 const SBACK='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
 const ago=t=>{const m=Math.round((Date.now()-t)/60000);return m<1?'just now':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':new Date(t).toLocaleDateString()};
 const setHead=(t,back)=>`<div class="sh"><button class="sback" data-sp="${back}" aria-label="Back">${SBACK}</button><b>${t}</b></div>`;
 const srow=(pg,l,v)=>`<button class="srow" data-sp="${pg}"><span>${l}</span><span class="sv">${v}</span>${SCHEV}</button>`;
-function miniInv(){const I=INV(),ac=/^#[0-9a-f]{6}$/i.test(I.color)?I.color:'#2b2b2b',fg='#ffffff';
- return `<div class="smb" style="background:${ac};color:${fg}"><span>${esc(I.title||'Invoice')}</span>${I.logo?`<img src="${esc(I.logo)}" alt="">`:'<i></i>'}</div><div class="sml"><u></u><u style="width:70%"></u><u style="width:45%"></u></div><div class="smf" style="background:${ac}"></div>`}
+function miniInv(){const I=INV(),ac=/^#[0-9a-f]{6}$/i.test(I.color)?I.color:'#2b2b2b',tax=Math.max(0,+I.tax||0),base=1200;
+ const cash=n=>esc(S.cfg.cur)+' '+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+ return `<div class="settings-paper" style="--invoice-color:${ac}"><div class="settings-paper-brand"><b>${esc(I.biz||S.cfg.me||'Your business')}</b>${I.logo?`<img src="${esc(I.logo)}" alt="Business logo">`:''}</div><p>${esc(I.tagline)}</p><p class="preview-lines">${esc(I.contact)}</p><p>${esc(I.social)}</p><div class="preview-invoice-title"><h3>${esc(I.title||'Invoice')}</h3><span>INV–001</span></div><small>BILLED TO</small><p>Sample client</p><div class="preview-line"><span>Portrait session</span><span>${cash(base)}</span></div><div class="preview-line"><span>Tax (${esc(tax)}%)</span><span>${cash(base*tax/100)}</span></div><div class="preview-line preview-total"><b>Total due</b><b>${cash(base*(1+tax/100))}</b></div><small>PAYMENT DETAILS</small><p class="preview-lines">${esc(I.pay||'Add your payment instructions')}</p><footer>${esc(I.foot)}</footer></div>`}
 function setHome(){const s=CL.status,I=INV(),c=S.cfg;
  const t=!NAT||!NAT.cloudStatus?'Cloud backup':!s?'Cloud backup':!s.configured?'Cloud backup is not set up':s.signedIn?'Cloud backup is on':'Back up to Google Drive';
  const sub=!NAT?'Available in the desktop app':s&&s.signedIn?(s.lastAt?'Last backup '+ago(s.lastAt):'No backup yet'):s&&s.configured?'Tap to sign in':'';
@@ -412,14 +429,14 @@ function setGeneral(){const c=S.cfg;
  ${NAT&&NAT.platform==='darwin'?`<div class="sg">Mac</div><label class="srow2"><span>Show in Dock</span><input class="ssw" id="sDock" type="checkbox" ${NAT.getDock()?'checked':''}></label><p class="shelp">Lets you Force Quit from the Dock. Turn off to float over full-screen apps. Restarts the app.</p>`:''}</div>`}
 function setInvoice(){const I=INV(),sw=['#2b2b2b','#0b1a33','#1d5fa3','#2e7d32','#8a2f4d','#f7b52a'];
  const f=(id,k,l,v)=>`<label class="srow2"><span>${l}</span><input class="sin" id="${id}" data-inv="${k}" type="${k==='tax'?'number':'text'}" ${k==='tax'?'min="0" step="0.1"':''} value="${esc(v)}"></label>`;
- return setHead('Invoice','home')+`<div class="sbody"><div class="smini" id="invMini">${miniInv()}</div>
+ return `<div class="invoice-workbench"><div class="sbody invoice-fields">
  <div class="sg" style="margin-top:10px">Business</div>${f('iBiz','biz','Name',I.biz)}${f('iTag','tagline','Tagline',I.tagline)}${f('iSoc','social','Handle or website',I.social)}
  <label class="srow2 tall"><span>Contact (footer)</span><textarea class="sin" id="iCon" data-inv="contact" rows="2">${esc(I.contact)}</textarea></label>
  <div class="sg">Payment</div>${f('iTax','tax','Default tax (%)',I.tax)}
  <label class="srow2 tall"><span>Payment details</span><textarea class="sin" id="iPay" data-inv="pay" rows="3" placeholder="Mobile money number, bank account, etc.">${esc(I.pay)}</textarea></label>
- <div class="sg">Look</div>${f('iTitle','title','Title',I.title)}${f('iFoot','foot','Thank-you message',I.foot)}
+ <details class="settings-advanced"><summary>Branding & finishing touches</summary><div class="sg">Look</div>${f('iTitle','title','Title',I.title)}${f('iFoot','foot','Thank-you message',I.foot)}
  <div class="srow2"><span>Header colour</span><span class="sws">${sw.map(c=>`<button class="swc${String(I.color).toLowerCase()===c?' sel':''}" data-swc="${c}" style="background:${c}" aria-label="Colour ${c}"></button>`).join('')}<input type="color" id="iCol" data-inv="color" value="${esc(I.color)}" aria-label="Custom colour"></span></div>
- <div class="srow2"><span>Logo</span>${I.logo?`<img src="${esc(I.logo)}" alt="" style="max-height:26px;max-width:70px;margin-left:auto">`:'<span class="sv">None</span>'}<label class="sbtn">${I.logo?'Change':'Upload'}<input type="file" id="sInvLogo" accept="image/*" hidden></label>${I.logo?'<button class="sbtn" id="invLogoRm">Remove</button>':''}</div></div>`}
+ <div class="srow2"><span>Logo</span>${I.logo?`<img src="${esc(I.logo)}" alt="" style="max-height:26px;max-width:70px;margin-left:auto">`:'<span class="sv">None</span>'}<label class="sbtn">${I.logo?'Change':'Upload'}<input type="file" id="sInvLogo" accept="image/*" hidden></label>${I.logo?'<button class="sbtn" id="invLogoRm">Remove</button>':''}</div></details></div><aside class="invoice-preview"><div class="preview-caption">Live preview · sample invoice</div><div id="invMini">${miniInv()}</div><p class="shelp">Sample values shown in ${esc(S.cfg.cur)}.</p></aside></div>`}
 function setWorkflow(){
  return setHead('Workflow','home')+`<div class="sbody"><p class="shelp" style="margin-top:8px">Phases group the steps of a project. Separate steps with commas. Renaming a step keeps each project's progress.</p>`+S.phases.map((p,i)=>`<div class="scd"><div class="sph"><input type="color" data-pc="${i}" value="${p.c}" aria-label="Colour for ${esc(p.n)}"><input class="sin sname" type="text" data-pn="${i}" value="${esc(p.n)}" aria-label="Phase name"></div><textarea class="sin sstep" data-ps="${i}" rows="2" aria-label="Steps for ${esc(p.n)}">${esc(p.s.join(', '))}</textarea></div>`).join('')+'</div>'}
 function setData(){
@@ -428,8 +445,15 @@ function setData(){
  <div class="sg">Data</div><div class="scd"><div class="sct"><b>Backup copies</b><small>Your data is saved on this computer, with daily copies kept for 14 days.</small></div>
  <div class="sbt"><button class="stx" id="bkCopy">Copy backup text</button><button class="stx" id="bkRestore">Restore from text</button><button class="stx sbad" id="rst" style="margin-left:auto">Reset settings</button></div>
  <textarea id="bkBox" class="sin sbox" rows="3" hidden aria-label="Backup text" placeholder="Paste backup text here, then press Restore from text."></textarea></div></div>`}
-function renderSet(){const pg={home:setHome,general:setGeneral,invoice:setInvoice,workflow:setWorkflow,data:setData}[sp]||setHome;$('set').innerHTML=pg();if(sp==='data'){renderUpd();renderCloud()}}
-function openSet(pg){if(pg)sp=pg;renderSet();if(sp==='home'||sp==='data')cloudRefresh()}
+function renderSet(){
+ if(sp==='home')sp='general';
+ const pages={general:['General','Everyday preferences, all in one place.',setGeneral],invoice:['Business & invoice','Your identity on every invoice. Set it once, see it as you go.',setInvoice],workflow:['Workflow','Shape the stages your projects move through.',setWorkflow],data:['Backups & updates','Know where your work is saved.',setData]};
+ const page=pages[sp]||pages.general;
+ $('set').innerHTML=`<div class="settings-head"><b>Settings</b><button class="sbtn" data-sp="x" aria-label="Close settings">Close</button></div><div class="settings-shell"><nav class="settings-nav" aria-label="Settings categories">${Object.entries(pages).map(([key,p])=>`<button data-sp="${key}" ${sp===key?'aria-current="page"':''}>${p[0]}</button>`).join('')}<small>StudioAid ${esc(VER)}</small></nav><main class="settings-main"><div class="settings-title"><h2>${page[0]}</h2><span id="settingsSaved" role="status">Saved on this computer</span></div><p class="shelp settings-intro">${page[1]}</p>${page[2]()}</main></div>`;
+ if(sp==='data'){renderUpd();renderCloud()}
+}
+function openSet(pg){if(pg)sp=pg==='home'?'general':pg;renderSet();if(sp==='data')cloudRefresh()}
+
 
 
 $('set').onclick=e=>{
@@ -449,14 +473,14 @@ $('set').oninput=e=>{const t=e.target,d=t.dataset;if(t.id==='sDock'){NAT.setDock
   if(t.id==='sTheme')S.cfg.theme=t.value;else if(t.id==='sMe')S.cfg.me=t.value;else if(t.id==='sCc')S.cfg.cc=t.value.replace(/\D/g,'');else if(t.id==='sCur')S.cfg.cur=t.value;else if(t.id==='sSize'){S.cfg.size=+t.value;t.previousElementSibling.textContent='Size ('+t.value+'px)'}
   else if(t.id==='sFade')S.cfg.fade=t.checked;
   else if(d.pc)S.phases[d.pc].c=t.value;else if(d.pn)S.phases[d.pn].n=t.value||' ';
-  else if(d.ps){const a=t.value.split(',').map(x=>x.trim()).filter(Boolean);if(!a.length)return;migrate(S.phases[d.ps].s,a);S.phases[d.ps].s=a}else if(d.inv){(S.cfg.inv=S.cfg.inv||{})[d.inv]=t.value;if($('invMini'))$('invMini').innerHTML=miniInv()}else return;save();render()};
+  else if(d.ps){const a=t.value.split(',').map(x=>x.trim()).filter(Boolean);if(!a.length)return;migrate(S.phases[d.ps].s,a);S.phases[d.ps].s=a}else if(d.inv){(S.cfg.inv=S.cfg.inv||{})[d.inv]=t.value;if($('invMini'))$('invMini').innerHTML=miniInv()}else return;save();render();if($('settingsSaved'))$('settingsSaved').textContent='Saved on this computer';if(sp==='invoice'&&$('invMini'))$('invMini').innerHTML=miniInv()};
 /* bubble */
 const bub=$('bubble'),M=14;let idleT,drag=null;
 const BW=()=>S.cfg.size;
 function setBubble(){const x=S.side==='l'?M:innerWidth-BW()-M;S.y=Math.max(M,Math.min(innerHeight-BW()-M,S.y));bub.style.left=x+'px';bub.style.top=S.y+'px'}
 function wake(){bub.classList.remove('idle');clearTimeout(idleT);if(S.cfg.fade)idleT=setTimeout(()=>{if(!$('bar').classList.contains('open'))bub.classList.add('idle')},3000)}
 function place(){setBubble();const bar=$('bar');if(!bar.classList.contains('open'))return;
-  const W=({B:960,C:620,P:480,S:420})[S.view]||380;bar.style.width=Math.min(W,innerWidth-24)+'px';const r=bub.getBoundingClientRect(),w=bar.offsetWidth,h=bar.offsetHeight,n=innerWidth<520;
+  const W=({B:960,C:620,P:480,S:1000})[S.view]||380;bar.style.width=Math.min(W,innerWidth-24)+'px';const r=bub.getBoundingClientRect(),w=bar.offsetWidth,h=bar.offsetHeight,n=innerWidth<520;
   const l=n?(innerWidth-w)/2:S.side==='l'?r.right+10:r.left-10-w,t=n?(r.top>innerHeight/2?r.top-h-10:r.bottom+10):r.top;
   bar.style.left=Math.max(8,Math.min(innerWidth-w-8,l))+'px';bar.style.top=Math.max(8,Math.min(innerHeight-h-8,t))+'px'}
 bub.addEventListener('pointerdown',e=>{bub.setPointerCapture(e.pointerId);drag={sx:e.clientX,sy:e.clientY,ox:bub.offsetLeft,oy:bub.offsetTop,moved:false};wake()});
@@ -609,3 +633,4 @@ if(NAT){document.documentElement.classList.add('native');let on=false;
 </script>
 </body>
 </html>
+
