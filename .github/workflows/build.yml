@@ -7,7 +7,13 @@ permissions:
   contents: write
 
 jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+    permissions:
+      contents: read
+
   build:
+    needs: test
     strategy:
       fail-fast: false
       matrix:
@@ -57,12 +63,13 @@ jobs:
           VER="0.1.${{ github.run_number }}"
           npm version "$VER" --no-git-tag-version --allow-same-version
           mkdir pkg
-          cp package.json core.js updater.js cloud.js cloud-config.js preload.js index.html pkg/
+          cp package.json core.js updater.js cloud.js cloud-config.js preload.js studio-data.js studio-model.js index.html pkg/
           cp -r assets pkg/assets
-          npx --yes @electron/asar pack pkg installers/app-update.asar
+          npx --yes @electron/asar@3.2.10 pack pkg installers/app-update.asar
           SHA=$(sha256sum installers/app-update.asar | cut -d' ' -f1)
           printf '{"version":"%s","file":"app-update.asar","sha256":"%s","shell":1}\n' "$VER" "$SHA" > installers/update.json
           cat installers/update.json
-      - run: gh release create "v0.1.${{ github.run_number }}" installers/* --repo "${{ github.repository }}" --title "StudioAid build ${{ github.run_number }}" --notes "Mac (.dmg) and Windows (.exe) installers, plus the small update package used by the app's built-in updater."
+      - run: gh release create "v0.1.${{ github.run_number }}" installers/* --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "StudioAid build ${{ github.run_number }}" --notes "Mac (.dmg) and Windows (.exe) installers, plus the small update package used by the app's built-in updater."
         env:
           GH_TOKEN: ${{ github.token }}
+

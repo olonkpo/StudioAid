@@ -20,7 +20,11 @@ The bubble appears at the right edge of your main screen, and a small icon appea
 
 ## Moving your existing data
 
-In the web version (or another computer), open Settings, press "Copy backup". In this app open Settings, paste into the box and press "Restore from box". Use the same steps to move data between your Mac and Windows computers.
+1. On the original computer, open **Settings → Backups & updates** and choose **Copy backup text**.
+2. Save the copied text in a private file before changing computers or restoring data.
+3. On the destination computer, open **Settings → Backups & updates**, choose **Restore from text**, paste the backup, then choose **Restore from text** again.
+
+Keep a backup of the destination computer's work before replacing it. A restore replaces its studio data; it does not merge two studios. The desktop app validates the incoming snapshot and saves a `before-restore-…json` safety copy before replacing its data file. If validation or the safety copy fails, the restore is rejected.
 
 ## Where your data lives
 
@@ -31,12 +35,14 @@ A daily copy is kept in the `backups` folder next to it (the last 14 days). "Sho
 
 ## Get a normal installer (no Terminal needed)
 
-This folder includes a ready-made GitHub recipe that builds the Mac installer (.dmg) and the Windows installer (.exe) for you in the cloud, for free.
+1. Open this repository's **Actions** tab and choose **Build installers**.
+2. Choose **Run workflow**, select the branch containing the changes (normally **main**), then choose **Run workflow** again.
+3. Wait for **Test app behavior**, both installer builds, and the release job to finish successfully.
+4. Open the repository's **Releases** page and download the installer for your computer. The release also contains the small package used by the app's built-in updater.
 
-1. Create a free account at https://github.com and make a new **private** repository.
-2. Upload everything in this folder to it. If the hidden `.github` folder does not upload, click "Add file", then "Create new file", type `.github/workflows/build.yml` as the name, and paste in the contents of that file.
-3. In the repository, open the **Actions** tab, choose "Build installers", and press "Run workflow".
-4. After a few minutes, open the finished run and download the two files under Artifacts: one contains the .dmg (Mac), the other the .exe (Windows).
+The workflow creates the version and tag automatically. The tag points to the exact commit used for that build, even if the branch receives more changes while the installers are building.
+
+Maintainers setting up a new repository should upload the complete project, including `.github/workflows`, and allow GitHub Actions to run.
 
 ## Which file do I download?
 
@@ -48,7 +54,7 @@ Not sure which Mac you have? Click the Apple menu, then About This Mac. If it sa
 
 ## Building on your own computer instead
 
-- On a Mac: `npm run dist:mac` makes one .dmg that works on both Apple Silicon and Intel Macs, in the `dist` folder.
+- On a Mac: `npm run dist:mac` makes separate Apple Silicon and Intel .dmg installers in the `dist` folder.
 - On Windows: `npm run dist:win` makes an installer in the `dist` folder.
 
 ## Opening the app the first time
@@ -62,21 +68,40 @@ Removing these warnings entirely requires paid developer accounts (Apple Develop
 
 ## Updates
 
-Open Settings, then Updates, and press Check for updates. Most updates are small (about 0.1 MB): the app downloads only the changed program files, checks them against a fingerprint, and restarts. You do not reinstall anything. A full installer is only needed now and then, when the app's engine itself changes; the app tells you when. If a small update ever fails to start, the app switches back to the installed version by itself.
+Open **Settings → Backups & updates** and press **Check** under Updates. Most updates use a small package: the app downloads only the changed program files, checks them against a fingerprint, and restarts. You do not reinstall anything. A full installer is only needed now and then, when the app's engine itself changes; the app tells you when. If a small update ever fails to start, the app switches back to the installed version by itself.
+
+Changes to the launcher (`main.js`), including startup rollback behavior, require a full installer. A small update replaces the app core but keeps the launcher from the installed version.
 
 ## Cloud backup (Google Drive)
 
-Settings, then Cloud backup, then Sign in with Google. Your browser opens, you approve, and StudioAid keeps a private backup in a hidden app folder of your own Google Drive. Only StudioAid can see it, and your other Drive files are not touched. After that it backs up automatically a few seconds after you change something. On a new computer, sign in and your data is fetched. If two computers have different data, the app asks which to keep before anything is overwritten, and it keeps a safety copy of the local data first.
+Open **Settings → Backups & updates → Sign in with Google**. Your browser opens, you approve, and StudioAid keeps a private backup in a hidden app folder of your own Google Drive. Only StudioAid can see it, and your other Drive files are not touched. After that it backs up automatically a few seconds after you change something. On a new computer, sign in and your data is fetched. If two computers have different data, the app asks which to keep before anything is overwritten, and it keeps a safety copy of the local data first.
 
 Maintainers: the Google client ID and secret are not stored in the repository. Add them as repository secrets named GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET (Settings, Secrets and variables, Actions) and the build writes them into the app.
 
 ## Dock and Force Quit (Mac)
 
-By default StudioAid shows in the Dock, so it appears in the Force Quit window (Command+Option+Esc). If you prefer a menu-bar-only app that can float over full-screen apps, turn off "Show in the Dock and Force Quit list" in Settings. The menu bar icon always has Quit.
+By default StudioAid shows in the Dock, so it appears in the Force Quit window (Command+Option+Esc). If you prefer a menu-bar-only app that can float over full-screen apps, turn off **Show in Dock** in **Settings → General**. The menu bar icon always has Quit.
 
 ## Notes
 
 - The bubble lives on your main screen only.
 - You will be asked once to allow notifications. You get one a day when steps are due or overdue.
 - Email and WhatsApp buttons open your default mail app and browser.
-- The two computers do not sync automatically yet. Use Copy backup and Restore to move data.
+- Google Drive backup checks for changes on startup and periodically while the app is running. Keep both computers online and allow backup to finish before switching; conflicting edits require you to choose which copy to keep.
+
+
+## Validation before a release
+
+Run `npm test` to check the app's data and calculation behavior. These tests use Node's built-in test runner and do not require Electron to launch. GitHub runs them on Linux, macOS, and Windows for pushes to main, pull requests, and before packaging installers.
+
+Before distributing a release, also open the app on Mac and Windows and check the bubble and keyboard shortcut, settings navigation, invoice preview and printed output, backup export and restore, and updating from the previous version. Automated checks do not replace these desktop checks.
+
+The app and its small update package both include `studio-data.js` and `studio-model.js`. Keep their packaging lists in sync when adding shared app modules. The release workflow pins the ASAR packer version so its Node requirements do not change unexpectedly.
+
+## Invoice consistency and revisions
+
+Invoice totals, payment balances and reminder amounts use the same calculation. Once marked as sent, an invoice keeps its tax, currency, client details and business branding. Payment records can still be added. Use **Create invoice revision** to reopen the invoice for editing; its previous snapshot is retained. Money summaries and reports show different currencies separately, without converting or adding them together.
+
+Existing sent invoices are frozen at their current saved values when this update first opens them. This cannot reconstruct an older invoice that was already changed by previous app versions. Compare important invoices against the PDFs you originally sent.
+
+Settings now previews the same invoice renderer used for printing. In browser-only use, export a backup separately; the desktop app provides the daily local backup copies.

@@ -2,7 +2,11 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('native', {
   interactive: on => ipcRenderer.send('interactive', on),
   load: () => ipcRenderer.sendSync('load'),
-  save: json => ipcRenderer.send('save', json),
+  save: json => ipcRenderer.invoke('save', json),
+  restore: (json, expectedRevision) => ipcRenderer.invoke('restore', json, expectedRevision),
+  revision: () => ipcRenderer.sendSync('data-revision'),
+  ready: () => ipcRenderer.send('renderer-ready'),
+  cloudConflict: () => ipcRenderer.invoke('cloud-conflict'),
   checkUpdate: () => ipcRenderer.invoke('update-check'),
   cloudStatus: () => ipcRenderer.invoke('cloud-status'),
   cloudSignIn: () => ipcRenderer.invoke('cloud-signin'),
@@ -20,3 +24,4 @@ contextBridge.exposeInMainWorld('native', {
   notify: (title, body) => ipcRenderer.send('notify', { title, body }),
   onToggle: cb => ipcRenderer.on('toggle', (_e, force) => cb(force))
 });
+

@@ -7,7 +7,7 @@ const crypto = require('crypto');
 
 module.exports = function makeUpdater({ fetch, dir, runVersion, shellApi, repo, platform, arch }) {
   const cmp = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number); for (let i = 0; i < 3; i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d; } return 0; };
-  const trusted = u => { try { const h = new URL(u).hostname; return h === 'github.com' || h.endsWith('.github.com') || h.endsWith('.githubusercontent.com'); } catch (_) { return false; } };
+  const trusted = u => { try { const parsed = new URL(u), h = parsed.hostname; return parsed.protocol === 'https:' && (h === 'github.com' || h.endsWith('.github.com') || h.endsWith('.githubusercontent.com')); } catch (_) { return false; } };
   const headers = { 'User-Agent': 'StudioAid', Accept: 'application/vnd.github+json' };
 
   async function check() {
@@ -36,6 +36,7 @@ module.exports = function makeUpdater({ fetch, dir, runVersion, shellApi, repo, 
 
   async function install(patch) {
     if (!patch || !trusted(patch.url)) throw new Error('Untrusted update source');
+    if (!/^\d+\.\d+\.\d+$/.test(patch.version)) throw new Error('Invalid update version');
     const r = await fetch(patch.url, { headers: { 'User-Agent': 'StudioAid' } });
     if (!r.ok) throw new Error('Download failed: HTTP ' + r.status);
     const buf = Buffer.from(await r.arrayBuffer());
@@ -44,9 +45,24 @@ module.exports = function makeUpdater({ fetch, dir, runVersion, shellApi, repo, 
     fs.mkdirSync(dir, { recursive: true });
     const name = `app-${patch.version}.asar`, final = path.join(dir, name), tmp = final + '.tmp';
     fs.writeFileSync(tmp, buf); fs.renameSync(tmp, final);
-    fs.writeFileSync(path.join(dir, 'current.json'), JSON.stringify({ version: patch.version, file: name, tries: 0 }));
-    fs.readdirSync(dir).filter(f => /^app-.*\.asar$/.test(f) && f !== name).forEach(f => { try { fs.unlinkSync(path.join(dir, f)); } catch (_) {} });
+    const pointer = path.join(dir, 'current.json');
+    let previous = null;
+    try {
+      const current = JSON.parse(fs.readFileSync(pointer, 'utf8'));
+      const candidate = current.healthy ? current : current.previous;
+      if (candidate && candidate.file !== name && candidate.file === `app-${candidate.version}.asar` && fs.existsSync(path.join(dir, candidate.file))) {
+        previous = { version: candidate.version, file: candidate.file, tries: 0, healthy: true };
+      }
+    } catch (_) {}
+    const next = { version: patch.version, file: name, tries: 0, healthy: false };
+    if (previous) next.previous = previous;
+    const pointerTmp = pointer + '.tmp';
+    fs.writeFileSync(pointerTmp, JSON.stringify(next));
+    fs.renameSync(pointerTmp, pointer);
+    // Preserve one healthy package for rollback instead of deleting every prior update.
+    fs.readdirSync(dir).filter(f => /^app-.*\.asar$/.test(f) && f !== name && (!previous || f !== previous.file)).forEach(f => { try { fs.unlinkSync(path.join(dir, f)); } catch (_) {} });
     return true;
   }
   return { check, install, cmp };
 };
+

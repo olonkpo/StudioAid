@@ -4,6 +4,7 @@ const makeCloud = require('./cloud');
 const path = require('path');
 const fs = require('fs');
 const makeUpdater = require('./updater');
+const { parseBackup, createBackup, hasStudioData } = require('./studio-data');
 
 const APP_ICON = path.join(__dirname, 'assets', 'icon.png');
 
@@ -42,7 +43,7 @@ function createWindow() {
   win.on('close', e => { if (!quitting) { e.preventDefault(); win.hide(); } });
   win.on('closed', () => { win = null; });
   win.loadFile(path.join(__dirname, 'index.html'));
-  win.webContents.once('did-finish-load', markGood);
+  // A loaded page may still have broken renderer code. Only renderer-ready marks an update healthy.
   const external = url => { if (/^(https?|mailto):/i.test(url)) shell.openExternal(url); };
   win.webContents.setWindowOpenHandler(({ url }) => { external(url); return { action: 'deny' }; });
   win.webContents.on('will-navigate', (e, url) => { if (url !== win.webContents.getURL()) { e.preventDefault(); external(url); } });
@@ -53,18 +54,53 @@ function togglePanel() {
   win.show(); win.focus(); win.webContents.send('toggle');
 }
 
+// Changes are serialized by Electron's main thread; each committed snapshot gets a revision.
+let dataRevision = 0, dataLoadError = null;
+function atomicWrite(file, contents) {
+  const tmp = file + '.tmp';
+  try { fs.writeFileSync(tmp, contents); fs.renameSync(tmp, file); }
+  catch (error) { try { fs.unlinkSync(tmp); } catch (_) {} throw error; }
+}
+function validatedJSON(json) { return JSON.stringify(parseBackup(json)); }
+function transferableJSON(json) { return validatedJSON(createBackup(parseBackup(json))); }
+const DEVICE_PREFS = ['y', 'side', 'vf', 'sf', 'ln', 'un', 'lb', 'all', 'phase'];
 function saveData(json) {
+  if (dataLoadError) throw new Error('Existing saved data could not be loaded. Restore a valid backup before saving new work.');
+  const normalized = validatedJSON(json);
+  fs.mkdirSync(backupDir(), { recursive: true });
+  // A backup failure must not prevent saving the current work, or falsely report a failed save.
+  let warning = '';
+  const day = path.join(backupDir(), 'data-' + new Date().toISOString().slice(0, 10) + '.json');
   try {
-    fs.mkdirSync(backupDir(), { recursive: true });
-    const tmp = dataFile() + '.tmp';
-    fs.writeFileSync(tmp, json); fs.renameSync(tmp, dataFile());
-    const day = path.join(backupDir(), 'data-' + new Date().toISOString().slice(0, 10) + '.json');
-    if (!fs.existsSync(day)) {
-      fs.writeFileSync(day, json);
-      const old = fs.readdirSync(backupDir()).filter(f => f.startsWith('data-')).sort();
-      old.slice(0, Math.max(0, old.length - 14)).forEach(f => fs.unlinkSync(path.join(backupDir(), f)));
-    }
-  } catch (e) { console.error('save failed', e); }
+    if (!fs.existsSync(day)) fs.writeFileSync(day, fs.existsSync(dataFile()) ? fs.readFileSync(dataFile(), 'utf8') : normalized);
+    const old = fs.readdirSync(backupDir()).filter(f => /^data-\d{4}-\d{2}-\d{2}\.json$/.test(f)).sort();
+    old.slice(0, Math.max(0, old.length - 14)).forEach(f => fs.unlinkSync(path.join(backupDir(), f)));
+  } catch (error) { warning = 'Saved, but the daily backup could not be updated.'; }
+  atomicWrite(dataFile(), normalized);
+  dataRevision++;
+  return { ok: true, revision: dataRevision, warning };
+}
+function restoreData(json, expectedRevision) {
+  const restored = parseBackup(createBackup(parseBackup(json))); // Validate studio content; imported device preferences never replace this computer's preferences.
+  if (expectedRevision !== undefined && expectedRevision !== dataRevision) {
+    return { ok: false, error: 'Your work changed while the restore was loading. Review the latest data and try again.', revision: dataRevision };
+  }
+  fs.mkdirSync(backupDir(), { recursive: true });
+  const current = readData();
+  if (current !== null) {
+    try {
+      const local = parseBackup(current);
+      for (const key of DEVICE_PREFS) if (Object.prototype.hasOwnProperty.call(local, key)) restored[key] = local[key];
+    } catch (_) { /* A corrupt file may be explicitly replaced, but still gets a recovery copy below. */ }
+    // If the safety copy fails, leave the original data in place.
+    const recovery = path.join(backupDir(), 'before-restore-' + Date.now() + '-' + dataRevision + '.json');
+    fs.writeFileSync(recovery, current, { flag: 'wx' });
+  }
+  const normalized = JSON.stringify(restored);
+  atomicWrite(dataFile(), normalized);
+  dataRevision++;
+  dataLoadError = null;
+  return { ok: true, json: normalized, revision: dataRevision };
 }
 
 // ---- Cloud backup (Google Drive)
@@ -81,55 +117,112 @@ const cloud = makeCloud({
   fetch: (u, o) => net.fetch(u, o), store: cstore, device: os.hostname(), endpoints: testEp,
   openUrl: u => { if (testEp && process.env.STUDIOAID_TEST_OPENFILE) fs.writeFileSync(process.env.STUDIOAID_TEST_OPENFILE, u); else shell.openExternal(u); }
 });
-const readData = () => { try { return fs.readFileSync(dataFile(), 'utf8'); } catch (_) { return null; } };
+const readData = () => {
+  try { return fs.readFileSync(dataFile(), 'utf8'); }
+  catch (error) { if (error.code === 'ENOENT') return null; throw error; }
+};
 const send = (ch, p) => { if (alive()) win.webContents.send(ch, p); };
-let bt;
-function scheduleBackup() { // back up 20 seconds after the last change
-  const s = cloud.status(); if (!s.signedIn) return;
-  cloud.markDirty(); if (s.conflict) return;
+let bt, cloudQueue = Promise.resolve(), cloudCandidate = null;
+const withCloud = work => {
+  const next = cloudQueue.then(work, work);
+  cloudQueue = next.catch(() => {});
+  return next;
+};
+function signalConflict() {
+  cloudCandidate = null;
+  cloud.setConflict();
+  send('cloud-event', { kind: 'conflict' });
+}
+async function backupCurrent(force) {
+  const json = readData();
+  if (!json) return { ok: false, error: 'Nothing to back up yet.' };
+  const revision = dataRevision;
+  const result = await cloud.backup(JSON.stringify(createBackup(parseBackup(json))), { force });
+  if (dataRevision !== revision) cloud.markDirty();
+  return result;
+}
+async function cloudProposal() {
+  const revision = dataRevision;
+  const pulled = await cloud.pull(); // Fetch only; acceptance happens after a validated restore.
+  if (!pulled.ok || !pulled.json) return pulled;
+  if (revision !== dataRevision) { signalConflict(); return { ok: false, conflict: true, error: 'Your work changed while the cloud copy was loading.', revision: dataRevision }; }
+  try {
+    const json = transferableJSON(pulled.json);
+    cloudCandidate = { json, version: pulled.version, revision };
+    return { ok: true, json, revision };
+  } catch (error) {
+    return { ok: false, error: 'The cloud backup is invalid: ' + error.message, revision: dataRevision };
+  }
+}
+function scheduleBackup() {
+  const status = cloud.status();
+  if (!status.signedIn) return;
+  cloud.markDirty();
+  cloudCandidate = null;
   clearTimeout(bt);
-  bt = setTimeout(async () => { const json = readData(); if (!json) return; const r = await cloud.backup(json); send('cloud-event', { kind: r.ok ? 'backup' : r.conflict ? 'conflict' : 'error', error: r.error }); }, 20000);
+  if (status.conflict) return;
+  bt = setTimeout(() => withCloud(async () => {
+    if (cloud.status().conflict || !cloud.status().signedIn) return;
+    const r = await backupCurrent(false);
+    send('cloud-event', { kind: r.ok ? 'backup' : r.conflict ? 'conflict' : 'error', error: r.error });
+  }).catch(error => send('cloud-event', { kind: 'error', error: error.message })), 20000);
 }
-async function startupSync() {
-  const s = cloud.status(); if (!s.signedIn || s.conflict) return;
-  const c = await cloud.check(); if (!c.ok) return;
-  if (c.state === 'newer') {
-    if (!s.dirty) { const p = await cloud.pull(); if (p.ok && p.json) send('cloud-apply', p.json); }
-    else { cloud.setConflict(); send('cloud-event', { kind: 'conflict' }); }
-  } else if (c.state === 'none' || (c.state === 'same' && s.dirty)) {
-    const json = readData(); if (json) { const r = await cloud.backup(json); send('cloud-event', { kind: r.ok ? 'backup' : 'error', error: r.error }); }
+async function syncCloud() {
+  const status = cloud.status();
+  if (!status.signedIn || status.conflict || cloudCandidate) return;
+  const revision = dataRevision;
+  const checked = await cloud.check();
+  if (!checked.ok) return checked;
+  if (checked.state === 'newer') {
+    // Re-read state after the network request, including writes made while it was in flight.
+    if (revision !== dataRevision || cloud.status().dirty) { signalConflict(); return; }
+    const proposal = await cloudProposal();
+    if (proposal.ok && proposal.json) send('cloud-apply', { json: proposal.json, revision: proposal.revision });
+  } else if (checked.state === 'none' || (checked.state === 'same' && cloud.status().dirty)) {
+    const r = await backupCurrent(false);
+    send('cloud-event', { kind: r.ok ? 'backup' : r.conflict ? 'conflict' : 'error', error: r.error });
   }
 }
+function startupSync() { return withCloud(syncCloud).catch(error => send('cloud-event', { kind: 'error', error: error.message })); }
 ipcMain.handle('cloud-status', () => cloud.status());
-ipcMain.handle('cloud-signin', async () => {
-  const r = await cloud.signIn(); if (!r.ok) return r;
+ipcMain.handle('cloud-signin', () => withCloud(async () => {
+  const r = await cloud.signIn();
+  if (!r.ok) return r;
+  const revision = dataRevision;
   const c = await cloud.check();
-  if (c.ok && c.state === 'none') { const json = readData(); if (json) await cloud.backup(json); }
-  else if (c.ok && c.state === 'newer') {
-    let local = null; try { local = JSON.parse(readData() || 'null'); } catch (_) {}
-    if (!local || !(local.projects || []).length) { const p = await cloud.pull(); if (p.ok && p.json) send('cloud-apply', p.json); } // new computer: just fetch it
-    else cloud.setConflict(); // both sides have data: let the user choose
+  if (!c.ok) return c;
+  if (c.state === 'none') await backupCurrent(false);
+  else if (c.state === 'newer') {
+    let occupied = true;
+    try { const raw = readData(); occupied = raw !== null && hasStudioData(parseBackup(raw)); } catch (_) { /* Unreadable existing data must never be treated as an empty computer. */ }
+    if (!occupied && revision === dataRevision) {
+      const proposal = await cloudProposal();
+      if (proposal.ok && proposal.json) send('cloud-apply', { json: proposal.json, revision: proposal.revision });
+    } else signalConflict();
   }
   return r;
-});
-ipcMain.handle('cloud-signout', () => cloud.signOut());
-ipcMain.handle('cloud-check', () => cloud.check());
-ipcMain.handle('cloud-backup', async (_e, force) => { const json = readData(); if (!json) return { ok: false, error: 'Nothing to back up yet.' }; return cloud.backup(json, { force }); });
-ipcMain.handle('cloud-pull', async () => {
-  const r = await cloud.pull();
-  if (r.ok && r.json) { try { fs.mkdirSync(backupDir(), { recursive: true }); const cur = readData(); if (cur) fs.writeFileSync(path.join(backupDir(), 'before-cloud-restore-' + Date.now() + '.json'), cur); } catch (_) {} } // safety copy
-  return r;
-});
+}));
+ipcMain.handle('cloud-signout', () => withCloud(() => { clearTimeout(bt); cloudCandidate = null; return cloud.signOut(); }));
+ipcMain.handle('cloud-check', () => withCloud(() => cloud.check()));
+ipcMain.handle('cloud-backup', (_e, force) => withCloud(() => backupCurrent(!!force)));
+ipcMain.handle('cloud-pull', () => withCloud(cloudProposal));
+ipcMain.handle('cloud-conflict', () => { signalConflict(); return { ok: true }; });
 
 // ---- Updates
 const REPO = 'olonkpo/StudioAid';
 const updatesDir = () => path.join(app.getPath('userData'), 'updates');
 let upd;
 const U = () => upd || (upd = makeUpdater({ fetch: (u, o) => net.fetch(u, o), dir: updatesDir(), runVersion: RUN_VER, shellApi: SHELL_API, repo: REPO, platform: process.platform, arch: process.arch }));
-function markGood() { // the app started properly, so the update is safe to keep
-  try { const cf = path.join(updatesDir(), 'current.json'), cur = JSON.parse(fs.readFileSync(cf, 'utf8')); if (cur.tries) { cur.tries = 0; fs.writeFileSync(cf, JSON.stringify(cur)); } } catch (_) {}
+function markGood(event) {
+  if (!alive() || event.sender !== win.webContents || dataLoadError) return;
+  try {
+    const cf = path.join(updatesDir(), 'current.json');
+    const cur = JSON.parse(fs.readFileSync(cf, 'utf8'));
+    if (cur.version === RUN_VER) atomicWrite(cf, JSON.stringify(Object.assign({}, cur, { tries: 0, healthy: true })));
+  } catch (_) {}
   console.log('StudioAid ready, version', RUN_VER, 'from', __dirname);
 }
+ipcMain.on('renderer-ready', markGood);
 function restartApp() { setTimeout(() => { quitting = true; app.relaunch(); app.quit(); }, 700); }
 ipcMain.handle('update-check', () => U().check());
 ipcMain.handle('update-install', async () => {
@@ -142,8 +235,35 @@ ipcMain.on('set-dock', (_e, on) => { prefs.dock = !!on; savePrefs(); restartApp(
 ipcMain.on('open-external', (_e, url) => { if (typeof url === 'string' && url.startsWith(`https://github.com/${REPO}/`)) shell.openExternal(url); });
 
 ipcMain.on('interactive', (_e, on) => alive() && win.setIgnoreMouseEvents(!on, { forward: true }));
-ipcMain.on('save', (_e, json) => { saveData(json); scheduleBackup(); });
-ipcMain.on('load', e => { try { e.returnValue = fs.existsSync(dataFile()) ? fs.readFileSync(dataFile(), 'utf8') : null; } catch (_) { e.returnValue = null; } });
+ipcMain.handle('save', (_e, json) => {
+  try { const result = saveData(json); scheduleBackup(); return result; }
+  catch (error) { return { ok: false, error: 'Could not save your work: ' + error.message, revision: dataRevision }; }
+});
+ipcMain.on('data-revision', event => { event.returnValue = dataRevision; });
+ipcMain.handle('restore', (_e, json, expectedRevision) => {
+  try {
+    const normalized = transferableJSON(json);
+    const candidate = cloudCandidate;
+    const result = restoreData(normalized, expectedRevision);
+    if (!result.ok) return result;
+    cloudCandidate = null;
+    if (candidate && candidate.json === normalized && candidate.revision === expectedRevision) {
+      cloud.accept(candidate.version);
+    } else scheduleBackup();
+    return result;
+  } catch (error) { return { ok: false, error: 'Could not restore your work: ' + error.message, revision: dataRevision }; }
+});
+ipcMain.on('load', event => {
+  try {
+    const json = readData();
+    if (json !== null) parseBackup(json); // A corrupt snapshot is not a fresh installation.
+    dataLoadError = null;
+    event.returnValue = json;
+  } catch (error) {
+    dataLoadError = 'Could not read saved data: ' + error.message;
+    event.returnValue = { ok: false, error: dataLoadError, revision: dataRevision };
+  }
+});
 ipcMain.on('notify', (_e, { title, body }) => {
   if (!Notification.isSupported()) return;
   const n = new Notification({ title, body, icon: APP_ICON });

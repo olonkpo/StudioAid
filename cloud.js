@@ -21,7 +21,7 @@ const msg = e => (e && e.code === 'signedout') ? 'Please sign in again.' : Strin
 module.exports = function makeCloud({ clientId, clientSecret, fetch, openUrl, store, device, endpoints }) {
   const E = Object.assign({}, DEFAULTS, endpoints || {});
   const configured = !!(clientId && clientSecret);
-  let access = null, exp = 0;
+  let access = null, exp = 0, changeSerial = 0;
   const st = () => store.get() || {};
   const put = o => store.set(Object.assign({}, st(), o));
 
@@ -95,13 +95,14 @@ module.exports = function makeCloud({ clientId, clientSecret, fetch, openUrl, st
 
   async function backup(json, { force } = {}) {
     try {
+      const serial = changeSerial;
       const f = await find(), s = st();
       if (f && !force && f.version !== s.lastSeen) { put({ conflict: true }); return { ok: false, conflict: true, modified: f.modifiedTime, device: dev(f) }; }
       const meta = { appProperties: { device: device || '', app: 'studioaid' } }, fields = 'id,modifiedTime,version';
       let res;
       if (f) { const m = multipart(meta, json); res = await api(`${E.upload}/files/${f.id}?uploadType=multipart&fields=${fields}`, { method: 'PATCH', headers: { 'Content-Type': m.type }, body: m.body }); }
       else { const m = multipart(Object.assign({ name: FILE, parents: ['appDataFolder'] }, meta), json); res = await api(`${E.upload}/files?uploadType=multipart&fields=${fields}`, { method: 'POST', headers: { 'Content-Type': m.type }, body: m.body }); }
-      put({ lastSeen: res.version, lastAt: Date.now(), dirty: false, conflict: false });
+      put({ lastSeen: res.version, lastAt: Date.now(), dirty: serial !== changeSerial, conflict: false });
       return { ok: true };
     } catch (e) { return { ok: false, error: msg(e) }; }
   }
@@ -110,8 +111,7 @@ module.exports = function makeCloud({ clientId, clientSecret, fetch, openUrl, st
       const f = await find();
       if (!f) return { ok: true, empty: true };
       const json = await (await raw(`${E.drive}/files/${f.id}?alt=media`)).text();
-      put({ lastSeen: f.version, lastAt: Date.now(), dirty: false, conflict: false });
-      return { ok: true, json, modified: f.modifiedTime, device: dev(f) };
+      return { ok: true, json, version: f.version, modified: f.modifiedTime, device: dev(f) };
     } catch (e) { return { ok: false, error: msg(e) }; }
   }
   async function check() {
@@ -128,6 +128,8 @@ module.exports = function makeCloud({ clientId, clientSecret, fetch, openUrl, st
     return { ok: true };
   }
   return { status, signIn, signOut, backup, pull, check, configured,
-    markDirty: () => { if (!st().dirty) put({ dirty: true }); },
+    markDirty: () => { changeSerial++; if (!st().dirty) put({ dirty: true }); },
+    accept: version => put({ lastSeen: version, lastAt: Date.now(), dirty: false, conflict: false }),
     setConflict: () => put({ conflict: true }) };
 };
+
