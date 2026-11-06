@@ -5,6 +5,8 @@ const path = require('path');
 const fs = require('fs');
 const makeUpdater = require('./updater');
 
+const APP_ICON = path.join(__dirname, 'assets', 'icon.png');
+
 const RUN_VER = require('./package.json').version;
 const SHELL_API = global.__SHELL_API || 1;
 
@@ -27,6 +29,7 @@ function createWindow() {
   const area = screen.getPrimaryDisplay().workArea;
   win = new BrowserWindow({
     x: area.x, y: area.y, width: area.width, height: area.height,
+    icon: APP_ICON,
     frame: false, transparent: true, hasShadow: false, resizable: false, movable: false,
     skipTaskbar: true, alwaysOnTop: true, fullscreenable: false, backgroundColor: '#00000000',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false }
@@ -143,7 +146,7 @@ ipcMain.on('save', (_e, json) => { saveData(json); scheduleBackup(); });
 ipcMain.on('load', e => { try { e.returnValue = fs.existsSync(dataFile()) ? fs.readFileSync(dataFile(), 'utf8') : null; } catch (_) { e.returnValue = null; } });
 ipcMain.on('notify', (_e, { title, body }) => {
   if (!Notification.isSupported()) return;
-  const n = new Notification({ title, body });
+  const n = new Notification({ title, body, icon: APP_ICON });
   n.on('click', togglePanel);
   n.show();
 });
@@ -156,6 +159,7 @@ app.setAppUserModelId('com.studioaid.app');
 
 app.whenReady().then(() => {
   if (app.dock) {
+    app.dock.setIcon(APP_ICON);
     if (prefs.dock) { app.dock.show(); app.dock.setMenu(Menu.buildFromTemplate([{ label: 'Show or hide panel', click: togglePanel }])); } else app.dock.hide();
   }
   createWindow();
@@ -169,7 +173,7 @@ app.whenReady().then(() => {
   tray.setContextMenu(Menu.buildFromTemplate([
     { label: 'Show or hide panel', click: togglePanel },
     { label: 'Open at login', type: 'checkbox', checked: app.getLoginItemSettings().openAtLogin, click: i => app.setLoginItemSettings({ openAtLogin: i.checked }) },
-    { label: 'Check for updates', click: async () => { const r = await U().check(); if (Notification.isSupported()) new Notification({ title: 'StudioAid', body: !r.ok ? 'Could not check for updates.' : r.newer ? 'Version ' + r.latest + ' is available. Open the panel, then Settings, then Updates.' : 'You have the latest version (' + r.current + ').' }).show(); } },
+    { label: 'Check for updates', click: async () => { const r = await U().check(); if (Notification.isSupported()) new Notification({ icon: APP_ICON, title: 'StudioAid', body: !r.ok ? 'Could not check for updates.' : r.newer ? 'Version ' + r.latest + ' is available. Open the panel, then Settings, then Updates.' : 'You have the latest version (' + r.current + ').' }).show(); } },
     { label: 'Show data folder', click: () => shell.openPath(app.getPath('userData')) },
     { type: 'separator' },
     { label: 'Quit', role: 'quit' }
@@ -188,3 +192,4 @@ app.whenReady().then(() => {
 
 app.on('before-quit', () => { quitting = true; });
 app.on('will-quit', () => globalShortcut.unregisterAll());
+
