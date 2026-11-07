@@ -29,6 +29,8 @@
       "studio-workflow.js",
       "studio-booking.js",
       "studio-search.js",
+      "studio-operations.js",
+      "studio-client.js",
       "preload.js",
       "index.html",
       "assets/**"

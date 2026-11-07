@@ -1,8 +1,8 @@
 (function (root, factory) {
   'use strict';
-  if (typeof module === 'object' && module.exports) module.exports = factory();
-  else root.StudioData = factory();
-})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./studio-workflow'));
+  else root.StudioData = factory(root.StudioWorkflow);
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (Workflow) {
   'use strict';
 
   const DEFAULT_PHASES = [
@@ -13,7 +13,7 @@
   const DEFAULT_CFG = { theme: 'auto', size: 44, fade: true, cur: 'GHS', me: 'Ebenezer', cc: '233' };
   const DEFAULT_INV = { biz: '', tagline: '', contact: '', pay: '', foot: 'Thank you!', color: '#2b2b2b', title: 'Invoice', logo: '', tax: '0', social: '' };
   const DEVICE_PREFS = ['y', 'side', 'vf', 'sf', 'ln', 'un', 'lb', 'all', 'phase'];
-  const PERSISTENT = ['projects', 'phases', 'cfg', 'contacts', 'docs', 'packages', 'dtpl', 'mtpl', 'invN', ...DEVICE_PREFS];
+  const PERSISTENT = ['projects', 'phases', 'cfg', 'contacts', 'docs', 'packages', 'dtpl', 'mtpl', 'invN', 'workflowPresets', ...DEVICE_PREFS];
   const BAD_KEYS = new Set(['__proto__', 'prototype', 'constructor']);
   const own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
   const fail = (path, reason) => { throw new Error('Invalid StudioAid backup: ' + path + ' ' + reason); };
@@ -116,7 +116,7 @@
   }
   function validateProjectWorkflow(workflow, path) {
     object(workflow, path);
-    if (!['wedding', 'portrait', 'event'].includes(workflow.preset)) fail(path + '.preset', 'is not a supported preset');
+    if (!['wedding', 'portrait', 'event'].includes(workflow.preset) && !(typeof workflow.preset==='string'&&/^custom-[a-z0-9][a-z0-9-]{0,72}$/.test(workflow.preset))) fail(path + '.preset', 'is not a supported preset');
     const phases = array(workflow.phases, path + '.phases');
     if (!phases.length) fail(path + '.phases', 'must include a phase');
     phases.forEach((phase, i) => {
@@ -147,9 +147,31 @@
     if (booking.depositType === 'percent' && Number(booking.depositValue) > 100) fail(path + '.depositValue', 'must not exceed 100 percent');
     date(booking.depositDue, path + '.depositDue');
     date(booking.balanceDue, path + '.balanceDue');
+    if (own(booking, 'installments')) {
+      if (array(booking.installments, path + '.installments').length > 36) fail(path + '.installments', 'must include at most 36 milestones');
+      uniqueRecords(booking.installments, path + '.installments', (row, k) => {
+        string(row.id, k + '.id', true);
+        if (row.id.length > 80 || BAD_KEYS.has(row.id)) fail(k + '.id', 'must be a safe identifier of at most 80 characters');
+        string(row.label, k + '.label', true);
+        if (row.label.trim().length > 120) fail(k + '.label', 'must be at most 120 characters');
+        number(row.amount, k + '.amount', { min: 0.01 });
+        date(row.due, k + '.due');
+      });
+    }
+  }
+  function timestamp(value,path){string(value,path,true);if(!Number.isFinite(Date.parse(value)))fail(path,'must be a timestamp');}
+  function validateExtras(p,path){
+    if(own(p,'schedule')){const v=object(p.schedule,path+'.schedule');for(const key of ['durationMinutes','setupMinutes','travelMinutes']){number(v[key],path+'.schedule.'+key,{min:key==='durationMinutes'?1:0,integer:true});if(Number(v[key])>10080)fail(path+'.schedule.'+key,'is too large');}}
+    if(own(p,'delivery')){const v=object(p.delivery,path+'.delivery');if(!['not_started','gallery_sent','selections_received','revisions','approved','delivered'].includes(v.stage))fail(path+'.delivery.stage','is unsupported');for(const key of ['gallerySentAt','selectionsDue','approvedAt','deliveredAt'])date(v[key],path+'.delivery.'+key);string(v.revisions,path+'.delivery.revisions');}
+    if(own(p,'expenses'))uniqueRecords(p.expenses,path+'.expenses',(v,k)=>{date(v.date,k+'.date');if(!v.date)fail(k+'.date','is required');string(v.category,k+'.category',true);string(v.description,k+'.description');number(v.amount,k+'.amount',{min:0.01});string(v.currency,k+'.currency',true);});
+    if(own(p,'timeEntries'))uniqueRecords(p.timeEntries,path+'.timeEntries',(v,k)=>{date(v.date,k+'.date');if(!v.date)fail(k+'.date','is required');string(v.description,k+'.description');number(v.minutes,k+'.minutes',{min:1,integer:true});number(v.rate,k+'.rate',{min:0});string(v.currency,k+'.currency',true);});
+    if(own(p,'messageDrafts')){const drafts=object(p.messageDrafts,path+'.messageDrafts');for(const name of Object.keys(drafts)){const draft=object(drafts[name],path+'.messageDrafts.'+name);string(draft.subject,path+'.draft.subject');string(draft.body,path+'.draft.body');timestamp(draft.updatedAt,path+'.draft.updatedAt');}}
+    if(own(p,'clientOffer')){const offer=object(p.clientOffer,path+'.clientOffer');if(offer.app!=='StudioAidOffer'||offer.version!==1)fail(path+'.clientOffer','is unsupported');string(offer.offerId,path+'.clientOffer.offerId',true);string(offer.projectId,path+'.clientOffer.projectId',true);timestamp(offer.createdAt,path+'.clientOffer.createdAt');timestamp(offer.expiresAt,path+'.clientOffer.expiresAt');object(offer.quote,path+'.clientOffer.quote');number(offer.quote.total,path+'.clientOffer.quote.total');}
+    if(own(p,'clientResponses'))array(p.clientResponses,path+'.clientResponses').forEach((v,i)=>{const k=path+'.clientResponses['+i+']';object(v,k);string(v.offerId,k+'.offerId',true);string(v.projectId,k+'.projectId',true);if(!['approved','declined','details'].includes(v.status))fail(k+'.status','is unsupported');timestamp(v.submittedAt,k+'.submittedAt');const response=object(v.response,k+'.response');for(const key of ['name','email','phone','location','brief','preferences'])string(response[key],k+'.response.'+key);});
   }
   function validateProject(p, path) {
     string(p.name, path + '.name');
+    validateExtras(p,path);
     strings(p, ['client', 'email', 'phone', 'link', 'time', 'location', 'pkg', 'brief', 'notes', 'invDesc', 'invNote', 'invCurrency'], path);
     fields(p, ['cid', 'inv'], path, id);
     fields(p, ['date', 'invDate', 'invDue'], path, date);
@@ -199,6 +221,12 @@
       if (own(data, key) && !choices.includes(data[key])) fail('preferences.' + key, 'is not supported');
     }
     data.projects = uniqueRecords(data.projects, 'projects', validateProject);
+    data.workflowPresets = uniqueRecords(own(data, 'workflowPresets') ? data.workflowPresets : [], 'workflowPresets', () => {}).map((preset, i) => {
+      const path = 'workflowPresets[' + i + ']';
+      if (!Workflow || typeof Workflow.validatePreset !== 'function') fail(path, 'requires StudioWorkflow validation');
+      try { return Workflow.validatePreset(preset); }
+      catch (error) { fail(path, error.message); }
+    });
     data.phases = own(data, 'phases') ? data.phases : clone(DEFAULT_PHASES);
     array(data.phases, 'phases');
     if (!data.phases.length) fail('phases', 'must include at least one phase');
@@ -273,7 +301,7 @@
     // silently replace it. Restore still calls parseBackup and rejects it.
     let data;
     try { data = parseBackup(state); } catch (_) { return true; }
-    return Boolean(data.projects.length || data.contacts.length || data.docs.length || data.packages.length ||
+    return Boolean(data.projects.length || data.workflowPresets.length || data.contacts.length || data.docs.length || data.packages.length ||
       Object.keys(data.dtpl).length || Object.keys(data.mtpl).length || data.invN > 999 ||
       !equal(data.phases, DEFAULT_PHASES) || !equal(data.cfg, Object.assign({}, DEFAULT_CFG, { inv: DEFAULT_INV })));
   }

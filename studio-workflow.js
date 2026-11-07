@@ -119,14 +119,67 @@
     if (state.workflow) project.workflow = state.workflow;
     return project;
   }
-  function presets() { return clone(PRESETS); }
+  function validatePreset(raw) {
+    object(raw, 'custom preset');
+    if (typeof raw.id !== 'string' || !/^custom-[a-z0-9][a-z0-9-]{0,72}$/.test(raw.id)) fail('custom preset ID must start with custom- and use lowercase letters, digits or hyphens');
+    if (typeof raw.name !== 'string' || !raw.name.trim() || raw.name.trim().length > 100) fail('preset name is required and must be at most 100 characters');
+    if (raw.description !== undefined && (typeof raw.description !== 'string' || raw.description.length > 500)) fail('preset description must be at most 500 characters');
+    if (!Array.isArray(raw.phases) || !raw.phases.length || raw.phases.length > 12) fail('a preset needs between 1 and 12 phases');
+    object(raw.offsets, 'preset offsets');
+    const seen = new Set(), phases = raw.phases.map((phase, i) => {
+      object(phase, 'phase ' + (i + 1));
+      if (typeof phase.n !== 'string' || !phase.n.trim() || phase.n.trim().length > 100) fail('phase name is required and must be at most 100 characters');
+      if (typeof phase.c !== 'string' || !/^#[0-9a-f]{6}$/i.test(phase.c)) fail('phase color must be a hex color');
+      if (!Array.isArray(phase.s) || !phase.s.length) fail('every phase needs at least one step');
+      return { n: phase.n.trim(), c: phase.c, s: phase.s.map(value => {
+        const step = stepName(value).trim();
+        if (step.length > 120 || unsafe.has(step) || seen.has(step)) fail('steps must be unique, safe names of at most 120 characters');
+        seen.add(step); return step;
+      }) };
+    });
+    if (seen.size > 100) fail('a preset can contain at most 100 steps');
+    const offsets = {};
+    for (const step of seen) {
+      if (!own(raw.offsets, step) || !Number.isSafeInteger(raw.offsets[step]) || Math.abs(raw.offsets[step]) > 3650) fail('every step needs a whole-day offset between -3650 and 3650');
+      offsets[step] = raw.offsets[step];
+    }
+    for (const step of Object.keys(raw.offsets)) if (!seen.has(step)) fail('offsets may only refer to preset steps');
+    return { id: raw.id, name: raw.name.trim(), description: (raw.description || '').trim(), phases, offsets };
+  }
+  function presets(customList) {
+    if (customList !== undefined && !Array.isArray(customList)) fail('custom presets must be an array');
+    const custom = (customList || []).map(validatePreset), ids = new Set();
+    for (const preset of custom) { if (ids.has(preset.id)) fail('custom preset IDs must be unique'); ids.add(preset.id); }
+    return clone(PRESETS).concat(custom);
+  }
+  function savePreset(state, raw) {
+    object(state, 'studio');
+    const preset = validatePreset(raw), existing = presets(state.workflowPresets).filter(p => p.id.startsWith('custom-'));
+    const index = existing.findIndex(p => p.id === preset.id);
+    if (index < 0) existing.push(preset); else existing[index] = preset;
+    state.workflowPresets = clone(existing);
+    return clone(preset);
+  }
+  function capturePreset(project, options, fallbackPhases) {
+    object(project, 'project'); object(options, 'preset details');
+    const phases = getPhases(project, fallbackPhases), date = dateValue(project.date || ''), offsets = {};
+    for (const step of phases.flatMap(phase => phase.s)) {
+      const current = project.workflow && project.workflow.offsets && project.workflow.offsets[step];
+      if (Number.isSafeInteger(current)) offsets[step] = current;
+      else if (date && project.due && project.due[step]) {
+        const due = dateValue(project.due[step]);
+        offsets[step] = due ? Math.round((new Date(due + 'T00:00:00Z') - new Date(date + 'T00:00:00Z')) / 86400000) : 0;
+      } else offsets[step] = 0;
+    }
+    return validatePreset({ id: options.id, name: options.name, description: options.description || '', phases, offsets });
+  }
   function getPhases(project, fallback) {
     const phases = project && project.workflow && Array.isArray(project.workflow.phases) ? project.workflow.phases : (fallback || []);
     return clone(phases);
   }
   function getSteps(project, fallback) { return [...new Set(getPhases(project, fallback).flatMap(phase => phase.s))]; }
-  function applyPreset(project, presetId, shootDate) {
-    const preset = PRESETS.find(p => p.id === presetId);
+  function applyPreset(project, presetId, shootDate, customList) {
+    const preset = presets(customList).find(p => p.id === presetId);
     if (!preset) fail('unknown preset');
     const state = workingState(project);
     const date = dateValue(shootDate === undefined ? (project.date || '') : shootDate);
@@ -185,5 +238,5 @@
     project.workflow = state.workflow;
     return project;
   }
-  return Object.freeze({ presets, getPhases, getSteps, applyPreset, reschedule, setDue, resetDue });
+  return Object.freeze({ presets, validatePreset, savePreset, capturePreset, getPhases, getSteps, applyPreset, reschedule, setDue, resetDue });
 });

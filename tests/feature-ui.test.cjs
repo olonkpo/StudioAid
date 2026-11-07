@@ -19,3 +19,15 @@ test('canceled deposit plans do not say the deposit was received',()=>{
  const p={name:'Canceled',amount:1000,cells:{}};Booking.configure(p,{stage:'canceled',depositValue:30});const context={bookingSummary:p=>Booking.summary(p,{tax:0},'2026-11-06'),esc:x=>String(x),invoiceMoney:(p,n)=>'GHS '+n,stageOptions:()=>'',fmt:x=>x};
  vm.createContext(context);vm.runInContext(extract('function bookingStrip(','function paymentPlan(')+extract('function paymentPlanAmounts(','function changeBooking('),context);const result=context.bookingStrip(p)+context.paymentPlanAmounts(p);assert.match(result,/canceled/);assert.match(result,/collection (is )?paused/);assert.doesNotMatch(result,/Deposit received/);
 });
+test('a deleted custom template remains selectable as the saved project timeline',()=>{
+ const context={S:{workflowPresets:[]},StudioWorkflow:Workflow,esc:x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))};
+ vm.createContext(context);vm.runInContext(extract('const presetOptions=','function bookingStrip(')+';result=presetOptions("custom-deleted");',context);
+ assert.match(context.result,/<option value="custom-deleted" selected>Current project timeline<\/option>/);
+ vm.runInContext('result=presetOptions(\'custom-"<script>\');',context);assert(!context.result.includes('<script>'));
+});
+test('leaving revision notes preserves the next navigation click without rebuilding the screen',()=>{
+ const studio={},p={id:'p',cells:{}},context={$:()=>studio,wsField:()=>false,curP:()=>p,StudioOperations:require('../studio-operations'),save(){},renderStudio(){throw Error('Unexpected screen rebuild')},render(){throw Error('Unexpected board rebuild')}};
+ vm.createContext(context);vm.runInContext(extract("$('studio').oninput=","$('studio').onkeydown="),context);
+ const target={id:'',dataset:{delivery:'revisions'},value:'Crop the first image'};
+ studio.oninput({target});studio.onchange({target});assert.equal(p.delivery.revisions,'Crop the first image');
+});

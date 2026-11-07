@@ -17,7 +17,7 @@
     Object.freeze({ id: 'canceled', label: 'Canceled' })
   ]);
   const defaults = Object.freeze({ stage: 'enquiry', depositType: 'percent', depositValue: 0, depositDue: '', balanceDue: '' });
-  const keys = Object.keys(defaults);
+  const keys = Object.keys(defaults).concat('installments');
   const owns = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
   const fail = message => { throw new Error('Invalid booking: ' + message); };
   function object(value, label) {
@@ -50,13 +50,27 @@
       for (const key of Object.keys(patch)) if (!keys.includes(key)) fail('unknown setting ' + key + '.');
     }
     const result = {};
-    for (const key of keys) result[key] = patch && owns(patch, key) ? patch[key] : existing && owns(existing, key) ? existing[key] : defaults[key];
+    for (const key of Object.keys(defaults)) result[key] = patch && owns(patch, key) ? patch[key] : existing && owns(existing, key) ? existing[key] : defaults[key];
     if (!stages.some(stage => stage.id === result.stage)) fail('stage is not supported.');
     if (result.depositType !== 'percent' && result.depositType !== 'fixed') fail('deposit type must be percent or fixed.');
     result.depositValue = numeric(result.depositValue);
     if (result.depositType === 'percent' && result.depositValue > 100) fail('deposit percentage must be between 0 and 100.');
     if (result.depositType === 'fixed') result.depositValue = money(result.depositValue);
     date(result.depositDue, 'deposit due date'); date(result.balanceDue, 'balance due date');
+    if ((patch && owns(patch, 'installments')) || (existing && owns(existing, 'installments'))) {
+      const input = patch && owns(patch, 'installments') ? patch.installments : existing.installments;
+      if (!Array.isArray(input) || input.length > 36) fail('installments must be an array of at most 36 milestones.');
+      const seen = new Set();
+      result.installments = input.map((item, i) => {
+        object(item, 'installment ' + (i + 1));
+        if (typeof item.id !== 'string' || !item.id.trim() || item.id.length > 80 || ['__proto__', 'constructor', 'prototype'].includes(item.id) || seen.has(item.id)) fail('installment IDs must be unique nonempty strings.');
+        if (typeof item.label !== 'string' || !item.label.trim() || item.label.trim().length > 120) fail('installment label is required and must be at most 120 characters.');
+        const amount = money(numeric(item.amount));
+        if (amount <= 0) fail('installment amount must be greater than zero.');
+        date(item.due, 'installment due date'); seen.add(item.id);
+        return { id: item.id, label: item.label.trim(), amount, due: item.due };
+      });
+    }
     return result;
   }
 
@@ -86,15 +100,29 @@
     const depositRequired = money(Math.min(maximum, requested));
     const depositPaid = money(Math.min(depositRequired, Math.max(0, paid)));
     const depositRemaining = canceled ? 0 : money(Math.min(balance, Math.max(0, depositRequired - depositPaid)));
-    const nextAmount = canceled ? 0 : depositRemaining > 0 ? depositRemaining : balance;
+    const postDepositTotal = money(Math.max(0, maximum - depositRequired));
+    const planned = (booking.installments || []).map((item, index) => ({ ...item, index })).sort((a, b) => (a.due || '9999-99-99').localeCompare(b.due || '9999-99-99') || a.index - b.index);
+    const plannedTotal = money(planned.reduce((sum, item) => sum + item.amount, 0));
+    const planOvercommitted = plannedTotal > postDepositTotal;
+    let budget = postDepositTotal, availablePaid = money(Math.max(0, paid - depositRequired));
+    const installments = planned.map(item => {
+      const scheduledAmount = money(Math.min(item.amount, budget)); budget = money(Math.max(0, budget - scheduledAmount));
+      const installmentPaid = money(Math.min(availablePaid, scheduledAmount)); availablePaid = money(Math.max(0, availablePaid - installmentPaid));
+      const remaining = canceled ? 0 : money(Math.max(0, scheduledAmount - installmentPaid));
+      return { id: item.id, label: item.label, amount: item.amount, due: item.due, scheduledAmount, paid: installmentPaid, remaining, overdue: remaining > 0 && item.due !== '' && item.due < today, clipped: scheduledAmount < item.amount };
+    });
+    const installmentRemaining = money(installments.reduce((sum, item) => sum + item.remaining, 0));
+    const unallocatedBalance = canceled ? 0 : money(Math.max(0, balance - depositRemaining - installmentRemaining));
+    const nextInstallment = installments.find(item => item.remaining > 0);
+    const nextAmount = canceled ? 0 : depositRemaining > 0 ? depositRemaining : nextInstallment ? nextInstallment.remaining : unallocatedBalance;
     const invoiceDue = Model.invoiceView(project).invDue || '';
-    const nextDue = nextAmount <= 0 ? '' : depositRemaining > 0 ? booking.depositDue : booking.balanceDue || invoiceDue;
+    const nextDue = nextAmount <= 0 ? '' : depositRemaining > 0 ? booking.depositDue : nextInstallment ? nextInstallment.due || booking.balanceDue || invoiceDue : booking.balanceDue || invoiceDue;
     const overdue = nextAmount > 0 && nextDue !== '' && nextDue < today;
     return {
       stage: booking.stage,
       label: stages.find(stage => stage.id === booking.stage).label,
       total, paid, balance, depositRequired, depositPaid, depositRemaining,
-      nextAmount, nextDue, overdue,
+      installments, unallocatedBalance, planOvercommitted, nextAmount, nextDue, overdue,
       readyToBook: !canceled && depositRemaining === 0
     };
   }

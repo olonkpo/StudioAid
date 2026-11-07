@@ -96,7 +96,7 @@ Run `npm test` to check the app's data and calculation behavior. These tests use
 
 Before distributing a release, also open the app on Mac and Windows and check the bubble and keyboard shortcut, settings navigation, invoice preview and printed output, backup export and restore, and updating from the previous version. Automated checks do not replace these desktop checks.
 
-The app and its small update package include the shared data, invoice model, workflow, booking and quick-search modules. Keep their packaging lists in sync when adding shared app modules. The release workflow pins the ASAR packer version so its Node requirements do not change unexpectedly.
+The app and its small update package include the shared data, invoice model, workflow, booking, quick-search, operations and client-response modules. Keep their packaging lists in sync when adding shared app modules. The release workflow pins the ASAR packer version so its Node requirements do not change unexpectedly.
 
 ## Invoice consistency and revisions
 
@@ -121,3 +121,29 @@ Milestones use the project's invoice total and recorded payments to show what is
 ## Quick actions
 
 While StudioAid has focus, press **Command+K** on Mac or **Control+K** on Windows to open quick actions. You can also choose **Search / actions** in the panel or right-click the bubble. Search projects, clients, invoices or documents and open the selected result from the keyboard. Quick actions also let you create a booking, record a payment or complete a task; completing a task offers Undo.
+
+## Conflicts and reusable timelines
+
+Set a start time, shoot duration, setup buffer and travel buffer in **Client & shoot**. Overlap warnings include those buffers and shoots that run past midnight. Archived and canceled bookings do not block the schedule. Warnings help you decide whether to reschedule; they do not prevent a booking.
+
+Save a project's timeline as a reusable template from **Workflow**, or create and edit templates in **Settings → Workflow**. Task offsets are days before or after the shoot date. Applying a template stores an independent copy on the project, so editing or deleting the library template keeps existing project timelines intact.
+
+## Delivery, drafts and repeat work
+
+Use **Delivery** to track gallery sent, selections received, revision requests, approval and final delivery. Optional selection deadlines highlight clients you are waiting for. These stages and notes are changed by you.
+
+Messages save unfinished subject and message text separately for each project and template. Returning to a message restores the saved draft. **Reset draft to template** restores the template and offers Undo.
+
+**Duplicate project** copies the brief, effective prices and tax, currency, client details (optional), checklist text and timeline into a new enquiry. Pick its shoot date to rebuild automatic deadlines. Payments, invoice identities, progress, expenses, drafts, gallery links and delivery or approval history start fresh.
+
+## Costs, profit and installments
+
+Record expenses and work time in **Costs & profit**. Estimated profit uses revenue after discount, excluding sales tax, minus expenses and time valued at the hourly rates you enter. Reports show currencies separately; there is no currency conversion. Work time is an estimate of labor cost, while cash net subtracts monetary expenses from payments received.
+
+Add installment amounts and optional due dates under **Payments**. These amounts divide the balance after the deposit. Received payments cover the deposit first, followed by installments in due-date order. Overcommitted plans show a warning and are capped at the invoice total; adjust the plan before exporting a client offer. Stages and payment records remain deliberate actions.
+
+## Client Desk
+
+The project's **Client page** exports a quote containing the intended client details, shoot details, prices and payment plan. Open [Client Desk](https://studioaid-client-desk.pebblyowlet8.chatgpt.site), sign in, upload the offer and generate an expiring invitation. Download the client's response and import it into the matching StudioAid project for review before applying it. Applying a response preserves prices and does not mark a booking as confirmed or paid. Changed quotes require a fresh offer.
+
+Client Desk is currently owner-private while external client access awaits approval. The platform gate blocks outside clients until its audience is changed. Once external access is enabled, individual offers still require their secret invitation link, and the studio dashboard requires sign-in. This companion is separate from the desktop installer; it does not automatically upload or synchronize your studio. See [the companion README](client-portal/README.md) for its build, storage and access details.
