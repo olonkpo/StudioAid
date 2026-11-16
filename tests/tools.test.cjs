@@ -16,6 +16,7 @@ test('project exports use frozen invoice pricing and currency while JSON retains
  assert.equal(plan.errors.length,0);assert.equal(plan.projects[0].amount,1000);assert.equal(plan.projects[0].invDisc,100);assert.equal(plan.projects[0].invTax,10);assert.equal(plan.projects[0].invCurrency,'USD');
  assert.deepEqual(Data.parseBackup(Data.createBackup(s)).projects[0],p);
  for(const type of ['payments','expenses','time'])assert(Tools.exportCSV(s,type).startsWith('\uFEFF'));
+ p.pay.push({amt:'-25',date:'2026-11-17',note:'Refund'});const payments=Tools.parseCSV(Tools.exportCSV(s,'payments'));assert.equal(payments[2][3],'-25','refunds must remain numeric in spreadsheets');
 });
 test('reminders respect due dates, settings, completion, cancellation and sample projects',()=>{
  const s=state();s.phases=[{n:'Work',c:'#123456',s:['Edit','Delivery']}];s.projects=[{id:'p',name:'Soon',date:'2026-11-18',amount:100,cells:{Edit:'done'},due:{Edit:'2026-11-15',Delivery:'2026-11-16'},booking:{stage:'booked',depositType:'fixed',depositValue:20,depositDue:'2026-11-16',balanceDue:''}}];

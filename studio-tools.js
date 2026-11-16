@@ -3,7 +3,7 @@
  const columns={projects:['name','client','email','phone','date','time','location','package','amount','currency','discount','tax'],contacts:['name','email','phone','notes'],payments:['project','client','date','amount','currency','note'],expenses:['project','date','category','description','amount','currency'],time:['project','date','description','minutes','hourly_rate','currency']};
  const defaults={tasks:true,payments:true,shoots:true,delivery:true,leadDays:2};
  const formula=s=>/^[\s]*[=+\-@]/.test(s);
- function csvCell(value){let s=String(value??'');if(formula(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';}
+ function csvCell(value){let s=String(value??'');if(typeof value!=='number'&&formula(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';}
  function parseCSV(input){
   if(typeof input!=='string'||input.length>2e6)throw Error('Choose a CSV file smaller than 2 MB.');
   const text=input.replace(/^\uFEFF/,''),rows=[];let row=[],cell='',quoted=false,closed=false;
@@ -19,9 +19,9 @@
   if(type==='contacts')for(const c of state.contacts||[])rows.push(columns.contacts.map(k=>c[k]||''));
   else for(const p of state.projects||[]){const v=Model.invoiceView(p),c=Model.calculate(p,state.cfg&&state.cfg.inv||{}),cur=Model.invoiceCurrency(p,state.cfg&&state.cfg.cur||'GHS');
    if(type==='projects')rows.push([p.name,p.client,p.email,p.phone,p.date,p.time,p.location,p.pkg,c.sub,cur,c.disc,c.r]);
-   if(type==='payments')for(const x of p.pay||[])rows.push([p.name,p.client,x.date,x.amt,cur,x.note]);
-   if(type==='expenses')for(const x of p.expenses||[])rows.push([p.name,x.date,x.category,x.description,x.amount,x.currency]);
-   if(type==='time')for(const x of p.timeEntries||[])rows.push([p.name,x.date,x.description,x.minutes,x.rate,x.currency]);
+   if(type==='payments')for(const x of p.pay||[])rows.push([p.name,p.client,x.date,Number(x.amt),cur,x.note]);
+   if(type==='expenses')for(const x of p.expenses||[])rows.push([p.name,x.date,x.category,x.description,Number(x.amount),x.currency]);
+   if(type==='time')for(const x of p.timeEntries||[])rows.push([p.name,x.date,x.description,Number(x.minutes),Number(x.rate),x.currency]);
   }
   return '\uFEFF'+[columns[type],...rows].map(row=>row.map(csvCell).join(',')).join('\r\n');
  }
