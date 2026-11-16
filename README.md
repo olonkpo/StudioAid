@@ -4,6 +4,8 @@ A floating bubble that stays on top of your other apps. Tap it (or use the short
 
 ## First run (about 5 minutes)
 
+On a new studio, the setup guide asks for a studio name and currency and can add a zero-price sample portrait project. Try its workflow, set a price in Payments, and prepare a quote from Client page. Existing studios are not prompted. Reopen the guide from **Settings → Backups & updates**.
+
 1. Install Node.js from https://nodejs.org (choose the LTS version).
 2. Open a terminal in this folder.
    - Mac: open Terminal, type `cd ` (with a space), drag this folder into the window, press Return.
@@ -19,6 +21,10 @@ The bubble appears at the right edge of your main screen, and a small icon appea
 - Windows: Control+Alt+Space (falls back to Control+Shift+Space if taken)
 
 ## Moving your existing data
+
+**Settings → Backups & updates** now downloads complete JSON backups and spreadsheet CSV files. CSV exports cover projects, clients, payments, expenses and work time. CSV imports add projects or clients after a row preview; all errors must be corrected before importing, and duplicate rows are skipped. CSV carries basic prices, while JSON retains full invoice lines, payment history, templates and studio settings.
+
+To restore, choose a JSON backup or a local daily/recovery copy, review its project/client/document counts, confirm replacement, then restore. StudioAid keeps the existing recovery-copy and concurrent-edit protections. The text-based restore remains available. Local backup selection requires this version's desktop app core; browser use supports uploaded files.
 
 1. On the original computer, open **Settings → Backups & updates** and choose **Copy backup text**.
 2. Save the copied text in a private file before changing computers or restoring data.
@@ -97,6 +103,18 @@ Run `npm test` to check the app's data and calculation behavior. These tests use
 Before distributing a release, also open the app on Mac and Windows and check the bubble and keyboard shortcut, settings navigation, invoice preview and printed output, backup export and restore, and updating from the previous version. Automated checks do not replace these desktop checks.
 
 The app and its small update package include the shared data, invoice model, workflow, booking, quick-search, operations and client-response modules. Keep their packaging lists in sync when adding shared app modules. The release workflow pins the ASAR packer version so its Node requirements do not change unexpectedly.
+
+The shared `studio-tools.js` module is also required in both packaging lists. The top-priority data and onboarding flows have regression coverage in `tests/tools.test.cjs`; native backup reads are covered with the persistence tests.
+
+## Signed releases
+
+The installer workflow defaults to signed builds and requires your Apple and Windows signing credentials. [Signing setup](docs/signing.md) lists the repository secrets and verification steps. This source change alone does not produce signed installers. A successful signed installer build is required before claiming a signed release. An explicit unsigned development-build option remains available.
+
+## Reminder preferences and merge fields
+
+Choose local task, payment, upcoming-shoot and delivery reminders in **Settings → Backups & updates**, including 0–30 days' notice before shoots. While the app is running, it checks hourly and sends one daily summary. It does not send client messages automatically or run while the app is closed. Opening the reminder list takes you to the related project.
+
+Message and document templates accept `{client_name}`, `{shoot_date}`, `{balance_due}`, `{project_name}` and `{studio_name}` alongside the existing short field names. Balances use the project's currency and recorded payments. Saved message drafts remain under your control; reset a draft to refresh it from its template.
 
 ## Invoice consistency and revisions
 

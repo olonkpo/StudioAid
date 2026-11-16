@@ -1,4 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const Tools=require('../studio-tools');
 const Workflow=require('../studio-workflow'),Booking=require('../studio-booking'),Model=require('../studio-model');
 const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8'),source=html.match(/<script>([\s\S]*?)<\/script>/)[1];
 const extract=(start,end)=>source.slice(source.indexOf(start),source.indexOf(end,source.indexOf(start)));
@@ -12,8 +13,8 @@ test('mixed legacy and preset board groups are nonempty and every step appears o
 });
 test('calendar and due notifications consistently omit canceled and archived work',()=>{
  const nodes={cal:{}},notifications=[];const projects=[{id:'a',name:'Active job',date:'2026-11-06',cells:{},due:{Delivery:'2026-11-06'}},{id:'c',name:'Canceled job',date:'2026-11-06',cells:{},due:{Delivery:'2026-11-06'},booking:{stage:'canceled'}},{id:'old',name:'Archived job',arch:true,date:'2026-11-06',cells:{},due:{Delivery:'2026-11-06'}}];
- const context={Date:FixedDate,S:{projects},view:new FixedDate(2026,10,1),key,cols:p=>Workflow.getSteps(p,phases),esc:x=>x,stat:()=> '--mute',$:id=>nodes[id],NAT:{notify:(...x)=>notifications.push(x)},save(){}};
- vm.createContext(context);vm.runInContext(extract('const activeWork=','const bookingSummary=')+extract('function renderCal(){','function renderBar(){')+extract('function notifyDue(){','if(NAT){document.documentElement'),context);context.renderCal();context.notifyDue();assert(nodes.cal.innerHTML.includes('Active job'));assert(!nodes.cal.innerHTML.includes('Canceled job'));assert(!nodes.cal.innerHTML.includes('Archived job'));assert.equal(notifications.length,1);assert.match(notifications[0][1],/^1 step due/);
+ const context={StudioTools:Tools,Date:FixedDate,S:{projects,cfg:{},phases},view:new FixedDate(2026,10,1),key,cols:p=>Workflow.getSteps(p,phases),esc:x=>x,stat:()=> '--mute',$:id=>nodes[id],NAT:{notify:(...x)=>notifications.push(x)},save(){}};
+ vm.createContext(context);vm.runInContext(extract('const activeWork=','const bookingSummary=')+extract('function renderCal(){','function renderBar(){')+extract('function notifyDue(){','if(NAT){document.documentElement'),context);context.renderCal();context.notifyDue();assert(nodes.cal.innerHTML.includes('Active job'));assert(!nodes.cal.innerHTML.includes('Canceled job'));assert(!nodes.cal.innerHTML.includes('Archived job'));assert.equal(notifications.length,1);assert.match(notifications[0][1],/^2 reminders/);
 });
 test('canceled deposit plans do not say the deposit was received',()=>{
  const p={name:'Canceled',amount:1000,cells:{}};Booking.configure(p,{stage:'canceled',depositValue:30});const context={bookingSummary:p=>Booking.summary(p,{tax:0},'2026-11-06'),esc:x=>String(x),invoiceMoney:(p,n)=>'GHS '+n,stageOptions:()=>'',fmt:x=>x};
@@ -35,7 +36,7 @@ test('returning to a blank template editor creates a new template and preserves 
  const original={id:'custom-original',name:'Original',description:'Keep this template',phases:[{n:'Shoot',c:'#123456',s:['Photograph']}],offsets:{Photograph:0}};
  const S={workflowPresets:[structuredClone(original)]},nodes={set:{}};
  Object.defineProperty(nodes.set,'innerHTML',{set(){for(const id of ['customPresetName','customPresetDescription','customPresetSteps','presetEditor'])nodes[id]={value:'',focus(){}};}});
- const context={S,StudioWorkflow:Workflow,$:id=>nodes[id],PH:phases,uid:()=> 'new',save(){},toast(){},updateSaveStatus(){},cloudRefresh(){},appBrand:()=>'',esc:x=>x,VER:'test',setGeneral:()=>'',setInvoice:()=>'',setWorkflow:()=>'',setData:()=>''};
+ const context={toolsClick:async()=>false,S,StudioWorkflow:Workflow,$:id=>nodes[id],PH:phases,uid:()=> 'new',save(){},toast(){},updateSaveStatus(){},cloudRefresh(){},appBrand:()=>'',esc:x=>x,VER:'test',setGeneral:()=>'',setInvoice:()=>'',setWorkflow:()=>'',setData:()=>''};
  vm.createContext(context);
  vm.runInContext("let editingPresetId='',sp='workflow';"+extract('function presetLines(','function workflowLibrary(')+extract('function saveCustomPreset(){','function downloadJSON(')+extract('function renderSet(){','function openSet(')+extract("$('set').onclick=","$('set').onchange="),context);
  const click=(selector,dataset,id='')=>nodes.set.onclick({target:{id,closest:s=>s===selector?{dataset}:null}});

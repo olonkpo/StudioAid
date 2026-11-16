@@ -4,6 +4,8 @@ contextBridge.exposeInMainWorld('native', {
   load: () => ipcRenderer.sendSync('load'),
   save: json => ipcRenderer.invoke('save', json),
   restore: (json, expectedRevision) => ipcRenderer.invoke('restore', json, expectedRevision),
+  listBackups: () => ipcRenderer.invoke('backup-list'),
+  readBackup: name => ipcRenderer.invoke('backup-read', name),
   revision: () => ipcRenderer.sendSync('data-revision'),
   ready: () => ipcRenderer.send('renderer-ready'),
   cloudConflict: () => ipcRenderer.invoke('cloud-conflict'),

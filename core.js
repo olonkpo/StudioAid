@@ -240,6 +240,26 @@ ipcMain.handle('save', (_e, json) => {
   catch (error) { return { ok: false, error: 'Could not save your work: ' + error.message, revision: dataRevision }; }
 });
 ipcMain.on('data-revision', event => { event.returnValue = dataRevision; });
+const backupName = value => typeof value === 'string' && /^(data-\d{4}-\d{2}-\d{2}|before-restore-\d+-\d+)\.json$/.test(value);
+ipcMain.handle('backup-list', () => {
+  try {
+    if (!fs.existsSync(backupDir())) return { ok: true, backups: [] };
+    const backups = fs.readdirSync(backupDir()).filter(backupName).map(name => {
+      const info = fs.lstatSync(path.join(backupDir(), name));
+      return info.isFile() ? { name, size: info.size, modified: info.mtime.toISOString() } : null;
+    }).filter(Boolean).sort((a,b) => b.modified.localeCompare(a.modified)).slice(0,50);
+    return { ok: true, backups };
+  } catch (error) { return { ok: false, error: 'Could not list backup copies: ' + error.message }; }
+});
+ipcMain.handle('backup-read', (_event, name) => {
+  try {
+    if (!backupName(name)) throw new Error('Choose a backup from the list.');
+    const file = path.join(backupDir(), name), info = fs.lstatSync(file);
+    if (!info.isFile() || info.size > 20 * 1024 * 1024) throw new Error('This backup is unavailable or larger than 20 MB.');
+    const json = fs.readFileSync(file, 'utf8'); parseBackup(json);
+    return { ok: true, json };
+  } catch (error) { return { ok: false, error: 'Could not read this backup: ' + error.message }; }
+});
 ipcMain.handle('restore', (_e, json, expectedRevision) => {
   try {
     const normalized = transferableJSON(json);

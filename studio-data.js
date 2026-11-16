@@ -239,6 +239,12 @@
     });
     const cfg = own(data, 'cfg') ? object(data.cfg, 'cfg') : {};
     strings(cfg, ['theme', 'cur', 'me', 'cc'], 'cfg'); booleans(cfg, ['fade'], 'cfg');
+    booleans(cfg, ['onboarded'], 'cfg');
+    if (own(cfg, 'reminders')) {
+      const reminders = object(cfg.reminders, 'cfg.reminders');
+      booleans(reminders, ['tasks','payments','shoots','delivery'], 'cfg.reminders');
+      if (own(reminders,'leadDays')) { number(reminders.leadDays,'cfg.reminders.leadDays',{min:0,integer:true}); if(Number(reminders.leadDays)>30) fail('cfg.reminders.leadDays','must be at most 30'); reminders.leadDays=Number(reminders.leadDays); }
+    }
     if (own(cfg, 'theme') && !['auto', 'light', 'dark'].includes(cfg.theme)) fail('cfg.theme', 'is not a supported theme');
     fields(cfg, ['size'], 'cfg', (v, p) => number(v, p, { min: 1 }));
     const inv = own(cfg, 'inv') ? cfg.inv : {};

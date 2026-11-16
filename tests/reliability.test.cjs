@@ -69,6 +69,14 @@ test('acknowledged saves persist validated state before returning success', t =>
   assert.equal(result.ok, true); assert.equal(result.revision, 1);
   assert.equal(JSON.parse(h.read()).projects[0].name, 'Saved');
 });
+test('local backup picker lists only supported files and validates reads without restoring',t=>{
+ const h=coreHarness(t);h.save(snapshot('Original'));const dir=path.join(h.dir,'backups');
+ fs.writeFileSync(path.join(dir,'unrelated.json'),snapshot('Other'));fs.mkdirSync(path.join(dir,'data-2001-01-01.json'));
+ const list=h.handles.get('backup-list')({});assert.equal(list.ok,true);assert.equal(list.backups.length,1);
+ const name=list.backups[0].name,read=h.handles.get('backup-read')({},name);assert.equal(read.ok,true);assert.equal(JSON.parse(read.json).projects[0].name,'Original');
+ assert.equal(h.handles.get('backup-read')({},'../data.json').ok,false);assert.equal(h.handles.get('backup-read')({},'unrelated.json').ok,false);
+ fs.writeFileSync(path.join(dir,name),'invalid');assert.equal(h.handles.get('backup-read')({},name).ok,false);assert.equal(JSON.parse(h.read()).projects[0].name,'Original');
+});
 
 test('malformed and stale restores preserve current data and revision', t => {
   const h = coreHarness(t); h.save(snapshot('Keep me'));
