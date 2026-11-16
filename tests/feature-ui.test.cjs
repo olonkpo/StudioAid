@@ -31,3 +31,28 @@ test('leaving revision notes preserves the next navigation click without rebuild
  const target={id:'',dataset:{delivery:'revisions'},value:'Crop the first image'};
  studio.oninput({target});studio.onchange({target});assert.equal(p.delivery.revisions,'Crop the first image');
 });
+test('returning to a blank template editor creates a new template and preserves the previous one',async()=>{
+ const original={id:'custom-original',name:'Original',description:'Keep this template',phases:[{n:'Shoot',c:'#123456',s:['Photograph']}],offsets:{Photograph:0}};
+ const S={workflowPresets:[structuredClone(original)]},nodes={set:{}};
+ Object.defineProperty(nodes.set,'innerHTML',{set(){for(const id of ['customPresetName','customPresetDescription','customPresetSteps','presetEditor'])nodes[id]={value:'',focus(){}};}});
+ const context={S,StudioWorkflow:Workflow,$:id=>nodes[id],PH:phases,uid:()=> 'new',save(){},toast(){},updateSaveStatus(){},cloudRefresh(){},appBrand:()=>'',esc:x=>x,VER:'test',setGeneral:()=>'',setInvoice:()=>'',setWorkflow:()=>'',setData:()=>''};
+ vm.createContext(context);
+ vm.runInContext("let editingPresetId='',sp='workflow';"+extract('function presetLines(','function workflowLibrary(')+extract('function saveCustomPreset(){','function downloadJSON(')+extract('function renderSet(){','function openSet(')+extract("$('set').onclick=","$('set').onchange="),context);
+ const click=(selector,dataset,id='')=>nodes.set.onclick({target:{id,closest:s=>s===selector?{dataset}:null}});
+ context.renderSet();
+ await click('[data-edit-preset]',{editPreset:original.id});
+ nodes.customPresetName.value='Updated original';
+ await click('',{},'saveCustomPreset');
+ assert.equal(S.workflowPresets.length,1,'editing an existing template must still update it');
+ assert.equal(S.workflowPresets[0].name,'Updated original');
+ const saved=structuredClone(S.workflowPresets[0]);
+ await click('[data-edit-preset]',{editPreset:original.id});
+ await click('[data-sp]',{sp:'general'});
+ await click('[data-sp]',{sp:'workflow'});
+ assert.equal(nodes.customPresetName.value,'');
+ nodes.customPresetName.value='New template';nodes.customPresetSteps.value='Shoot | New task | 1';
+ await click('',{},'saveCustomPreset');
+ assert.equal(S.workflowPresets.length,2);
+ assert.deepEqual(S.workflowPresets.find(p=>p.id===original.id),saved);
+ assert.equal(S.workflowPresets.find(p=>p.id==='custom-new').name,'New template');
+});

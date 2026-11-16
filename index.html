@@ -563,6 +563,8 @@ function setData(){
  <div class="sbt"><button class="stx" id="bkCopy">Copy backup text</button><button class="stx" id="bkRestore">Restore from text</button><button class="stx sbad" id="rst" style="margin-left:auto">Reset settings</button></div>
  <textarea id="bkBox" class="sin sbox" rows="3" hidden aria-label="Backup text" placeholder="Paste backup text here, then press Restore from text."></textarea></div></div>`}
 function renderSet(){
+ // Rebuilding settings replaces the editor fields, so its saved identity must reset too.
+ editingPresetId='';
  if(sp==='home')sp='general';
  const pages={general:['General','Everyday preferences, all in one place.',setGeneral],invoice:['Business & invoice','Your identity on every invoice. Set it once, see it as you go.',setInvoice],workflow:['Workflow','Shape the stages your projects move through.',setWorkflow],data:['Backups & updates','Know where your work is saved.',setData]};
  const page=pages[sp]||pages.general;
