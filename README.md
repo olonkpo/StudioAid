@@ -1,173 +1,79 @@
-# StudioAid (Mac and Windows)
+# StudioAid
 
-A floating bubble that stays on top of your other apps. Tap it (or use the shortcut) to open your project board, calendar and studio workspace.
+**A desktop workspace for managing the work around photography.**
 
-## First run (about 5 minutes)
+I built StudioAid to bring projects, clients, schedules, invoices and delivery into one place. My aim is straightforward: make the business side of a small studio easier to follow, without pulling attention away from the creative work.
 
-On a new studio, the setup guide asks for a studio name and currency and can add a zero-price sample portrait project. Try its workflow, set a price in Payments, and prepare a quote from Client page. Existing studios are not prompted. Reopen the guide from **Settings → Backups & updates**.
+StudioAid runs on macOS and Windows. Its floating bubble keeps the workspace within reach, with a project board, calendar and studio panel available when needed.
 
-1. Install Node.js from https://nodejs.org (choose the LTS version).
-2. Open a terminal in this folder.
-   - Mac: open Terminal, type `cd ` (with a space), drag this folder into the window, press Return.
-   - Windows: open the folder in File Explorer, click the address bar, type `cmd`, press Enter.
-3. Run: `npm install`
-4. Run: `npm start`
+[Download a release](https://github.com/olonkpo/StudioAid/releases) · [User guide](docs/user-guide.md) · [Development and releases](docs/development.md) · [Client Desk](client-portal/README.md)
 
-The bubble appears at the right edge of your main screen, and a small icon appears in the menu bar (Mac) or system tray (Windows, near the clock; you may need to click the ^ arrow). Its menu has: Show or hide panel, Open at login, Show data folder, Quit.
+## Why I built it
 
-## Shortcut to show or hide the panel
+A photography project involves much more than the shoot. It includes enquiries, preparation, deposits, editing, client feedback and final delivery. When those details sit in separate lists, messages and spreadsheets, it becomes harder to see what needs attention.
 
-- Mac: Option+Space (falls back to Control+Option+Space if taken)
-- Windows: Control+Alt+Space (falls back to Control+Shift+Space if taken)
+I designed StudioAid around that problem. Each project brings its client details, tasks, dates, payment records and delivery progress into a single workspace. The board shows the work across projects; the project view holds the details behind it.
 
-## Moving your existing data
+## Problems I designed StudioAid to solve
 
-**Settings → Backups & updates** now downloads complete JSON backups and spreadsheet CSV files. CSV exports cover projects, clients, payments, expenses and work time. CSV imports add projects or clients after a row preview; all errors must be corrected before importing, and duplicate rows are skipped. CSV carries basic prices, while JSON retains full invoice lines, payment history, templates and studio settings.
+| Problem | What I built | Practical benefit |
+| --- | --- | --- |
+| Priorities change, but a static list does not reflect them. | A project board with saved drag-and-drop ordering and keyboard controls. | Put the most important work at the top without changing project details. |
+| Moving a shoot can leave preparation and delivery dates out of step. | Shoot-relative timelines that preserve manual and completed deadlines. | Reschedule automatic tasks while keeping deliberate exceptions. |
+| A free time slot may still leave no room for setup or travel. | Duration, setup and travel buffers with overlap warnings. | Review the full appointment window before committing to another shoot. |
+| Deposits, balances and staged payments are easy to lose track of. | Booking stages, payment records, deposit requirements and installments. | See the next payment requirement alongside the booking. |
+| An invoice can become inconsistent after it has been sent. | Frozen issued-invoice details and explicit revisions. | Retain the original financial record while recording later payments. |
+| Revenue alone does not show the cost of delivering a job. | Expenses, work-time valuation and estimated profit by currency. | Review monetary costs and estimated labor alongside project revenue. |
+| Client feedback can stall delivery without a clear next step. | Gallery, selections, revisions, approval and delivery tracking. | Identify projects waiting on a client and keep requests with the job. |
+| Repeated work can mean re-entering the same information. | Reusable timelines, project duplication and saved message drafts. | Reuse the brief and process while starting new work with fresh history. |
+| Data needs to remain usable outside the app. | Complete JSON backups, spreadsheet CSV exports and previewed imports. | Keep a transferable copy of the studio and review incoming data before applying it. |
+| A restore or conflicting edit can put current work at risk. | Validated restores, recovery copies and explicit cloud-conflict choices. | Review replacement data and retain a recovery path. |
 
-To restore, choose a JSON backup or a local daily/recovery copy, review its project/client/document counts, confirm replacement, then restore. StudioAid keeps the existing recovery-copy and concurrent-edit protections. The text-based restore remains available. Local backup selection requires this version's desktop app core; browser use supports uploaded files.
+## How the workspace fits together
 
-1. On the original computer, open **Settings → Backups & updates** and choose **Copy backup text**.
-2. Save the copied text in a private file before changing computers or restoring data.
-3. On the destination computer, open **Settings → Backups & updates**, choose **Restore from text**, paste the backup, then choose **Restore from text** again.
+**Board and calendar.** Review progress across projects, reorder priorities, filter active or archived work, and see shoots and task deadlines on the calendar.
 
-Keep a backup of the destination computer's work before replacing it. A restore replaces its studio data; it does not merge two studios. The desktop app validates the incoming snapshot and saves a `before-restore-…json` safety copy before replacing its data file. If validation or the safety copy fails, the restore is rejected.
+**Project workspace.** Keep client information, briefs, shot lists, gear checklists, workflows, payments, invoices, delivery status, costs, messages and notes with the project.
 
-## Where your data lives
+**Studio workspace.** Manage contacts, packages, documents and templates, then review money summaries and reports. Different currencies remain separate.
 
-- Mac: ~/Library/Application Support/StudioAid/data.json
-- Windows: %APPDATA%\StudioAid\data.json
+**Quick actions and reminders.** Use Command/Ctrl+K to find work or record an action. Configure local reminders for tasks, payments, approaching shoots and delivery follow-up.
 
-A daily copy is kept in the `backups` folder next to it (the last 14 days). "Show data folder" in the menu opens it.
+**Client Desk.** I built a separate hosted companion for sharing a limited quote and collecting a client's response. It uses an explicit offer-and-response handoff so the desktop project remains under the studio's control. Client Desk is currently an access-restricted preview; see its [access and workflow documentation](client-portal/README.md).
 
-## Get a normal installer (no Terminal needed)
+## Getting started
 
-1. Open this repository's **Actions** tab and choose **Build installers**.
-2. Choose **Run workflow**, select the branch containing the changes (normally **main**), then choose **Run workflow** again.
-3. Wait for **Test app behavior**, both installer builds, and the release job to finish successfully.
-4. Open the repository's **Releases** page and download the installer for your computer. The release also contains the small package used by the app's built-in updater.
+1. Download the appropriate installer from [Releases](https://github.com/olonkpo/StudioAid/releases).
+2. Install StudioAid and open the floating bubble or use the system shortcut below.
+3. Set your studio name and currency. The first-run guide can add a zero-price sample portrait project.
+4. Create a booking, choose a timeline, review the payment plan and prepare the project's invoice or quote.
 
-The workflow creates the version and tag automatically. The tag points to the exact commit used for that build, even if the branch receives more changes while the installers are building.
+| Action | macOS | Windows |
+| --- | --- | --- |
+| Show or hide the panel | Option+Space | Ctrl+Alt+Space |
+| Fallback if the shortcut is unavailable | Ctrl+Option+Space | Ctrl+Shift+Space |
+| Open quick actions while StudioAid has focus | Command+K | Ctrl+K |
 
-Maintainers setting up a new repository should upload the complete project, including `.github/workflows`, and allow GitHub Actions to run.
+The menu-bar or system-tray menu provides panel visibility, launch-at-login, the data folder and Quit. The [user guide](docs/user-guide.md) covers installation, everyday workflows, imports, backups and updates.
 
-## Which file do I download?
+## Design choices
 
-- **Windows:** `StudioAid-Setup-<version>.exe`
-- **Mac with an Apple chip (M1, M2, M3 and later):** `StudioAid-<version>-mac-arm64.dmg`
-- **Mac with an Intel chip:** `StudioAid-<version>-mac-x64.dmg`
+I keep studio data local by default, with optional Google Drive backup. Core project work does not require a cloud connection. JSON backups retain the complete transferable studio; CSV supports basic project/client migration and spreadsheet analysis.
 
-Not sure which Mac you have? Click the Apple menu, then About This Mac. If it says Chip, it is Apple; if it says Processor, it is Intel. The app's own "Check for updates" picks the right file for you.
+I keep financial changes deliberate. Recording a payment does not collect money, and approving a quote does not automatically confirm a booking. Reports separate currencies rather than assuming an exchange rate. Estimated profit distinguishes time valuation from cash expenses.
 
-## Building on your own computer instead
+I also keep recovery visible. The app reports save failures, validates incoming backups, and preserves existing data before a desktop restore. The updater checks downloaded packages against their release checksum and retains a recovery path for failed updates.
 
-- On a Mac: `npm run dist:mac` makes separate Apple Silicon and Intel .dmg installers in the `dist` folder.
-- On Windows: `npm run dist:win` makes an installer in the `dist` folder.
+## Availability and scope
 
-## Opening the app the first time
+This documentation describes the source on `main`. An installer includes the code at its release tag, so recent changes may appear here before a new installer is published.
 
-The installers are not signed with a paid developer certificate, so the computer will warn you once.
+The signed-installer workflow is configured, but a signed release requires valid certificates and a successful build. [Signing setup](docs/signing.md) explains the requirements. Client Desk has separate hosting and access controls from the desktop app.
 
-- **Mac:** Open the .dmg and drag StudioAid into Applications. Double-click it. If macOS says it cannot verify the app, open System Settings, then Privacy & Security, scroll down, and press "Open Anyway" next to StudioAid. On older macOS you can instead right-click the app and choose Open. If macOS says the app is "damaged", run this once in Terminal: `xattr -cr "/Applications/StudioAid.app"`
-- **Windows:** If SmartScreen warns about an unknown publisher, choose "More info", then "Run anyway".
+StudioAid currently records payments; it does not process them. Its quote responses are not electronic contract signatures. Email and WhatsApp actions open external applications. Local reminders require StudioAid to be running. Google Drive backup is not end-to-end encrypted.
 
-Removing these warnings entirely requires paid developer accounts (Apple Developer Program for Mac, a code-signing certificate for Windows).
+## Development
 
-## Updates
+StudioAid uses Electron with shared modules for data validation, financial calculations, scheduling, bookings, search and studio tools. Automated behavior checks run on macOS, Windows and Linux.
 
-Open **Settings → Backups & updates** and press **Check** under Updates. Most updates use a small package: the app downloads only the changed program files, checks them against a fingerprint, and restarts. You do not reinstall anything. A full installer is only needed now and then, when the app's engine itself changes; the app tells you when. If a small update ever fails to start, the app switches back to the installed version by itself.
-
-Changes to the launcher (`main.js`), including startup rollback behavior, require a full installer. A small update replaces the app core but keeps the launcher from the installed version.
-
-## Cloud backup (Google Drive)
-
-Open **Settings → Backups & updates → Sign in with Google**. Your browser opens, you approve, and StudioAid keeps a private backup in a hidden app folder of your own Google Drive. Only StudioAid can see it, and your other Drive files are not touched. After that it backs up automatically a few seconds after you change something. On a new computer, sign in and your data is fetched. If two computers have different data, the app asks which to keep before anything is overwritten, and it keeps a safety copy of the local data first.
-
-Maintainers: the Google client ID and secret are not stored in the repository. Add them as repository secrets named GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET (Settings, Secrets and variables, Actions) and the build writes them into the app.
-
-## Dock and Force Quit (Mac)
-
-By default StudioAid shows in the Dock, so it appears in the Force Quit window (Command+Option+Esc). If you prefer a menu-bar-only app that can float over full-screen apps, turn off **Show in Dock** in **Settings → General**. The menu bar icon always has Quit.
-
-## Notes
-
-- The bubble lives on your main screen only.
-- You will be asked once to allow notifications. You get one a day when steps are due or overdue.
-- Email and WhatsApp buttons open your default mail app and browser.
-- Google Drive backup checks for changes on startup and periodically while the app is running. Keep both computers online and allow backup to finish before switching; conflicting edits require you to choose which copy to keep.
-
-
-## Validation before a release
-
-Run `npm test` to check the app's data and calculation behavior. These tests use Node's built-in test runner and do not require Electron to launch. GitHub runs them on Linux, macOS, and Windows for pushes to main, pull requests, and before packaging installers.
-
-Before distributing a release, also open the app on Mac and Windows and check the bubble and keyboard shortcut, settings navigation, invoice preview and printed output, backup export and restore, and updating from the previous version. Automated checks do not replace these desktop checks.
-
-The app and its small update package include the shared data, invoice model, workflow, booking, quick-search, operations and client-response modules. Keep their packaging lists in sync when adding shared app modules. The release workflow pins the ASAR packer version so its Node requirements do not change unexpectedly.
-
-The shared `studio-tools.js` module is also required in both packaging lists. The top-priority data and onboarding flows have regression coverage in `tests/tools.test.cjs`; native backup reads are covered with the persistence tests.
-
-## Signed releases
-
-The installer workflow defaults to signed builds and requires your Apple and Windows signing credentials. [Signing setup](docs/signing.md) lists the repository secrets and verification steps. This source change alone does not produce signed installers. A successful signed installer build is required before claiming a signed release. An explicit unsigned development-build option remains available.
-
-## Reminder preferences and merge fields
-
-Choose local task, payment, upcoming-shoot and delivery reminders in **Settings → Backups & updates**, including 0–30 days' notice before shoots. While the app is running, it checks hourly and sends one daily summary. It does not send client messages automatically or run while the app is closed. Opening the reminder list takes you to the related project.
-
-Message and document templates accept `{client_name}`, `{shoot_date}`, `{balance_due}`, `{project_name}` and `{studio_name}` alongside the existing short field names. Balances use the project's currency and recorded payments. Saved message drafts remain under your control; reset a draft to refresh it from its template.
-
-## Invoice consistency and revisions
-
-Invoice totals, payment balances and reminder amounts use the same calculation. Once marked as sent, an invoice keeps its tax, currency, client details and business branding. Payment records can still be added. Use **Create invoice revision** to reopen the invoice for editing; its previous snapshot is retained. Money summaries and reports show different currencies separately, without converting or adding them together.
-
-Existing sent invoices are frozen at their current saved values when this update first opens them. This cannot reconstruct an older invoice that was already changed by previous app versions. Compare important invoices against the PDFs you originally sent.
-
-Settings now previews the same invoice renderer used for printing. In browser-only use, export a backup separately; the desktop app provides the daily local backup copies.
-
-## Project workflows and scheduling
-
-Choose a Wedding, Portrait or Event workflow preset for an individual project. The preset supplies that project's phases and steps, with suggested task dates relative to the shoot date. Other projects keep their own workflow.
-
-When the shoot date changes, automatic task dates move with it. Dates you set manually are preserved, including manually managed tasks from an earlier preset. Review the task dates after applying a new preset or rescheduling a shoot.
-
-## Booking and payment milestones
-
-Track a project's booking stage from enquiry and quote through awaiting deposit, booked, completed or canceled. Set a deposit as a percentage or a fixed amount, plus optional deposit and balance due dates. Deposit percentages run from 0 to 100.
-
-Milestones use the project's invoice total and recorded payments to show what is still due. Recording money and changing the booking stage remain deliberate actions; a milestone does not send a message or collect a payment.
-
-## Quick actions
-
-While StudioAid has focus, press **Command+K** on Mac or **Control+K** on Windows to open quick actions. You can also choose **Search / actions** in the panel or right-click the bubble. Search projects, clients, invoices or documents and open the selected result from the keyboard. Quick actions also let you create a booking, record a payment or complete a task; completing a task offers Undo.
-
-## Board priority
-
-Drag the **⠿** handle beside a project and drop above or below another row to set its priority. The row marker shows where it will land. Higher rows have higher priority. Focus a handle and press **↑ / ↓** to reorder with the keyboard.
-
-Reordering switches the board's sort to **Priority**, and saves the order with your projects, including in backups. Date and Name sorts remain available. When using a search or filter, only visible projects are rearranged; hidden projects keep their positions. New projects are added at the bottom.
-
-## Conflicts and reusable timelines
-
-Set a start time, shoot duration, setup buffer and travel buffer in **Client & shoot**. Overlap warnings include those buffers and shoots that run past midnight. Archived and canceled bookings do not block the schedule. Warnings help you decide whether to reschedule; they do not prevent a booking.
-
-Save a project's timeline as a reusable template from **Workflow**, or create and edit templates in **Settings → Workflow**. Task offsets are days before or after the shoot date. Applying a template stores an independent copy on the project, so editing or deleting the library template keeps existing project timelines intact.
-
-## Delivery, drafts and repeat work
-
-Use **Delivery** to track gallery sent, selections received, revision requests, approval and final delivery. Optional selection deadlines highlight clients you are waiting for. These stages and notes are changed by you.
-
-Messages save unfinished subject and message text separately for each project and template. Returning to a message restores the saved draft. **Reset draft to template** restores the template and offers Undo.
-
-**Duplicate project** copies the brief, effective prices and tax, currency, client details (optional), checklist text and timeline into a new enquiry. Pick its shoot date to rebuild automatic deadlines. Payments, invoice identities, progress, expenses, drafts, gallery links and delivery or approval history start fresh.
-
-## Costs, profit and installments
-
-Record expenses and work time in **Costs & profit**. Estimated profit uses revenue after discount, excluding sales tax, minus expenses and time valued at the hourly rates you enter. Reports show currencies separately; there is no currency conversion. Work time is an estimate of labor cost, while cash net subtracts monetary expenses from payments received.
-
-Add installment amounts and optional due dates under **Payments**. These amounts divide the balance after the deposit. Received payments cover the deposit first, followed by installments in due-date order. Overcommitted plans show a warning and are capped at the invoice total; adjust the plan before exporting a client offer. Stages and payment records remain deliberate actions.
-
-## Client Desk
-
-The project's **Client page** exports a quote containing the intended client details, shoot details, prices and payment plan. Open [Client Desk](https://studioaid-client-desk.pebblyowlet8.chatgpt.site), sign in, upload the offer and generate an expiring invitation. Download the client's response and import it into the matching StudioAid project for review before applying it. Applying a response preserves prices and does not mark a booking as confirmed or paid. Changed quotes require a fresh offer.
-
-Client Desk is currently owner-private while external client access awaits approval. The platform gate blocks outside clients until its audience is changed. Once external access is enabled, individual offers still require their secret invitation link, and the studio dashboard requires sign-in. This companion is separate from the desktop installer; it does not automatically upload or synchronize your studio. See [the companion README](client-portal/README.md) for its build, storage and access details.
+See [Development and releases](docs/development.md) for local setup, packaging, validation and release configuration.

@@ -1,35 +1,68 @@
 # StudioAid Client Desk
 
-A hosted companion to the StudioAid desktop app. Each signed-in studio operator uploads a client offer exported by StudioAid, creates an expiring invitation link, and downloads the client's recorded response for review/import into the original desktop project.
+I built Client Desk to connect a studio's prepared quote with a structured client response. The desktop app keeps the project record; the hosted companion presents the offer and collects the details needed for the next step.
 
-## Access and data
+This addresses a practical gap: a quote can be prepared in one place while approval, contact updates and shoot preferences arrive in separate messages. Client Desk brings those responses together in a file the studio can review before updating the original project.
 
-The current Site remains owner-private pending explicit approval for public client access. The platform sign-in gate therefore blocks external clients even if they have an invitation link. The Site must allow external visitors for client invitations to work; application-level admin ownership and invitation-token checks remain required after that change. The public page does not expose a directory of offers. An invitation uses a 256-bit random token in the URL fragment and sends it to the API through an Authorization header. The database stores a SHA-256 token hash, never the original token. Keep invitation links between the studio and intended client.
+[StudioAid overview](../README.md) · [Desktop user guide](../docs/user-guide.md)
 
-Administration requires Sign in with ChatGPT. Every admin query includes the authenticated Site user ID; one signed-in studio cannot list, export, replace or revoke another studio's offers. Sign-in identifies the operator and does not automatically import their desktop data.
+## Current availability
 
-Client access needs the invitation link. It expires at the exported offer expiry and can be revoked. A client can submit one response; identical retries with the same submission ID are safe. New details after submission require contacting the photographer or issuing a fresh offer. Revoking an invitation preserves its response for the operator's export.
+[Client Desk](https://studioaid-client-desk.pebblyowlet8.chatgpt.site) is deployed as an access-restricted preview. The hosting platform's audience controls apply before the application's invitation checks. A client invitation does not bypass those controls; the intended visitor must also be allowed by the platform's access policy.
 
-A quote response is a recorded approval/decline/detail submission. This application does not take payments, confirm bookings automatically, or provide electronic contract signatures.
+The companion has a separate release and deployment lifecycle from the desktop app. Changes in this GitHub directory do not by themselves update the hosted application.
 
-## Storage and migration
+## What I designed it to do
 
-The Worker uses the `DB` D1 binding declared in `.openai/hosting.json`. The schema-only migration is `drizzle/0000_client_offers.sql` with its Drizzle migration journal. Sites packaging copies these migrations to `dist/.openai/drizzle` and applies them before deploying the Worker. No table creation occurs during requests.
+- Present the studio's branding, client details, shoot information, quote lines and payment requirements.
+- Let a client approve, decline or send details without approving yet.
+- Collect contact information, location, a shoot brief and photography preferences.
+- Return a recorded response for explicit review in the matching desktop project.
+- Keep studio administration separate from client invitation access.
 
-## Build and verification
+A response records the client's decision. It does not process a payment, confirm the booking automatically or provide an electronic contract signature.
 
-No package installation is needed.
+## Offer and response workflow
 
-- `npm test`: auth scoping, token expiration/revocation, schema validation, idempotent responses and request limits using a D1 test double.
-- `npm run build`: produces the Worker artifact with the hosting manifest and migrations.
-- `npm run validate`: confirms the artifact is an ESM Worker.
+1. In the desktop project's **Client page**, choose **Export client offer**.
+2. Open Client Desk, sign in with ChatGPT and upload the exported offer.
+3. Generate an invitation and copy its link for the intended client, subject to the preview's platform access policy.
+4. The client reviews the quote, enters details and submits a response.
+5. Download the recorded response from the studio's invitation list.
+6. Import it into the original desktop project, review the proposed details and choose **Apply reviewed response**.
 
-Keep source edits in `worker/index.js`; the starter build copies only that file, its manifest and the migration directory. Essential brand image bytes are embedded; there are no third-party browser scripts or tracking images.
+The desktop app checks that the response matches the latest offer and that the project and quote still match the exported terms. Changed terms require a fresh offer. Applying a response updates supplied client/shoot details and records the decision; prices and booking stage remain under the studio's control.
 
-## End-to-end use
+There is no automatic upload or synchronization of the complete desktop studio. Internal costs, message drafts and private project notes are not part of the offer export.
 
-1. In StudioAid, export a client offer for the project and open Client Desk.
-2. Sign in with ChatGPT, upload the exported offer and generate its invitation.
-3. Copy the invitation link to the intended client. A replacement link invalidates the old one; an answered offer cannot be reopened by rotating its token.
-4. The client reviews their quote, enters shoot details and records approve, decline or details-only.
-5. Download the response from the offer list. Import it into StudioAid to review and apply the client's details to the matching project.
+## Access and invitation handling
+
+Studio administration requires ChatGPT sign-in. Administrative database operations are scoped to the authenticated operator, so one operator cannot list, export, replace or revoke another operator's offers.
+
+Each invitation uses a random 256-bit token. The browser receives it in the URL fragment and sends it to the API in an Authorization header. The database stores a SHA-256 hash of the token rather than the token itself. Treat the complete invitation link as access to that offer and share it only with the intended recipient.
+
+Invitations expire with their exported offer and can be revoked. Replacing an unanswered invitation invalidates its previous link. An answered offer cannot be reopened by rotating its token.
+
+A client can submit one response. Identical retries using the same submission ID are idempotent; changed details after submission require contacting the studio or preparing a fresh offer. Revocation blocks client access while retaining the response for the studio's export.
+
+## Storage and deployment
+
+The Worker uses the `DB` D1 binding declared in `.openai/hosting.json`. The schema migration is `drizzle/0000_client_offers.sql`, accompanied by its migration journal.
+
+The build copies the Worker, hosting manifest and migrations into `dist/`. Deployment packaging places migrations under `dist/.openai/drizzle` so they can be applied before the Worker is deployed. Requests do not create database tables.
+
+Keep application edits in `worker/index.js`. The page embeds its brand image and does not load third-party browser scripts or tracking images. Responses use no-store headers, and the HTML applies a nonce-based content security policy.
+
+## Build and validate
+
+From `client-portal/`, run:
+
+```sh
+npm test
+npm run build
+npm run validate
+```
+
+No package installation is required for these commands. Tests cover offer validation, operator ownership, token handling, expiry, revocation, response retries and request limits using a D1 test double. Artifact validation checks the Worker export and hosting manifest.
+
+Before changing the hosted version, also verify the complete handoff: desktop export, offer upload, invitation access under the selected audience policy, client submission, response download and desktop review/import.
