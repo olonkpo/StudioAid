@@ -54,5 +54,13 @@
  }
  function merge(template,values){const v={...values,client_name:values.client,shoot_date:values.date,balance_due:values.balance,project_name:values.project,studio_name:values.me};return template.replace(/\{(\w+)\}/g,(raw,k)=>v[k]===undefined?raw:String(v[k]));}
  function sampleProject(today,id){const p={id,name:'Sample portrait shoot',client:'Sample client',date:today,time:'10:00',amount:0,cells:{},brief:'Practice project: try the timeline, invoice and messages. Set a price in Payments to practice a quote. Delete this project when ready.',sample:true};Workflow.applyPreset(p,'portrait',today);Booking.configure(p,{stage:'quote',depositValue:30});return p;}
- return{parseCSV,exportCSV,previewCSV,reminderSettings,reminders,merge,sampleProject};
+ function prioritizeProjects(projects,visibleIds,sourceId,targetId,after=false){
+  const ids=visibleIds.map(String),source=String(sourceId),target=String(targetId),known=new Set(projects.map(p=>String(p.id)));
+  if(new Set(ids).size!==ids.length||ids.some(id=>!known.has(id))||!ids.includes(source)||!ids.includes(target)||source===target)return projects;
+  const order=ids.filter(id=>id!==source);order.splice(order.indexOf(target)+(after?1:0),0,source);
+  const byId=new Map(projects.map(p=>[String(p.id),p])),visible=new Set(ids);let index=0;
+  const next=projects.map(p=>visible.has(String(p.id))?byId.get(order[index++]):p);
+  return next.every((p,i)=>p===projects[i])?projects:next;
+ }
+ return{parseCSV,exportCSV,previewCSV,reminderSettings,reminders,merge,sampleProject,prioritizeProjects};
 });

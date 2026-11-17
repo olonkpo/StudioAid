@@ -140,6 +140,12 @@ Milestones use the project's invoice total and recorded payments to show what is
 
 While StudioAid has focus, press **Command+K** on Mac or **Control+K** on Windows to open quick actions. You can also choose **Search / actions** in the panel or right-click the bubble. Search projects, clients, invoices or documents and open the selected result from the keyboard. Quick actions also let you create a booking, record a payment or complete a task; completing a task offers Undo.
 
+## Board priority
+
+Drag the **⠿** handle beside a project and drop above or below another row to set its priority. The row marker shows where it will land. Higher rows have higher priority. Focus a handle and press **↑ / ↓** to reorder with the keyboard.
+
+Reordering switches the board's sort to **Priority**, and saves the order with your projects, including in backups. Date and Name sorts remain available. When using a search or filter, only visible projects are rearranged; hidden projects keep their positions. New projects are added at the bottom.
+
 ## Conflicts and reusable timelines
 
 Set a start time, shoot duration, setup buffer and travel buffer in **Client & shoot**. Overlap warnings include those buffers and shoots that run past midnight. Archived and canceled bookings do not block the schedule. Warnings help you decide whether to reschedule; they do not prevent a booking.
